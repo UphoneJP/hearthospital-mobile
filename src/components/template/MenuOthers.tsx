@@ -1,0 +1,56 @@
+import { StyleSheet, Text } from "react-native"
+import MenuItem from "./MenuItem"
+import { useTab } from "@/src/context/tabContext"
+import { Entypo, MaterialIcons, AntDesign} from '@expo/vector-icons'
+
+interface PropsType {
+  toggleMenu: () => void
+}
+export default function MenuOthers({toggleMenu}:PropsType){
+  const { selectedTab } = useTab()
+  return(
+    <>
+      <Text style={styles.subTitle}>others</Text>
+
+      <MenuItem
+        icon={<Entypo name="browser" size={20} color="#444444"/>}
+        label="ブラウザ版を開く"
+        url='https://www.hearthospital.jp'
+        toggleMenu={toggleMenu}
+      />
+      <MenuItem
+        icon={<MaterialIcons name="policy" size={20} color={selectedTab === "policy"? 'white': '#444444'}/>}
+        label="利用規約"
+        name="policy"
+        url="/others/policy"
+        toggleMenu={toggleMenu}
+      />
+      <MenuItem
+        icon={<MaterialIcons name="privacy-tip" size={20} color={selectedTab === "privacy"? 'white': '#444444'}/>}
+        label="プライバシーポリシー"
+        name="privacy"
+        url="/others/privacy"
+        toggleMenu={toggleMenu}
+      />
+      <MenuItem
+        icon={<AntDesign name="form" size={20} color={selectedTab === "form"? 'white': '#444444'}/>}
+        label="お問い合わせ"
+        name="form"
+        url="/others/form"
+        toggleMenu={toggleMenu}
+      />
+      <MenuItem
+        icon={<MaterialIcons name="feedback" size={20} color={selectedTab === "feedback"? 'white': '#444444'}/>}
+        label="フィードバック"
+        name="feedback"
+        url="/others/feedback"
+        toggleMenu={toggleMenu}
+      />
+    </>
+  )
+}
+const styles = StyleSheet.create({
+  subTitle: {
+    color: 'gray'
+  }
+})
