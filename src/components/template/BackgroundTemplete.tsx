@@ -10,7 +10,6 @@ import { MenuContext } from '@/src/context/menuContext'
 
 const BackgroundTemplate = ({ children }: { children: React.ReactNode }) => {
   const { menuVisible, toggleMenu } = useContext(MenuContext)
-  // function toggleMenu () {setMenuVisible(!menuVisible)}
 
   return (
     <GestureHandlerRootView>

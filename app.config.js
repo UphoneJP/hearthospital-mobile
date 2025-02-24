@@ -3,16 +3,16 @@ export default{
     name: "hearthospital-mobile",
     slug: "hearthospital-mobile",
     scheme: "jp.hearthospital",
-    version: "1.0.0",
+    version: "1.0.1",
     orientation: "portrait",
     icon: "./assets/icon(1024x1024).png",
-    userInterfaceStyle: "light",
-    newArchEnabled: true,
     splash: {
       "image": "./assets/splash-icon(414x896).png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    userInterfaceStyle: "light",
+    newArchEnabled: true,
     ios: {
       bundleIdentifier: "jp.hearthospital",
       buildNumber: "1.0.0",
@@ -27,8 +27,8 @@ export default{
       versionCode: 1,
       permissions: [],
       adaptiveIcon: {
-        foregroundImage: "./assets/adaptive-icon(108x108).png",
-        backgroundColor: "#ffffff"
+        foregroundImage: "./assets/adaptive(432x432).png",
+        backgroundColor: "#FFFFFF"
       },
       config: {
         googleMaps: {
