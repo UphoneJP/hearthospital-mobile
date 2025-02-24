@@ -20,7 +20,7 @@ export default function MessageHeader({recieverName, personId}:PropsType){
         }}
         onPress={()=>router.push(`/others/${personId}`)}
       >
-        <Text style={{
+        <Text selectable={true} style={{
           color: 'white', 
           padding: 12, 
           fontSize: 20

@@ -56,13 +56,13 @@ export default function HospitalDetail () {
       
       <ScrollView key={hospital._id} style={styles.scroll}>
         {/* ヘッダー */}
-        <Text style={styles.title}>{hospital.hospitalname}</Text>
+        <Text selectable={true} style={styles.title}>{hospital.hospitalname}</Text>
         <TouchableOpacity onPress={website}>
           <Text style={styles.websiteText}>
             公式HPをブラウザで開く
           </Text>
         </TouchableOpacity>
-        <Text style={styles.location}>{hospital.location}</Text>
+        <Text selectable={true} style={styles.location}>{hospital.location}</Text>
 
         {/* マップ */}
         <HospitalMap hospital={hospital}/>

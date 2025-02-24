@@ -30,11 +30,11 @@ export default function othersPage () {
       <View style={styles.visibleBox}>
         <View style={styles.section}>
           <Text style={styles.title}>ペンネーム:</Text>
-          <Text style={styles.content}>{otherPerson?.penName || otherPerson?.username}</Text>
+          <Text selectable={true} style={styles.content}>{otherPerson?.penName || otherPerson?.username}</Text>
         </View>
         <View style={styles.section}>
           <Text style={styles.title}>紹介文:</Text>
-          <Text style={styles.content}>{otherPerson?.promotion}</Text>
+          <Text selectable={true} style={styles.content}>{otherPerson?.promotion}</Text>
         </View>
         <View style={styles.section}>
           <Text style={styles.title}>投稿した口コミ:</Text>

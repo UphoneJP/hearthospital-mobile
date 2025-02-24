@@ -63,14 +63,14 @@ export default function Talks ({talkTheme, id, setNum}:PropsType) {
                     {backgroundColor: bgcolors[talk.loggedInUser?.num || 0]}
                   ]
                 }>
-                  <Text>
+                  <Text selectable={true}>
                     {talksLength - index}. {talk.guestName || talk.loggedInUser?.penName || talk.loggedInUser?.username}
                   </Text>
                   <View style={{flexDirection: 'row'}}>
-                    <Text style={styles.madeAt}>
+                    <Text selectable={true} style={styles.madeAt}>
                       {tokyoTime}
                     </Text>
-                    {user?._id === talk.loggedInUser?._id && 
+                    {user && user._id === talk.loggedInUser?._id && 
                       <TouchableOpacity onPress={()=>confirmFun(talk._id)}>
                         <Text style={styles.deleteButton}>
                           削除
@@ -81,7 +81,7 @@ export default function Talks ({talkTheme, id, setNum}:PropsType) {
                     
                 </View>
                 
-                <Text style={styles.content}>
+                <Text selectable={true} style={styles.content}>
                   {talk.content}
                 </Text>
                 

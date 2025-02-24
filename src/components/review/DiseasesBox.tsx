@@ -21,7 +21,7 @@ export default function DiseasesBox({diseases, setInputVal, func}:PropsType) {
                 if(func) func(disease)
               }}
             >
-              <Text style={styles.disease}>
+              <Text selectable={true} style={styles.disease}>
                 {disease}
               </Text>
             </TouchableOpacity>

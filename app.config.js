@@ -15,7 +15,7 @@ export default{
     newArchEnabled: true,
     ios: {
       bundleIdentifier: "jp.hearthospital",
-      buildNumber: "1.0.0",
+      buildNumber: "1.0.1",
       supportsTablet: false,
       config: {
         googleMapsApiKey: process.env.GOOGLE_MAP_API_KEY
@@ -24,7 +24,7 @@ export default{
     },
     android: {
       package: "jp.hearthospital",
-      versionCode: 1,
+      versionCode: 1.1,
       permissions: [],
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive(432x432).png",

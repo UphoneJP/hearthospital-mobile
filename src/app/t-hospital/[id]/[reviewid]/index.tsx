@@ -45,15 +45,15 @@ export default function ReveiwDetail () {
       <ScrollView style={{width: '100%'}}>
 
         {/* 病院名 */}
-        <Text style={styles.hospitalname}>
+        <Text selectable={true} style={styles.hospitalname}>
           {review.hospital?.hospitalname}
         </Text>
 
         {/* タイトル */}
-        <Text style={styles.title}>{review.title}</Text>
+        <Text selectable={true} style={styles.title}>{review.title}</Text>
 
         {/* 投稿者 */}
-        <Text style={styles.author}>
+        <Text selectable={true} style={styles.author}>
           投稿者: 
           <TouchableOpacity onPress={()=>router.push(`/others/${review.author?._id}`)}>
             <Text style={styles.authorLink}>
@@ -97,7 +97,7 @@ export default function ReveiwDetail () {
         {/* コメント */}
         <View style={styles.commentBox}>
           <ScrollView>
-            <Text>
+            <Text selectable={true}>
               {review.comment}
             </Text>
           </ScrollView>

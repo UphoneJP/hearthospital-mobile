@@ -21,8 +21,6 @@ export default function ReviewsBox ( prop: PropsType ) {
     if(setInputVal)setInputVal(d)
   }
 
-
-
   return (
     <>
       {reviews?.filter(review => !review.author?.isDeleted).map(review=>{
@@ -44,23 +42,23 @@ export default function ReviewsBox ( prop: PropsType ) {
           <View key={review._id} style={styles.box}>
 
             {/* タイトル */}
-            <Text style={styles.title}>{review.title}</Text>
+            <Text selectable={true} style={styles.title}>{review.title}</Text>
 
             {/* 投稿者・投稿日・治療時期・詳細画面 */}
             <View style={styles.flexbox}>
               <View style={{width: '70%'}}>
-                <Text style={styles.author}>
+                <Text selectable={true} style={styles.author}>
                   投稿者: 
                   <TouchableOpacity onPress={()=>router.push(`/others/${review.author?._id}`)}>
-                    <Text style={styles.authorLink}>
+                    <Text selectable={true} style={styles.authorLink}>
                       {review?.author?.penName||review?.author?.username}
                     </Text>
                   </TouchableOpacity>
                 </Text>
-                <Text style={styles.tweetDate}>
+                <Text selectable={true} style={styles.tweetDate}>
                   投稿日:  {review.tweetDate}
                 </Text>
-                <Text style={styles.treatmentTiming}>
+                <Text selectable={true} style={styles.treatmentTiming}>
                   治療時期:  {review.treatmentTiming}
                 </Text>
               </View>
@@ -101,7 +99,7 @@ export default function ReviewsBox ( prop: PropsType ) {
                     style={styles.dButton}
                     onPress={()=>jumpFun(d)}
                   >
-                    <Text style={styles.d}>{d}</Text>
+                    <Text selectable={true} style={styles.d}>{d}</Text>
                   </TouchableOpacity>
                 )
               })}
@@ -110,7 +108,7 @@ export default function ReviewsBox ( prop: PropsType ) {
             {/* コメント */}
             <View style={styles.commentBox}>
               <ScrollView>
-                <Text style={styles.comment}>
+                <Text selectable={true} style={styles.comment}>
                   {review.comment}
                 </Text>
               </ScrollView>

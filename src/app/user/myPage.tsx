@@ -25,20 +25,20 @@ export default function MyPage () {
             >
               <>
                 <View style={{flexDirection:'row'}}>
-                  <Text style={{fontWeight:'bold'}}>会員ID: </Text>
-                  <Text style={{flex:1}}> {user?._id}</Text>
+                  <Text selectable={true} style={{fontWeight:'bold'}}>会員ID: </Text>
+                  <Text selectable={true} style={{flex:1}}> {user?._id}</Text>
                 </View>
 
                 {user?.username&&
                   <View style={{flexDirection:'row'}}>
-                    <Text style={{fontWeight:'bold'}}>お名前: </Text>
-                    <Text style={{flex:1}}> {user?.username}</Text>
+                    <Text selectable={true} style={{fontWeight:'bold'}}>お名前: </Text>
+                    <Text selectable={true} style={{flex:1}}> {user?.username}</Text>
                   </View>
                 }
                 
                 <View style={{flexDirection:'row'}}>
-                  <Text style={{fontWeight:'bold'}}>Email: </Text>
-                  <Text style={{flex:1}}> {user?.email}</Text>
+                  <Text selectable={true} style={{fontWeight:'bold'}}>Email: </Text>
+                  <Text selectable={true} style={{flex:1}}> {user?.email}</Text>
                 </View>
               
                 <Password />

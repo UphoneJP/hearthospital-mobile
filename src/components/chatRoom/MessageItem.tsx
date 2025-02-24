@@ -16,7 +16,7 @@ const MessageItem = memo(({message, userId}:PropsType) => {
     ]}>
 
       {/* メッセージ本文 */}
-      <Text style={[
+      <Text selectable={true} style={[
         styles.message,
         {backgroundColor: isSender?"blue":"green"}
       ]}>
