@@ -24,7 +24,7 @@ export default{
     },
     android: {
       package: "jp.hearthospital",
-      versionCode: 1.1,
+      versionCode: 2,
       permissions: [],
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive(432x432).png",
