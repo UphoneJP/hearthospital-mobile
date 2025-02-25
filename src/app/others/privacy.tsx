@@ -1,7 +1,7 @@
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import { useTab } from "@/src/context/tabContext"
 import { router } from "expo-router"
-import { ScrollView, StyleSheet, View } from "react-native"
+import { Linking, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native"
 import { Text } from "react-native"
 
 export default function privacy(){
@@ -21,12 +21,24 @@ export default function privacy(){
         <View style={styles.innerBox}>
           <Text selectable={true} style={styles.subTitle}>2. 収集する情報</Text>
           <Text selectable={true}>
-            当アプリは、以下の情報を収集する場合があります。
+            (1) 当アプリは、以下の情報を収集する場合があります。
           </Text>
-          <Text selectable={true}>・登録情報: ユーザーがアカウントを作成する際に提供する氏名またはペンネーム、メールアドレス、パスワードなどの情報。</Text>
-          <Text selectable={true}>・口コミ情報: ユーザーが投稿する病院の口コミ。</Text>
-          {/* <Text selectable={true}>・技術情報: ユーザーのデバイス情報、IPアドレス、ブラウザの種類、アクセス日時、閲覧ページなどの技術情報。</Text> */}
-          <Text selectable={true}>・Cookieおよび類似技術: ユーザーの設定情報を収集するために使用するCookieおよび類似技術。</Text>
+          <Text selectable={true}>・登録情報: ユーザーがアカウントを登録する際に提供するペンネーム、メールアドレス、パスワードの情報。</Text>
+          <Text selectable={true}>・外部アカウント登録情報: 外部アカウント内のID、氏名、メールアドレスの情報(外部アカウントを利用して当アプリのアカウント登録をした場合に限る)。</Text>
+          <Text selectable={true}>・口コミ情報: ユーザーが投稿する病院の情報や子育てに関する情報とその投稿日時。</Text>
+          <Text selectable={true}>・技術情報: IPアドレス(不正アクセス時に限る)などの技術情報。</Text>
+          <Text selectable={true}>
+            (2) 当アプリ(モバイルアプリに限る)では Google AdMob を使用して広告を配信しており、パーソナライズド広告を使用しない設定にしています。ユーザーの興味関心・履歴等に関する情報収集は一切行われません。ただし、Googleは広告の表示回数やクリック数などの統計情報を収集し、広告の最適化や不正防止のために利用することがあります。詳しくはGoogleのプライバシーポリシーをご確認ください。
+          </Text>
+          <TouchableOpacity onPress={()=>{Linking.openURL('https://policies.google.com/privacy')}}>
+            <Text style={styles.link}>Google プライバシーポリシー</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={()=>{Linking.openURL('https://policies.google.com/technologies/ads')}}>
+            <Text style={styles.link}>Google 広告に関するポリシー</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={()=>{Linking.openURL('https://support.google.com/admob/answer/7665968')}}>
+            <Text style={styles.link}>Google データの使用に関するポリシー</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.innerBox}>
@@ -39,7 +51,6 @@ export default function privacy(){
           <Text selectable={true}>・サービスの改善および新機能の開発</Text>
           <Text selectable={true}>・ユーザーサポートの提供</Text>
           <Text selectable={true}>・セキュリティ対策および不正行為の防止</Text>
-          <Text selectable={true}>・法律および規制の遵守</Text>
         </View>
 
         <View style={styles.innerBox}>

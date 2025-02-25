@@ -20,7 +20,10 @@ export default{
       config: {
         googleMapsApiKey: process.env.GOOGLE_MAP_API_KEY
       },
-      usesAppleSignIn: true
+      usesAppleSignIn: true,
+      infoPlist: {
+        ITSAppUsesNonExemptEncryption: false
+      }
     },
     android: {
       package: "jp.hearthospital",
