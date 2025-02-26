@@ -18,7 +18,7 @@ export default{
       buildNumber: "1.0.1",
       supportsTablet: false,
       config: {
-        googleMapsApiKey: process.env.GOOGLE_MAP_API_KEY
+        googleMapsApiKey: process.env.GOOGLE_MAP_API_KEY_FOR_IOS
       },
       usesAppleSignIn: true,
       infoPlist: {
@@ -35,7 +35,7 @@ export default{
       },
       config: {
         googleMaps: {
-          apiKey: process.env.GOOGLE_MAP_API_KEY
+          apiKey: process.env.GOOGLE_MAP_API_KEY_FOR_ANDROID
         }
       }
     },

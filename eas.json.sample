@@ -19,7 +19,8 @@
       "env": {
         "API_BASE_URL": "XXXX",
         "API_KEY_INI": "XXXX",
-        "GOOGLE_MAP_API_KEY": "XXXX",
+        "GOOGLE_MAP_API_KEY_FOR_ANDROID": "XXXX",
+        "GOOGLE_MAP_API_KEY_FOR_IOS": "XXXX",
         "PROJECT_ID": "XXXX",
         "GOOGLE_OAUTH_CLIANT_ID": "XXXX",
         "GOOGLE_OAUTH_CLIANT_ID_ANDROID": "XXXX",
