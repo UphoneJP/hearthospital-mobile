@@ -28,10 +28,11 @@ export default function eachTheme() {
     .catch(()=> Alert.alert('データが取得できませんでした。'))
   }, [num])
 
-  if(loading&&talkTheme){
+  if(loading&&!talkTheme){
     return (
       <BackgroundTemplate>
-        <ActivityIndicator/>
+        <ActivityIndicator size="large" color="orange" />
+        <Text>サーバーから読み込み中...</Text>
       </BackgroundTemplate>
     )
   }

@@ -1,11 +1,11 @@
-import { Alert, StyleSheet, ActivityIndicator } from "react-native"
+import { Alert, StyleSheet, ActivityIndicator, Text } from "react-native"
 import { useState, useEffect } from "react"
-import { type hospitalType } from "@/src/types/types"
 import MapView, { Marker } from 'react-native-maps'
-import axiosClient from "@/utils/axiosClient"
 import { router } from "expo-router"
+
+import { type hospitalType } from "@/src/types/types"
+import axiosClient from "@/utils/axiosClient"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
-//http://IPアドレス:3000/api
 
 export default function Map () {
   const [hospitals, setHospitals] = useState<hospitalType[]|undefined>(undefined)
@@ -22,36 +22,41 @@ export default function Map () {
     })
   },[])
 
+  if(loading){
+    return (
+      <BackgroundTemplate>
+        <ActivityIndicator size="large" color="orange" />
+        <Text>サーバーから読み込み中...</Text>
+      </BackgroundTemplate>
+    )
+  }
+
   return (
     <BackgroundTemplate>            
-      {loading? (
-        <ActivityIndicator size="large" color="#ff9500" />
-      ) : (
-        <MapView
-          style={styles.map}
-          initialRegion={{
-            latitude: 36,
-            longitude: 135,
-            latitudeDelta: 15,
-            longitudeDelta: 15
-          }}
-        >
-          {hospitals?.map(hospital => {
-            return (
-              <Marker
-                key={hospital._id}
-                coordinate={{ 
-                  latitude: hospital.lat, 
-                  longitude: hospital.lng
-                }}
-                title={hospital.hospitalname}
-                description={`口コミ${hospital.reviews?.filter(review=>review.ownerCheck&&!review.author?.isDeleted).length}件`}
-                onCalloutPress={() => router.push(`/t-hospital/${hospital._id}`)}
-              />
-            )
-          })}
-        </MapView>
-      )}
+      <MapView
+        style={styles.map}
+        initialRegion={{
+          latitude: 36,
+          longitude: 135,
+          latitudeDelta: 15,
+          longitudeDelta: 15
+        }}
+      >
+        {hospitals?.map(hospital => {
+          return (
+            <Marker
+              key={hospital._id}
+              coordinate={{ 
+                latitude: hospital.lat, 
+                longitude: hospital.lng
+              }}
+              title={hospital.hospitalname}
+              description={`口コミ${hospital.reviews?.filter(review=>review.ownerCheck&&!review.author?.isDeleted).length}件`}
+              onCalloutPress={() => router.push(`/t-hospital/${hospital._id}`)}
+            />
+          )
+        })}
+      </MapView>
     </BackgroundTemplate>
   )
 }

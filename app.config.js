@@ -46,7 +46,6 @@ export default{
       hidden: true
     },
     plugins: [
-      "expo-tracking-transparency",
       [
         'expo-tracking-transparency',
         {
@@ -128,8 +127,10 @@ export default{
       GOOGLE_OAUTH_CLIANT_ID_IOS: process.env.GOOGLE_OAUTH_CLIANT_ID_IOS,
       GOOGLE_OAUTH_CLIANT_ID_WEB: process.env.GOOGLE_OAUTH_CLIANT_ID_WEB,
       // 広告関連
-      ANDROID_UNIT_ID: process.env.ANDROID_UNIT_ID,
-      IOS_UNIT_ID: process.env.IOS_UNIT_ID
+      REWARDED_ANDROID_UNIT_ID: process.env.REWARDED_ANDROID_UNIT_ID,
+      REWARDED_IOS_UNIT_ID: process.env.REWARDED_IOS_UNIT_ID,
+      NATIVE_ANDROID_UNIT_ID: process.env.NATIVE_ANDROID_UNIT_ID,
+      NATIVE_IOS_UNIT_ID: process.env.NATIVE_IOS_UNIT_ID
     }
   }
 }

@@ -27,9 +27,9 @@
         "GOOGLE_OAUTH_CLIANT_ID_IOS": "XXXX",
         "GOOGLE_OAUTH_CLIANT_ID_WEB": "XXXX",
         "ANDROID_APP_ID": "XXXX",
-        "ANDROID_UNIT_ID": "XXXX",
+        "REWARDED_ANDROID_UNIT_ID": "XXXX",
         "IOS_APP_ID": "XXXX",
-        "IOS_UNIT_ID": "XXXX"
+        "REWARDED_IOS_UNIT_ID": "XXXX"
       }
     },
     "preview": {

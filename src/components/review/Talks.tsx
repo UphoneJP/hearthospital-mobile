@@ -1,8 +1,9 @@
+import { useContext } from "react"
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { AuthContext } from "@/src/context/loginContext"
 import { talkThemeType } from "@/src/types/types"
 import axiosClient from "@/utils/axiosClient"
-import { useContext } from "react"
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import NativeAds from "@/src/components/template/NativeAds"
 
 interface PropsType {
   talkTheme: talkThemeType | undefined
@@ -90,6 +91,11 @@ export default function Talks ({talkTheme, id, setNum}:PropsType) {
           </View>  
         )
       })}
+      
+      <View style={styles.adBox}>
+        <NativeAds />
+      </View>
+      
       <View style={{padding:64}}></View>
     </ScrollView>
   )
@@ -123,6 +129,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     borderRadius: 4,
     marginHorizontal: 8
+  },
+  adBox: {
+    width: '70%',
+    margin: 'auto',
+    marginTop: 16
   }
 })
 const bgcolors = [

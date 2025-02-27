@@ -1,6 +1,6 @@
 import { useSearchParams } from "expo-router/build/hooks"
 import { useEffect, useState } from "react"
-import { ScrollView, StyleSheet, ActivityIndicator, Linking, TouchableOpacity  } from "react-native"
+import { ScrollView, StyleSheet, ActivityIndicator, Linking, TouchableOpacity, View  } from "react-native"
 import { Text, Alert } from "react-native"
 
 import { hospitalType } from "@/src/types/types"
@@ -9,7 +9,7 @@ import ReviewsBox from "@/src/components/review/ReviewsBox"
 import AddButton from "@/src/components/parts/AddButton"
 import HospitalMap from "@/src/components/review/HospitalMap"
 import axiosClient from "@/utils/axiosClient"
-//http://IPアドレス:3000/api
+import NativeAds from "@/src/components/template/NativeAds"
 
 export default function HospitalDetail () {
   const searchParams = useSearchParams()
@@ -39,7 +39,8 @@ export default function HospitalDetail () {
   if(!hospital || reviewLength === undefined) {
     return (
       <BackgroundTemplate>
-        <ActivityIndicator size="large" color="#ff9500" />
+        <ActivityIndicator size="large" color="orange" />
+        <Text>サーバーから読み込み中...</Text>
       </BackgroundTemplate>
     )
   }
@@ -56,7 +57,9 @@ export default function HospitalDetail () {
       
       <ScrollView key={hospital._id} style={styles.scroll}>
         {/* ヘッダー */}
-        <Text selectable={true} style={styles.title}>{hospital.hospitalname}</Text>
+        <Text selectable={true} style={styles.title}>
+          {hospital.hospitalname}
+        </Text>
         <TouchableOpacity onPress={website}>
           <Text style={styles.websiteText}>
             公式HPをブラウザで開く
@@ -80,6 +83,10 @@ export default function HospitalDetail () {
             口コミはありません
           </Text>
         )}
+
+        <View style={{width: '70%', marginHorizontal: 'auto', marginVertical: 16}}>
+          <NativeAds />
+        </View>
       </ScrollView>
       
     </BackgroundTemplate>
@@ -94,7 +101,8 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     textAlign: 'center',
     fontWeight: 'bold',
-    fontSize: 20
+    fontSize: 20,
+    marginVertical: 16
   },
   location: {
     textAlign: 'center',

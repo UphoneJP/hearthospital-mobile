@@ -1,16 +1,17 @@
-import RaisedButton from "@/src/components/parts/RaisedButton"
-import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
-import { Card } from "@rneui/themed"
 import { useContext, useEffect, useState } from "react"
 import { Alert, ScrollView, StyleSheet, Text, View } from "react-native"
-import { Picker } from "@react-native-picker/picker"
 import { useSearchParams } from "expo-router/build/hooks"
+import { router } from "expo-router"
+import { Picker } from "@react-native-picker/picker"
+import { Card } from "@rneui/themed"
+
 import { hospitalType } from "@/src/types/types"
 import axiosClient from "@/utils/axiosClient"
 import CustomInput from "@/src/components/parts/CustomInput"
-import { router } from "expo-router"
 import { AuthContext } from "@/src/context/loginContext"
 import DiseasesBox from "@/src/components/review/DiseasesBox"
+import RaisedButton from "@/src/components/parts/RaisedButton"
+import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 
 export default function New(){
   const [hospital, setHospital] = useState<hospitalType|undefined>(undefined)

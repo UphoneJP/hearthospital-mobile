@@ -1,6 +1,6 @@
 import { useSearchParams } from "expo-router/build/hooks"
 import { useEffect, useState } from "react"
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, View } from "react-native"
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from "react-native"
 import { Input, Icon } from '@rneui/themed'
 
 import { type reviewType } from "@/src/types/types"
@@ -18,7 +18,6 @@ export default function DiseaseName () {
   const [loading, setLoading] = useState<boolean>(true)
   const params = useSearchParams()
   const disease = decodeURIComponent(params.get('disease') || '')
-
 
   useEffect(()=>{
     axiosClient.get('/api/hospital/reviews')
@@ -46,51 +45,42 @@ export default function DiseaseName () {
     }
   }, [inputVal, diseasesCopy, reviewsCopy])
 
+  if(loading){
+    return (
+      <BackgroundTemplate>
+        <ActivityIndicator size="large" color="orange" />
+        <Text>サーバーから読み込み中...</Text>
+      </BackgroundTemplate>
+    )
+  }
+
   return (
     <BackgroundTemplate>
-      {loading?(
-        <ActivityIndicator size="large" color="#ff9500" />
-      ) : (
-        <>
-          <Input
-            placeholder='検索したい病名を入力'
-            leftIcon={{ type: 'Ionicon', name: 'search' }}
-            value={inputVal}
-            onChangeText={(text)=>setInputVal(text)}
-            containerStyle={{height:52,marginTop: 16}}
-            rightIcon={
-              <Icon
-                type="MaterialIcons"
-                name="clear"
-                onPress={() => setInputVal('')}
-                color={inputVal ? 'gray' : 'transparent'}
-              />
-            }
+      <Input
+        placeholder='検索したい病名を入力'
+        leftIcon={{ type: 'Ionicon', name: 'search' }}
+        value={inputVal}
+        onChangeText={(text)=>setInputVal(text)}
+        containerStyle={{height:52,marginTop: 16}}
+        rightIcon={
+          <Icon
+            type="MaterialIcons"
+            name="clear"
+            onPress={() => setInputVal('')}
+            color={inputVal ? 'gray' : 'transparent'}
           />
-          <DiseasesBox diseases={diseases} setInputVal={setInputVal}/>
-          
-          <ScrollView style={styles.scrollBox}>
-            <ReviewsBox reviews={reviews} setInputVal={setInputVal} />
-            <View style={{padding:64}} />
-          </ScrollView>
-        </>
-      )}
+        }
+      />
+      <DiseasesBox diseases={diseases} setInputVal={setInputVal}/>
+      
+      <ScrollView style={styles.scrollBox}>
+        <ReviewsBox reviews={reviews} setInputVal={setInputVal} />
+        <View style={{padding:64}} />
+      </ScrollView>
     </BackgroundTemplate>
   )
 }
 const styles = StyleSheet.create({
-  resetButton: {
-    textAlign: 'center',
-    borderWidth: 1,
-    borderRadius: 4,
-    borderColor: '#555555',
-    backgroundColor: '#ffff00',
-    paddingHorizontal: 8,
-    paddingVertical: 0,
-    color: '#555555',
-    marginBottom: 16,
-    flex:1
-  },
   scrollBox: {
     width: '100%'
   }

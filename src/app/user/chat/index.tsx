@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react"
-import { Alert, ScrollView, StyleSheet, Text, View } from "react-native"
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from "react-native"
 import { router } from "expo-router"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import { AuthContext } from "@/src/context/loginContext"
@@ -45,6 +45,13 @@ export default function Chat() {
   return(
     <BackgroundTemplate>
       <Text style={styles.title}>メッセージBOX</Text>
+
+      {loading&&
+        <>
+          <ActivityIndicator size="large" color="orange" />
+          <Text>サーバーから読み込み中...</Text>
+        </>
+      }
 
       {!loading&&(
         <ScrollView style={{width: '100%', padding: 32}}>

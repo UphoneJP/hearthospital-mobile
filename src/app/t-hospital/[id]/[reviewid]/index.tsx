@@ -7,7 +7,7 @@ import { Linking } from "react-native"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import { reviewType } from "@/src/types/types"
 import axiosClient from "@/utils/axiosClient"
-//http://IPアドレス:3000/api
+import NativeAds from "@/src/components/template/NativeAds"
 
 export default function ReveiwDetail () {
   const params = useSearchParams()
@@ -35,7 +35,8 @@ export default function ReveiwDetail () {
   if(loading || !review){
     return (
       <BackgroundTemplate>
-        <ActivityIndicator size="large" color="#ff9500" />
+        <ActivityIndicator size="large" color="orange" />
+        <Text>サーバーから読み込み中...</Text>
       </BackgroundTemplate>
     )
   }
@@ -45,9 +46,11 @@ export default function ReveiwDetail () {
       <ScrollView style={{width: '100%'}}>
 
         {/* 病院名 */}
-        <Text selectable={true} style={styles.hospitalname}>
-          {review.hospital?.hospitalname}
-        </Text>
+        <TouchableOpacity onPress={()=>router.push(`/t-hospital/${review.hospital?._id}`)}>
+          <Text selectable={true} style={[styles.hospitalname, styles.link]}>
+            {review.hospital?.hospitalname}
+          </Text>
+        </TouchableOpacity>
 
         {/* タイトル */}
         <Text selectable={true} style={styles.title}>{review.title}</Text>
@@ -56,7 +59,7 @@ export default function ReveiwDetail () {
         <Text selectable={true} style={styles.author}>
           投稿者: 
           <TouchableOpacity onPress={()=>router.push(`/others/${review.author?._id}`)}>
-            <Text style={styles.authorLink}>
+            <Text style={styles.link}>
               {review?.author?.penName||review?.author?.username}
             </Text>
           </TouchableOpacity>
@@ -103,6 +106,10 @@ export default function ReveiwDetail () {
           </ScrollView>
         </View>
 
+        <View style={styles.adBox}>
+          <NativeAds />
+        </View>
+
         <View style={{padding:64}} />
 
       </ScrollView>
@@ -112,8 +119,8 @@ export default function ReveiwDetail () {
 const styles = StyleSheet.create({
   hospitalname: {
     textAlign: 'center',
-    marginTop: 8,
-    fontWeight: 'bold'
+    marginTop: 32,
+    fontSize: 16
   },
   title: {
     fontWeight: 'bold',
@@ -129,8 +136,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 8
   },
-  authorLink: {
-    textDecorationColor: 'blue',
+  link: {
     textDecorationLine: 'underline',
     color: 'blue'
   },
@@ -186,6 +192,10 @@ const styles = StyleSheet.create({
   },
   commentBox: {
     padding: 16
+  },
+  adBox: {
+    width: '70%',
+    marginHorizontal: 'auto'
   }
 })
 

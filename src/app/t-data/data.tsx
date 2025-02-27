@@ -8,6 +8,7 @@ import Selector from "@/src/components/chart/Selector"
 import DPCcodeSummary from "@/src/components/chart/DPCcodeSummary"
 import KcodeSummary from "@/src/components/chart/KcodeSummary"
 import HospitalData from "@/src/components/chart/HospitalData"
+import NativeAds from "@/src/components/template/NativeAds"
 
 export default function Data() {
   const [areas, setAreas] = useState<string[]>([])
@@ -15,7 +16,6 @@ export default function Data() {
   const [loading, setLoading] = useState<boolean>(true)
   const [selectedValue, setSelectedValue] = useState("R5")
   
-
   useEffect(()=>{
     axiosClient.get('/api/hospital')
     .then((response)=>{
@@ -32,6 +32,7 @@ export default function Data() {
     return(
       <BackgroundTemplate>
         <ActivityIndicator size="large" color='orange'/>
+        <Text>サーバーから読み込み中...</Text>
       </BackgroundTemplate>
     )
   }
@@ -93,6 +94,10 @@ export default function Data() {
             bgcolors={bgcolors}
           />
 
+          <View style={styles.adBox}>
+            <NativeAds />
+          </View>
+
         </ScrollView>
       </BackgroundTemplate>
     )
@@ -111,6 +116,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 8,
     color: 'green'
+  },
+  adBox: {
+    width: '80%',
+    marginHorizontal: 'auto',
+    marginTop: 8,
+    marginBottom: 32
   }
 })
 

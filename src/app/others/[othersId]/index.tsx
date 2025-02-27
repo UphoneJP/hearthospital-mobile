@@ -6,11 +6,12 @@ import axiosClient from "@/utils/axiosClient"
 import { router } from "expo-router"
 import { useSearchParams } from "expo-router/build/hooks"
 import { useContext, useEffect, useState } from "react"
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 
 
 export default function othersPage () {
   const [otherPerson, setOtherPerson] = useState<userType|undefined>(undefined)
+  const [loading, setLoading] = useState<boolean>(true)
   const { user } = useContext(AuthContext)
   const { onTabPress } = useTab()
   const id = useSearchParams().get('othersId')
@@ -19,11 +20,21 @@ export default function othersPage () {
     axiosClient.post('/api/others/othersPage', {id})
     .then((response)=>{
       setOtherPerson(response.data.other)
+      setLoading(false)
     })
     .catch(()=>{
       Alert.alert('相手のデータを取得できませんでした')
     })
   }, [])
+
+  if(loading){
+    return (
+      <BackgroundTemplate>
+        <ActivityIndicator size="large" color="orange" />
+        <Text>サーバーから読み込み中...</Text>
+      </BackgroundTemplate>
+    )
+  }
 
   return (
     <BackgroundTemplate>
