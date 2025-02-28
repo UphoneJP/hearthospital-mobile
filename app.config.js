@@ -3,7 +3,7 @@ export default{
     name: "hearthospital-mobile",
     slug: "hearthospital-mobile",
     scheme: "jp.hearthospital",
-    version: "1.0.1",
+    version: "1.0.2",
     orientation: "portrait",
     icon: "./assets/icon(1024x1024).png",
     splash: {
@@ -15,7 +15,7 @@ export default{
     newArchEnabled: true,
     ios: {
       bundleIdentifier: "jp.hearthospital",
-      buildNumber: "1.0.1",
+      buildNumber: "1.0.2",
       supportsTablet: false,
       config: {
         googleMapsApiKey: process.env.GOOGLE_MAP_API_KEY_FOR_IOS
@@ -27,7 +27,7 @@ export default{
     },
     android: {
       package: "jp.hearthospital",
-      versionCode: 2,
+      versionCode: 3,
       permissions: [],
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive(432x432).png",

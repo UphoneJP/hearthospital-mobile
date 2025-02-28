@@ -2,6 +2,7 @@ import { createContext, useState, useEffect } from "react"
 import * as SecureStore from "expo-secure-store"
 import { io } from "socket.io-client"
 import Constants from "expo-constants"
+import { appleAuth } from '@invertase/react-native-apple-authentication'
 
 import { type userType } from "../types/types"
 import axiosClient from "@/utils/axiosClient"
@@ -29,6 +30,7 @@ interface AuthContextType {
   register: (penName: string, email: string, password: string )=> Promise<void>
   login: (email: string, password: string) => Promise<void>
   googleLogin: (response: AuthSessionResult | null) => Promise<void>
+  appleLogin: () => Promise<void>
   logout: () => Promise<void>
 }
 const defaultAuthContext: AuthContextType = {
@@ -38,6 +40,7 @@ const defaultAuthContext: AuthContextType = {
   register: async () => {},
   login: async () => {},
   googleLogin: async () => {},
+  appleLogin: async () => {},
   logout: async () => {}
 }
 const AuthContext = createContext(defaultAuthContext)
@@ -132,6 +135,34 @@ const AuthProvider: React.FC<ChildrenType> = ({ children }:ChildrenType) => {
     }
   }
 
+  async function appleLogin() {
+    try {
+      const appleAuthRequestResponse = await appleAuth.performRequest({
+        requestedOperation: appleAuth.Operation.LOGIN,
+        requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL]
+      })
+      const credentialState = await appleAuth.getCredentialStateForUser(appleAuthRequestResponse.user)
+      if (credentialState === appleAuth.State.AUTHORIZED) {
+        const res = await axiosClient.post('/api/user/auth/apple', {
+          username: appleAuthRequestResponse.fullName,
+          email: appleAuthRequestResponse.email,
+          appleId: appleAuthRequestResponse.authorizationCode
+        })
+        await saveToken("accessToken", res.data.accessToken)
+        await saveToken("refreshToken", res.data.refreshToken)
+        setIsLoggedIn(true)
+        setUser(res.data.user)
+        Alert.alert('ログインしました。')
+        onTabPress('myPage')
+        router.replace('/user/myPage')
+      } else {
+        Alert.alert("Apple認証に失敗しました")
+      }
+    } catch {
+      Alert.alert("Appleログインができませんでした")
+    }
+  }
+
   async function logout () {
     await deleteToken("accessToken")
     await deleteToken("refreshToken")
@@ -147,7 +178,7 @@ const AuthProvider: React.FC<ChildrenType> = ({ children }:ChildrenType) => {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, user, setUser, register, login, googleLogin, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, user, setUser, register, login, googleLogin, appleLogin, logout }}>
       {children}
     </AuthContext.Provider>
   )

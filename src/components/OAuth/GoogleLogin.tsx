@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useContext, useEffect } from 'react'
-import { SocialIcon } from "@rneui/base"
-import { Button } from '@rneui/themed'
+import { GoogleSigninButton } from '@react-native-google-signin/google-signin'
 import * as Google from 'expo-auth-session/providers/google'
 import * as WebBrowser from 'expo-web-browser'
 import Constants from 'expo-constants'
@@ -26,21 +25,10 @@ export default function App() {
   }, [response])
 
   return (
-    <Button
-      title="Googleアカウントで登録/ログイン"
+    <GoogleSigninButton
+      size={GoogleSigninButton.Size.Wide}
+      color={GoogleSigninButton.Color.Light}
       onPress={()=>promptAsync()}
-      icon={<SocialIcon type="google" iconSize={16}/>}
-      iconContainerStyle={{ marginRight: 10 }}
-      titleStyle={{ color: 'black',marginHorizontal: 8 }}
-      buttonStyle={{
-        backgroundColor: 'white',
-        borderColor: 'transparent',
-        borderWidth: 0,
-        borderRadius: 30
-      }}
-      containerStyle={{
-        width: '90%'
-      }}
     />
   )
 }

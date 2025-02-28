@@ -1,10 +1,11 @@
 import { useContext, useEffect } from "react"
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { router } from "expo-router"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import GoogleLogin from "@/src/components/OAuth/GoogleLogin"
 import LoginBox from "@/src/components/user/LoginBox"
 import { AuthContext } from "@/src/context/loginContext"
+import AppleLogin from "@/src/components/OAuth/AppleLogin"
 
 export default function Login () {
   const { isLoggedIn } = useContext(AuthContext)
@@ -23,6 +24,14 @@ export default function Login () {
 
       {/* Googleログイン */}
       <GoogleLogin />
+
+      {/* appleログイン */}
+      {Platform.OS === 'ios' && (
+        <>
+          <View style={{padding:8}}/>
+          <AppleLogin />
+        </>
+      )}
       
       {/* デバイダー */}
       <View style={styles.divider} />

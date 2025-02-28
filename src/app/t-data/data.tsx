@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     color: 'green'
   },
   adBox: {
-    width: '80%',
+    width: 220,
     marginHorizontal: 'auto',
     marginTop: 8,
     marginBottom: 32
