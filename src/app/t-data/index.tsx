@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import BackgroundTemplate from '@/src/components/template/BackgroundTemplete'
 import RewardedAds from '@/src/components/template/RewardedAds'
+import BannerAds from '@/src/components/template/BannerAds'
 
 export default function AdMobForData() {
   return (
@@ -17,6 +18,10 @@ export default function AdMobForData() {
       </View>
 
       <RewardedAds />
+      
+      <View style={{position: 'absolute', bottom: 0}}>
+        <BannerAds />
+      </View>
       
     </BackgroundTemplate>
   )

@@ -8,6 +8,7 @@ import axiosClient from "@/utils/axiosClient"
 import SearchFriend from "@/src/components/chatRoom/SearchFriend"
 import FriendsList from "@/src/components/chatRoom/FriendsList"
 import { UnReadMessagesContext } from "@/src/context/messageContext"
+import BannerAds from "@/src/components/template/BannerAds"
 
 export default function Chat() {
   const { user } = useContext(AuthContext)
@@ -72,6 +73,10 @@ export default function Chat() {
         
         </ScrollView>
       )}
+
+      <View style={{position: 'absolute', bottom: 0}}>
+        <BannerAds />
+      </View>
     </BackgroundTemplate>
   )
 }

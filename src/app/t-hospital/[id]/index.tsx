@@ -1,6 +1,6 @@
 import { useSearchParams } from "expo-router/build/hooks"
 import { useEffect, useState } from "react"
-import { ScrollView, StyleSheet, ActivityIndicator, Linking, TouchableOpacity, View  } from "react-native"
+import { ScrollView, StyleSheet, ActivityIndicator, Linking, TouchableOpacity } from "react-native"
 import { Text, Alert } from "react-native"
 
 import { hospitalType } from "@/src/types/types"
@@ -9,7 +9,7 @@ import ReviewsBox from "@/src/components/review/ReviewsBox"
 import AddButton from "@/src/components/parts/AddButton"
 import HospitalMap from "@/src/components/review/HospitalMap"
 import axiosClient from "@/utils/axiosClient"
-import NativeAds from "@/src/components/template/NativeAds"
+import BannerAds from "@/src/components/template/BannerAds"
 
 export default function HospitalDetail () {
   const searchParams = useSearchParams()
@@ -84,11 +84,11 @@ export default function HospitalDetail () {
           </Text>
         )}
 
-        <View style={{width: '70%', marginHorizontal: 'auto', marginVertical: 16}}>
-          <NativeAds />
-        </View>
+        
+        <BannerAds />
       </ScrollView>
       
+
     </BackgroundTemplate>
   )    
 }

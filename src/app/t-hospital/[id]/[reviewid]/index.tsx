@@ -7,7 +7,7 @@ import { Linking } from "react-native"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import { reviewType } from "@/src/types/types"
 import axiosClient from "@/utils/axiosClient"
-import NativeAds from "@/src/components/template/NativeAds"
+import BannerAds from "@/src/components/template/BannerAds"
 
 export default function ReveiwDetail () {
   const params = useSearchParams()
@@ -106,11 +106,11 @@ export default function ReveiwDetail () {
           </ScrollView>
         </View>
 
-        <View style={styles.adBox}>
-          <NativeAds />
-        </View>
-
         <View style={{padding:64}} />
+
+        <View style={{position: 'absolute', bottom: 0}}>
+          <BannerAds />
+        </View>
 
       </ScrollView>
     </BackgroundTemplate>
@@ -192,10 +192,6 @@ const styles = StyleSheet.create({
   },
   commentBox: {
     padding: 16
-  },
-  adBox: {
-    width: '70%',
-    marginHorizontal: 'auto'
   }
 })
 

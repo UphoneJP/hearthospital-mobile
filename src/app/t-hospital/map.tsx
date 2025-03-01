@@ -6,6 +6,7 @@ import { router } from "expo-router"
 import { type hospitalType } from "@/src/types/types"
 import axiosClient from "@/utils/axiosClient"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
+import BannerAds from "@/src/components/template/BannerAds"
 
 export default function Map () {
   const [hospitals, setHospitals] = useState<hospitalType[]|undefined>(undefined)
@@ -57,6 +58,7 @@ export default function Map () {
           )
         })}
       </MapView>
+      <BannerAds />
     </BackgroundTemplate>
   )
 }

@@ -1,5 +1,5 @@
-import { StyleSheet, ActivityIndicator } from "react-native"
-import { TestIds, NativeAdView, NativeMediaView, NativeAd } from "react-native-google-mobile-ads"
+import { StyleSheet, ActivityIndicator, Text, Image, View } from "react-native"
+import { NativeAd, TestIds, NativeAdView, NativeMediaView, NativeAsset, NativeAssetType } from "react-native-google-mobile-ads"
 import Constants from "expo-constants"
 import * as Device from "expo-device"
 import { useEffect, useState } from "react"
@@ -26,14 +26,44 @@ export default function NativeAds() {
       style={styles.adMedia}
     >
       <NativeMediaView />
+
+      <View style={styles.explanation}>
+        {/* アイコン */}
+        {nativeAd.icon && (
+          <NativeAsset assetType={NativeAssetType.ICON}>
+            <Image source={{uri: nativeAd.icon.url}} width={16} height={16} />
+          </NativeAsset>
+        )}
+        <View style={{flexDirection: 'row'}}>
+          {/* 広告の帰属表示 */}
+          <Text style={styles.budge}>Ad</Text>
+          
+          {/* 広告のタイトル */}
+          <NativeAsset assetType={NativeAssetType.HEADLINE}>
+            <Text style={{fontSize: 12}}>
+              {nativeAd.headline}
+            </Text>
+          </NativeAsset>
+        </View>
+      </View>
     </NativeAdView>
   )
 }
 
 const styles = StyleSheet.create({
   adMedia: {
-    width: "100%",
-    backgroundColor: '#dddddd'
+    width: "100%"
+  },
+  explanation: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    borderRadius: 16
+  },
+  budge: {
+    backgroundColor: 'orange',
+    color: 'white',
+    paddingHorizontal: 8,
+    borderRadius: 4,
+    fontSize: 12
   }
 })
-  

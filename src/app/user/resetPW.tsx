@@ -1,11 +1,12 @@
 import RaisedButton from "@/src/components/parts/RaisedButton"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
+import BannerAds from "@/src/components/template/BannerAds"
 import EmailInputForm from "@/src/components/user/EmailInputForm"
 import axiosClient from "@/utils/axiosClient"
 import { Card, Input } from "@rneui/themed"
 import { router } from "expo-router"
 import { useState } from "react"
-import { Alert, StyleSheet } from "react-native"
+import { Alert, StyleSheet, View } from "react-native"
 
 export default function resetPW(){
   const [email, setEmail] = useState<string>('')
@@ -56,6 +57,10 @@ export default function resetPW(){
           disabled={email&&authNum===answer&&Date.now() < expire&&password?false:true}
         />
       </Card>
+
+      <View style={{position: 'absolute', bottom: 0}}>
+        <BannerAds />
+      </View>
     </BackgroundTemplate>
   )
 }

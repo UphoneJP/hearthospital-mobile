@@ -8,7 +8,7 @@ import Selector from "@/src/components/chart/Selector"
 import DPCcodeSummary from "@/src/components/chart/DPCcodeSummary"
 import KcodeSummary from "@/src/components/chart/KcodeSummary"
 import HospitalData from "@/src/components/chart/HospitalData"
-import NativeAds from "@/src/components/template/NativeAds"
+import BannerAds from "@/src/components/template/BannerAds"
 
 export default function Data() {
   const [areas, setAreas] = useState<string[]>([])
@@ -94,11 +94,13 @@ export default function Data() {
             bgcolors={bgcolors}
           />
 
-          <View style={styles.adBox}>
-            <NativeAds />
-          </View>
 
         </ScrollView>
+        
+        <View style={{position: 'absolute', bottom: 0}}>
+          <BannerAds />
+        </View>
+      
       </BackgroundTemplate>
     )
   }
@@ -116,12 +118,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 8,
     color: 'green'
-  },
-  adBox: {
-    width: 220,
-    marginHorizontal: 'auto',
-    marginTop: 8,
-    marginBottom: 32
   }
 })
 

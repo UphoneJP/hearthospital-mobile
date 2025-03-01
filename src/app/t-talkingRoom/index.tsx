@@ -8,7 +8,7 @@ import { talkThemeType } from "@/src/types/types"
 import axiosClient from "@/utils/axiosClient"
 import NewTalkThemeBox from "@/src/components/review/NewTalkThemeBox"
 import TalkThemes from "@/src/components/review/TalkThemes"
-import NativeAds from "@/src/components/template/NativeAds"
+import BannerAds from "@/src/components/template/BannerAds"
 
 export default function TalkingRoom () {
   const [loading, setLoading]= useState<boolean>(true)
@@ -58,16 +58,15 @@ export default function TalkingRoom () {
           style={styles.scrollBox} 
           contentContainerStyle={styles.scrollContent}
         >
-          <View style={styles.adBox}>
-            <NativeAds />
-          </View>
-
           <TalkThemes 
             talkThemes={talkThemes} 
             setNum={setNum}
           />
-
         </ScrollView>
+        
+        <View style={{position: 'absolute', bottom: 0}}>
+          <BannerAds />
+        </View>
       </BackgroundTemplate>
     </PaperProvider>
   )
@@ -94,10 +93,5 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexDirection: 'row',
     flexWrap: 'wrap'
-  },
-  adBox: {
-    width: '50%', 
-    aspectRatio: 1, 
-    justifyContent: 'center'
   }
 })

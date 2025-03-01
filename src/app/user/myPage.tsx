@@ -9,6 +9,7 @@ import MyPageBox from "@/src/components/user/MyPageBox"
 import LogoutBox from "@/src/components/user/LogoutBox"
 import Password from "@/src/components/user/Password"
 import Notify from "@/src/components/user/Notify"
+import BannerAds from "@/src/components/template/BannerAds"
 
 export default function MyPage () {
   const {isLoggedIn, user} = useContext(AuthContext)
@@ -63,6 +64,11 @@ export default function MyPage () {
           <Text>アカウント情報がありません</Text>
         )}
       </ScrollView>
+
+      <View style={{position: 'absolute', bottom: 0}}>
+        <BannerAds />
+      </View>
+
     </BackgroundTemplate>
   )
 }

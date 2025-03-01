@@ -6,6 +6,7 @@ import GoogleLogin from "@/src/components/OAuth/GoogleLogin"
 import LoginBox from "@/src/components/user/LoginBox"
 import { AuthContext } from "@/src/context/loginContext"
 import AppleLogin from "@/src/components/OAuth/AppleLogin"
+import BannerAds from "@/src/components/template/BannerAds"
 
 export default function Login () {
   const { isLoggedIn } = useContext(AuthContext)
@@ -40,6 +41,10 @@ export default function Login () {
       <TouchableOpacity onPress={()=>router.replace('user/register')}>
         <Text style={styles.link}>新規ユーザー登録はこちら</Text>
       </TouchableOpacity>
+
+      <View style={{position: 'absolute', bottom: 0}}>
+        <BannerAds />
+      </View>
       
     </BackgroundTemplate>
   )

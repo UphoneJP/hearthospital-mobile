@@ -5,6 +5,7 @@ import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import RegisterBox from "@/src/components/user/RegisterBox"
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import GoogleLogin from "@/src/components/OAuth/GoogleLogin"
+import BannerAds from "@/src/components/template/BannerAds"
 
 export default function Register () {
   const { isLoggedIn } = useContext(AuthContext)
@@ -32,6 +33,10 @@ export default function Register () {
       <TouchableOpacity onPress={()=>router.replace('user/login')}>
         <Text style={styles.link}>ログインはこちら</Text>
       </TouchableOpacity>
+
+      <View style={{position: 'absolute', bottom: 0}}>
+        <BannerAds />
+      </View>
       
     </BackgroundTemplate>
   )

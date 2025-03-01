@@ -3,7 +3,7 @@ import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "rea
 import { AuthContext } from "@/src/context/loginContext"
 import { talkThemeType } from "@/src/types/types"
 import axiosClient from "@/utils/axiosClient"
-import NativeAds from "@/src/components/template/NativeAds"
+import BannerAds from "../template/BannerAds"
 
 interface PropsType {
   talkTheme: talkThemeType | undefined
@@ -92,11 +92,10 @@ export default function Talks ({talkTheme, id, setNum}:PropsType) {
         )
       })}
       
-      <View style={styles.adBox}>
-        <NativeAds />
-      </View>
-      
+      <BannerAds />
+
       <View style={{padding:64}}></View>
+
     </ScrollView>
   )
 }
@@ -129,11 +128,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     borderRadius: 4,
     marginHorizontal: 8
-  },
-  adBox: {
-    width: '70%',
-    margin: 'auto',
-    marginTop: 16
   }
 })
 const bgcolors = [
