@@ -17,20 +17,21 @@ export default function MenuOthers({toggleMenu}:PropsType){
         label="ブラウザ版を開く"
         url='https://www.hearthospital.jp'
         toggleMenu={toggleMenu}
+        externalIcon={true}
       />
       <MenuItem
         icon={<MaterialIcons name="policy" size={20} color={selectedTab === "policy"? 'white': '#444444'}/>}
         label="利用規約"
-        name="policy"
-        url="/others/policy"
+        url="https://www.hearthospital.jp/policy"
         toggleMenu={toggleMenu}
+        externalIcon={true}
       />
       <MenuItem
         icon={<MaterialIcons name="privacy-tip" size={20} color={selectedTab === "privacy"? 'white': '#444444'}/>}
         label="プライバシーポリシー"
-        name="privacy"
-        url="/others/privacy"
+        url="https://www.hearthospital.jp/policy#privacyPolicy"
         toggleMenu={toggleMenu}
+        externalIcon={true}
       />
       <MenuItem
         icon={<AntDesign name="form" size={20} color={selectedTab === "form"? 'white': '#444444'}/>}

@@ -4,6 +4,7 @@ import { router } from "expo-router"
 import { useContext } from "react"
 import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { Badge } from 'react-native-paper'
+import { Feather } from '@expo/vector-icons'
 
 interface PropsType {
   icon: JSX.Element
@@ -12,9 +13,10 @@ interface PropsType {
   url: string
   toggleMenu: () => void
   unReadCount?: number
+  externalIcon?: boolean
 }
 export default function MenuItem(prop: PropsType){
-  const { icon, label, name, url, toggleMenu, unReadCount } = prop
+  const { icon, label, name, url, toggleMenu, unReadCount, externalIcon } = prop
   const { selectedTab, onTabPress } = useTab()
   const { logout } = useContext(AuthContext)
 
@@ -69,6 +71,10 @@ export default function MenuItem(prop: PropsType){
             <Badge style={styles.badge}>{unReadCount}</Badge>
           )}
         </View>
+
+        {externalIcon&&
+          <Feather name="external-link" size={16} color='#444444' style={{alignSelf: 'center', marginLeft: 8}} />
+        }
         
       </View>
     </TouchableOpacity>
