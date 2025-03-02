@@ -94,7 +94,7 @@ export default function Data() {
             bgcolors={bgcolors}
           />
 
-
+          <View style={{padding: 64}}/>
         </ScrollView>
         
         <View style={{position: 'absolute', bottom: 0}}>
