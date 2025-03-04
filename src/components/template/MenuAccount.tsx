@@ -27,6 +27,13 @@ export default function MenuAccount({toggleMenu}:PropsType){
             toggleMenu={toggleMenu}
           />
           <MenuItem
+            icon={<MaterialCommunityIcons name="hand-coin" size={20} color={selectedTab === "points"? 'white': '#444444'} />}
+            label="ポイ活"
+            name="points"
+            url="/user/points"
+            toggleMenu={toggleMenu}
+          />
+          <MenuItem
             icon={<FontAwesome5 name="rocketchat" size={20} color={selectedTab === "chat"? 'white': '#444444'}/>}
             label="メッセージBOX"
             name="chat"

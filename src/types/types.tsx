@@ -1,4 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+interface pointType {
+  reward: number,
+  madeAt: Date
+}
 interface userType {
   _id: string,
   googleId: string,
@@ -13,7 +17,9 @@ interface userType {
   forResetToken: string,
   forResetExpires: Date,
   isDeleted : boolean,
-  num: number
+  num: number,
+  points: pointType[],
+  timeOfGotPoint: Date
 }
 interface hospitalType {
   _id: string,
@@ -33,7 +39,6 @@ interface hospitalType {
   R5Kcode: object,
   R5DPCcode: object,
   reviews? : reviewType[],
-  filteredReviewsCount: number,
   [key: string]: any
 }
 interface reviewType {
@@ -119,4 +124,4 @@ type usersExceptContactPersonsType = {
 }
 
 
-export { userType, hospitalType, reviewType, responseType, talkThemeType, talkType, KcodeType, contactPersonType, messageType, usersExceptContactPersonsType }
+export { pointType, userType, hospitalType, reviewType, responseType, talkThemeType, talkType, KcodeType, contactPersonType, messageType, usersExceptContactPersonsType }

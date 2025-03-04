@@ -1,3 +1,4 @@
+/* eslint-disable no-irregular-whitespace */
 import { useContext } from "react"
 import { Text, View, StyleSheet, ScrollView } from "react-native"
 
@@ -10,6 +11,7 @@ import LogoutBox from "@/src/components/user/LogoutBox"
 import Password from "@/src/components/user/Password"
 import Notify from "@/src/components/user/Notify"
 import BannerAds from "@/src/components/template/BannerAds"
+import { pointType } from "@/src/types/types"
 
 export default function MyPage () {
   const {isLoggedIn, user} = useContext(AuthContext)
@@ -28,6 +30,15 @@ export default function MyPage () {
                 <View style={{flexDirection:'row'}}>
                   <Text selectable={true} style={{fontWeight:'bold'}}>会員ID: </Text>
                   <Text selectable={true} style={{flex:1}}> {user?._id}</Text>
+                </View>
+
+                <View style={{flexDirection:'row'}}>
+                  <Text selectable={true} style={{fontWeight:'bold'}}>
+                    保有ハートポイント:　
+                  </Text>
+                  <Text selectable={true} style={{flex:1}}>
+                    {user?.points.map((point: pointType) => point.reward).reduce((sum, num) => sum + num, 0) || 0} pts
+                  </Text>
                 </View>
 
                 {user?.username&&
