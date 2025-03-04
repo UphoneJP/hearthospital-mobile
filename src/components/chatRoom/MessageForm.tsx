@@ -14,9 +14,10 @@ export default function MessageForm (prop:PropsType){
   const { sendForm } = useContext(UnReadMessagesContext)
 
   function handleTextChange(text: string) {
-    if (text.length <= 300) {setMessageInput(text.trim())}
+    if (text.length <= 300) {setMessageInput(text)}
   }
   function handlePress () {
+    setMessageInput(messageInput.trim())
     if(userId&&personId){
       sendForm(
         userId,

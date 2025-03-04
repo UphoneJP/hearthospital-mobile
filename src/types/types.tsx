@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface pointType {
   reward: number,
-  madeAt: Date
+  madeAt: Date,
+  gettingFrom: string,
+  _id: string
 }
 interface userType {
   _id: string,

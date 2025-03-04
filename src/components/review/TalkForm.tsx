@@ -31,8 +31,9 @@ export default function TalkForm (prop:PropsType) {
       setAddButtonVisible(true)
       setUser(response.data.DBuser)
     })
-    .catch(()=>{
+    .catch((e)=>{
       Alert.alert('エラーが発生しました。')
+      console.log(e)
       setSending(false)
     })
   }
