@@ -15,21 +15,21 @@ export default function TalkForm (prop:PropsType) {
   const { talkTheme, setNum, setInputVisible, setAddButtonVisible } = prop
   const [reviewText, setReviewText] = useState<string>('')
   const [sending, setSending] = useState<boolean>(false)
-  const { user } = useContext(AuthContext)
+  const { user, setUser } = useContext(AuthContext)
 
   function sendForm () {
-    // formが空白またはスペースの場合は何もしない
     if(!reviewText.trim()) return
     
     setSending(true)
     axiosClient.post(`/api/talkingRoom/${talkTheme?._id}`, { reviewText, user })
-    .then(()=>{
+    .then((response)=>{
       setNum(prev => prev + 1)
       Alert.alert('口コミ投稿しました')
       setReviewText('')
       setSending(false)
       setInputVisible(false)
       setAddButtonVisible(true)
+      setUser(response.data.DBuser)
     })
     .catch(()=>{
       Alert.alert('エラーが発生しました。')

@@ -24,10 +24,10 @@ export default function pointsPolicy(){
           ・病院に関する口コミを投稿後に掲載の承認を得ると、1回につき150ポイント付与
         </Text>
         <Text selectable style={{fontWeight: 'bold'}}>
-          ・おしゃべり場で育児に関する口コミを投稿すると、1回につき50ポイント付与
+          ・おしゃべり場で育児に関する口コミを投稿すると、初回のみ30ポイント付与
         </Text>
         <Text selectable style={{fontWeight: 'bold'}}>
-          ・ポイ活の動画広告を3回視聴すると2ポイント付与
+          ・ポイ活の動画広告を3回視聴たびに2ポイント付与
         </Text>
         <Text selectable style={{color: 'red', textDecorationLine: 'underline'}}>
           ※ 獲得できる方法とポイント数は暫定的なものであり、予告なく変更される場合があります。
