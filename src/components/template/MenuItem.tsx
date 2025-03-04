@@ -1,10 +1,11 @@
-import { AuthContext } from "@/src/context/loginContext"
-import { useTab } from "@/src/context/tabContext"
 import { router } from "expo-router"
 import { useContext } from "react"
 import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { Badge } from 'react-native-paper'
-import { Feather } from '@expo/vector-icons'
+import { Feather, Ionicons } from '@expo/vector-icons'
+import * as Updates from "expo-updates"
+import { AuthContext } from "@/src/context/loginContext"
+import { useTab } from "@/src/context/tabContext"
 
 interface PropsType {
   icon: JSX.Element
@@ -14,9 +15,10 @@ interface PropsType {
   toggleMenu: () => void
   unReadCount?: number
   externalIcon?: boolean
+  reloadIcon?: boolean
 }
 export default function MenuItem(prop: PropsType){
-  const { icon, label, name, url, toggleMenu, unReadCount, externalIcon } = prop
+  const { icon, label, name, url, toggleMenu, unReadCount, externalIcon, reloadIcon } = prop
   const { selectedTab, onTabPress } = useTab()
   const { logout } = useContext(AuthContext)
 
@@ -53,7 +55,14 @@ export default function MenuItem(prop: PropsType){
     } else {
       Linking.openURL(url)
     }
-    
+  }
+
+  async function handleReload (){
+    try {
+      await Updates.reloadAsync()
+    } catch (error) {
+      console.error("リロードに失敗しました:", error)
+    }
   }
 
   return (
@@ -73,7 +82,22 @@ export default function MenuItem(prop: PropsType){
         </View>
 
         {externalIcon&&
-          <Feather name="external-link" size={16} color='#444444' style={{alignSelf: 'center', marginLeft: 8}} />
+          <Feather 
+            name="external-link" 
+            size={16} 
+            color='#444444' 
+            style={{alignSelf: 'center', marginLeft: 8}} 
+          />
+        }
+
+        {reloadIcon&&
+          <Ionicons 
+            name="reload-circle" 
+            size={24} 
+            color={selectedTab === 'home' ? 'white' : '#444444'} 
+            style={{alignSelf: 'center', marginLeft: 'auto', marginRight: 16}}
+            onPress={handleReload} 
+          />
         }
         
       </View>

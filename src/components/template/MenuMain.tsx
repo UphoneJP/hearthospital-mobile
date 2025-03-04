@@ -18,6 +18,7 @@ export default function MenuMain({toggleMenu}:PropsType){
         name="home"
         url="/t-home"
         toggleMenu={toggleMenu}
+        reloadIcon={true}
       />
       <MenuItem
         icon={<FontAwesome6 name="hospital" size={20} color={selectedTab === "hospital"? 'white': '#444444'}/>}
