@@ -36,8 +36,8 @@ export default function MenuItem(prop: PropsType){
     },
     text: {
       fontSize:16,
-      paddingTop: 8,
-      paddingBottom: 12,
+      paddingTop: 6,
+      paddingBottom: 10,
       color: selectedTab === name? 'white': '#444444'
     },
     badge: {

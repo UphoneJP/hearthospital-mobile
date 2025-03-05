@@ -47,16 +47,15 @@ export default function PointsUse () {
 
   return (
     <Card containerStyle={{borderRadius: 16}}>
-      <Card.Title style={{color: 'orange'}}>
+      <Card.Title style={{color: 'orange', marginBottom: 0}}>
         <MaterialCommunityIcons name="numeric-2-box" size={20} />
         ハートポイントを使う
       </Card.Title>
-      <Text>（200ポイント使用）</Text>
       <CheckBox
         checked={check}
         onPress={() => setCheck(!check)}
         checkedColor="orange"
-        title="Amazonギフトカード(Eメールタイプ)　200円分"
+        title="Amazonギフトカード(Eメールタイプ)　200円分　（200ポイント使用）"
         disabled={(user?.points.map((point: pointType) => point.reward).reduce((sum, num) => sum + num, 0) || 0) < 200 }
       />
       {check && (

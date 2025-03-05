@@ -13,6 +13,13 @@ export default function MenuOthers({toggleMenu}:PropsType){
       <Text style={styles.subTitle}>others</Text>
 
       <MenuItem
+        icon={<AntDesign name="notification" size={20} color={selectedTab === "news"? 'white': '#444444'}/>}
+        label="お知らせ"
+        name="news"
+        url='/others/news'
+        toggleMenu={toggleMenu}
+      />
+      <MenuItem
         icon={<Entypo name="browser" size={20} color="#444444"/>}
         label="ブラウザ版を開く"
         url='https://www.hearthospital.jp'

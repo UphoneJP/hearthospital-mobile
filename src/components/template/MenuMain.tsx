@@ -29,7 +29,7 @@ export default function MenuMain({toggleMenu}:PropsType){
       />
       <MenuItem
         icon={<Foundation name="graph-bar" size={20} color={selectedTab === "data"? 'white': '#444444'}/>}
-        label="病院指標"
+        label="病院データ"
         name="data"
         url="/t-data"
         toggleMenu={toggleMenu}

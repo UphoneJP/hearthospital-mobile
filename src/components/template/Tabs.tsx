@@ -24,7 +24,7 @@ export default function Tabs() {
 
       <Tab 
         name='data' 
-        title='病院指標' 
+        title='病院データ' 
         select={selectedTab === 'data'}
         onTabPress={onTabPress} 
       />

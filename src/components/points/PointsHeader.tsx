@@ -15,21 +15,25 @@ export default function PointsHeader () {
     <>
       {/* ヘッダー */}
       <Text style={styles.title}>ポイ活</Text>
-      <Text style={styles.subTitle}>ハートポイントを集めて交換しよう！</Text>
-      <View style={styles.userPoints}>
-        <Text style={{ fontWeight: "bold" }}>
-          {user?.penName || user?.username}さんの保有ハートポイント:　
-        </Text>
-        <Text style={styles.point}>
-          {user?.points.map((point: pointType) => point.reward).reduce((sum: number, num: number) => sum + num, 0) || 0} pts
-        </Text>
-      </View>
 
-      {/* ハートン */}
-      <Image
-        source={require('../../../assets/heartonOnly.png')}
-        style={styles.hearton}
-      />
+      <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+        <View style={{justifyContent: 'center', alignItems: 'center'}}>
+          <Text style={{ fontWeight: "bold" }}>
+            {user?.penName || user?.username}さんの
+          </Text>
+          <Text style={{ fontWeight: "bold" }}>
+            保有ハートポイントは
+          </Text>
+          <Text style={styles.point}>
+            {user?.points.map((point: pointType) => point.reward).reduce((sum: number, num: number) => sum + num, 0) || 0} pts
+          </Text>
+        </View>
+        {/* ハートン */}
+        <Image
+          source={require('../../../assets/heartonOnly.png')}
+          style={styles.hearton}
+        />
+      </View>
 
       {/* ハートポイント利用規約 */}
       <TouchableOpacity onPress={()=>router.push('/others/pointsPolicy')}>
@@ -75,6 +79,8 @@ export default function PointsHeader () {
           })}
         </View>
       )}
+
+      <View style={{padding: 8}} />
     </>
   )
 }
@@ -86,26 +92,17 @@ const styles = StyleSheet.create({
     marginTop: 32,
     marginBottom: 8
   },
-  subTitle: {
-    textAlign: 'center',
-    fontSize: 20
-  },
-  userPoints: { 
-    flexDirection: "row", 
-    justifyContent: 'center',
-    marginVertical: 16
-  },
   point: {
     color: 'red', 
     fontWeight: 'bold', 
-    fontSize: 20,
-    textDecorationLine: 'underline'
+    fontSize: 32,
+    textDecorationLine: 'underline',
+    paddingVertical: 16
   },
   hearton: {
-    width: 200, 
+    width: 120, 
     height: 200, 
-    objectFit: 'contain', 
-    margin: 'auto'
+    objectFit: 'contain'
   },
   button: {
     color: 'white',

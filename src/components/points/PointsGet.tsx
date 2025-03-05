@@ -48,7 +48,7 @@ export default function PointsGet () {
 const styles = StyleSheet.create({
   remainingTime: {
     fontSize: 20,
-    marginVertical: 16,
+    marginBottom: 8,
     textAlign: 'center',
     color: 'orange',
     fontWeight: 'bold'
