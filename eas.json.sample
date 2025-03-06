@@ -30,10 +30,12 @@
         "REWARDED_ANDROID_UNIT_ID": "XXXX",
         "NATIVE_ANDROID_UNIT_ID": "XXXX",
         "BANNER_ANDROID_UNIT_ID": "XXXX",
+        "INTERSTITIAL_ANDROID_UNIT_ID": "XXXX",
         "IOS_APP_ID": "XXXX",
         "REWARDED_IOS_UNIT_ID": "XXXX",
         "NATIVE_IOS_UNIT_ID": "XXXX",
-        "BANNER_IOS_UNIT_ID": "XXXX"
+        "BANNER_IOS_UNIT_ID": "XXXX",
+        "INTERSTITIAL_IOS_UNIT_ID": "XXXX"
       }
     },
     "preview": {

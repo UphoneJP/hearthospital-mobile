@@ -16,9 +16,10 @@ interface PropsType {
   unReadCount?: number
   externalIcon?: boolean
   reloadIcon?: boolean
+  fun?: () => void
 }
 export default function MenuItem(prop: PropsType){
-  const { icon, label, name, url, toggleMenu, unReadCount, externalIcon, reloadIcon } = prop
+  const { icon, label, name, url, toggleMenu, unReadCount, externalIcon, reloadIcon, fun } = prop
   const { selectedTab, onTabPress } = useTab()
   const { logout } = useContext(AuthContext)
 
@@ -47,13 +48,18 @@ export default function MenuItem(prop: PropsType){
   })
 
   function handlePress(){
-    if(name){
-      onTabPress(name !== "logout" ? name : "home")
+    if(fun) {
+      fun()
       toggleMenu()
-      if(name === "logout") logout()
-      router.push(url)
     } else {
-      Linking.openURL(url)
+      if(name){
+        onTabPress(name !== "logout" ? name : "home")
+        toggleMenu()
+        if(name === "logout") logout()
+        router.push(url)
+      } else {
+        Linking.openURL(url)
+      }
     }
   }
 
