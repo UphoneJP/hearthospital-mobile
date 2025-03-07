@@ -20,33 +20,35 @@ export default function useInterstitialAd () {
   const { user } = useContext(AuthContext)
 
   useEffect(() => {
-    const unsubscribeLoaded = interstitialAd.addAdEventListener(
-      AdEventType.LOADED, 
-      () => { 
-        setLoaded(true)
-      }
-    )
-    const unsubscribeOpened = interstitialAd.addAdEventListener(
-      AdEventType.OPENED, 
-      () => {
-        if (Platform.OS === 'ios') {
-          StatusBar.setHidden(true)
+    if(user){
+      const unsubscribeLoaded = interstitialAd.addAdEventListener(
+        AdEventType.LOADED, 
+        () => { 
+          setLoaded(true)
         }
-      }
-    )
-    const unsubscribeClosed = interstitialAd.addAdEventListener(
-      AdEventType.CLOSED, 
-      () => {
-        if (Platform.OS === 'ios') {
-          StatusBar.setHidden(false)
+      )
+      const unsubscribeOpened = interstitialAd.addAdEventListener(
+        AdEventType.OPENED, 
+        () => {
+          if (Platform.OS === 'ios') {
+            StatusBar.setHidden(true)
+          }
         }
+      )
+      const unsubscribeClosed = interstitialAd.addAdEventListener(
+        AdEventType.CLOSED, 
+        () => {
+          if (Platform.OS === 'ios') {
+            StatusBar.setHidden(false)
+          }
+        }
+      )
+      interstitialAd.load()
+      return () => {
+        unsubscribeLoaded()
+        unsubscribeOpened()
+        unsubscribeClosed()
       }
-    )
-    interstitialAd.load()
-    return () => {
-      unsubscribeLoaded()
-      unsubscribeOpened()
-      unsubscribeClosed()
     }
   }, [user])
 

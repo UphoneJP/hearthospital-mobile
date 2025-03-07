@@ -2,8 +2,7 @@ import { router } from "expo-router"
 import { useContext } from "react"
 import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { Badge } from 'react-native-paper'
-import { Feather, Ionicons } from '@expo/vector-icons'
-import * as Updates from "expo-updates"
+import { Feather } from '@expo/vector-icons'
 import { AuthContext } from "@/src/context/loginContext"
 import { useTab } from "@/src/context/tabContext"
 
@@ -15,11 +14,10 @@ interface PropsType {
   toggleMenu: () => void
   unReadCount?: number
   externalIcon?: boolean
-  reloadIcon?: boolean
   fun?: () => void
 }
 export default function MenuItem(prop: PropsType){
-  const { icon, label, name, url, toggleMenu, unReadCount, externalIcon, reloadIcon, fun } = prop
+  const { icon, label, name, url, toggleMenu, unReadCount, externalIcon, fun } = prop
   const { selectedTab, onTabPress } = useTab()
   const { logout } = useContext(AuthContext)
 
@@ -63,14 +61,6 @@ export default function MenuItem(prop: PropsType){
     }
   }
 
-  async function handleReload (){
-    try {
-      await Updates.reloadAsync()
-    } catch (error) {
-      console.error("リロードに失敗しました:", error)
-    }
-  }
-
   return (
     <TouchableOpacity onPress={handlePress}>
       <View style={styles.itemBox}>
@@ -96,16 +86,6 @@ export default function MenuItem(prop: PropsType){
           />
         }
 
-        {reloadIcon&&
-          <Ionicons 
-            name="reload-circle" 
-            size={24} 
-            color={selectedTab === 'home' ? 'white' : '#444444'} 
-            style={{alignSelf: 'center', marginLeft: 'auto', marginRight: 16}}
-            onPress={handleReload} 
-          />
-        }
-        
       </View>
     </TouchableOpacity>
   )

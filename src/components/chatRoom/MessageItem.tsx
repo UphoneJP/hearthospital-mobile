@@ -1,8 +1,7 @@
 /* eslint-disable react/display-name */
 import { messageType } from "@/src/types/types"
-import { StyleSheet, Text, View, Linking } from "react-native"
+import { StyleSheet, Text, View } from "react-native"
 import { memo } from "react"
-import AutoLink from "react-native-autolink"
 
 interface PropsType {
   message: messageType
@@ -17,40 +16,20 @@ const MessageItem = memo(({message, userId}:PropsType) => {
     ]}>
 
       {/* メッセージ本文 */}
-      <AutoLink
-        text={message.content}
-        onPress={(url) => Linking.openURL(url)}
-        linkStyle={styles.link}
-        selectable={true}
-        style={[
-          styles.message,
-          {backgroundColor: isSender?"blue":"green"}
-        ]}
-      />
-      {/* <Text selectable={true} style={[
+      <Text selectable={true} style={[
         styles.message,
         {backgroundColor: isSender?"blue":"green"}
       ]}>
         {message.content}
-      </Text> */}
+      </Text>
 
       {/* 影 */}
-      <AutoLink
-        text={message.content}
-        onPress={(url) => Linking.openURL(url)}
-        linkStyle={styles.link}
-        selectable={true}
-        style={[
-          styles.messageShadow, 
-        {left: isSender ? 4 : -4}
-        ]}
-      />
-      {/* <Text style={[ 
+      <Text style={[ 
         styles.messageShadow, 
         {left: isSender ? 4 : -4}
       ]}>
         {message.content}
-      </Text> */}
+      </Text>
 
       {/* 既読と送信日時 */}
       <View style={[
