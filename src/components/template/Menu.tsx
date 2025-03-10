@@ -112,11 +112,11 @@ export default function Menu(){
             'ようこそ HeartHospitalへ'
           }
         </Text>
-      <Divider bold style={{marginVertical: 8}}/>
+      <Divider bold style={{marginTop: 8}}/>
         <MenuMain toggleMenu={toggleMenu}/>
-      <Divider bold style={{marginVertical: 8}}/>
+      <Divider bold style={{marginTop: 8}}/>
         <MenuAccount toggleMenu={toggleMenu} />
-      <Divider bold style={{marginVertical: 8}}/>
+      <Divider bold style={{marginTop: 8}}/>
         <MenuOthers toggleMenu={toggleMenu} />
 
       </Animated.View>

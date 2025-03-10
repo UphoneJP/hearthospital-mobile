@@ -26,7 +26,7 @@ export default function MenuItem(prop: PropsType){
       flexDirection:'row',
       backgroundColor: selectedTab === name? 'orange': 'white',
       borderRadius: 32,
-      marginHorizontal: 8
+      marginHorizontal: 4
     },
     icon: {
       width: 48,

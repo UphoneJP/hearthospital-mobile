@@ -18,7 +18,7 @@ export default function Topic (prop: PropsType) {
   return (
     <>
       <TouchableOpacity
-        style={styles.box}
+        style={{width: '50%', aspectRatio: 1}}
         onPress={()=>setIsOpen(prev=>!prev)}
       >
         <ImageBackground
@@ -46,38 +46,38 @@ export default function Topic (prop: PropsType) {
       {isOpen && (
         <View>
           <TouchableOpacity
-            style={styles.dialog}
+            style={{width: '100%', aspectRatio: 1}}
             onPress={()=>setIsOpen(prev=>!prev)}
           >
             <View style={styles.dialogBackground}>
-              <Text style={[styles.dateStyle, {color: textColor}]}>
-                {date}
-              </Text>
-              <Text style={[styles.title, {color: textColor}]}>
-                {title}
-              </Text>
+              <View style={{flexDirection: 'row', paddingBottom: 0, paddingRight: 16}}>
+                <View style={{flex: 1}}>
+                  <Text style={[styles.dateStyle, {color: textColor}]}>
+                    {date}
+                  </Text>
+                  <Text style={[styles.title, {color: textColor}]}>
+                    {title}
+                  </Text>
+                </View>
+                <Image source={require('@/assets/heartonOnly.png')} style={styles.hearton}/>
+              </View>
               
               <Card.Divider/>
               
-              <View style={styles.contentBox}>
-                <Text style={styles.content}>
+              <View style={{flex: 1}}>
+                <Text style={{marginHorizontal: 16}}>
                   {content}
                 </Text>
               </View>
             </View>
           </TouchableOpacity>
 
-          <Image source={require('@/assets/heartonOnly.png')} style={styles.hearton}/>
         </View>
       )}
     </>
   )
 }
 const styles = StyleSheet.create({
-  box: {
-    width: '50%',
-    aspectRatio: 1
-  },
   background: {
     width: '100%',
     height: '100%',
@@ -99,10 +99,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginHorizontal: 8
   },
-  dialog: {
-    width: '100%',
-    aspectRatio: 1
-  },
   dialogBackground: {
     margin: 16,
     flex: 1,
@@ -112,22 +108,11 @@ const styles = StyleSheet.create({
     borderColor: 'orange',
     backgroundColor: 'white'
   },
-  contentBox: {
-    flex: 1, 
-    paddingBottom: 16
-  },
-  content: {
-    marginHorizontal: 16,
-    zIndex: 20
-  },
   hearton: {
-    width: 120, 
-    height: 160, 
+    width: 80, 
+    height: 120, 
     objectFit: 'contain',
-    position: 'absolute',
-    bottom: -48,
-    right: 0,
-    zIndex: 15
+    marginBottom: -16
   }
 })
 const colorAssets = [

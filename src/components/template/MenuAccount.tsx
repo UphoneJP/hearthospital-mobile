@@ -5,7 +5,6 @@ import { Entypo, MaterialCommunityIcons, SimpleLineIcons, FontAwesome5 } from '@
 import { useContext } from "react"
 import { AuthContext } from "@/src/context/loginContext"
 import { UnReadMessagesContext } from "@/src/context/messageContext"
-import useInterstitialAd from "@/src/components/template/InterstitialAds"
 
 interface PropsType {
   toggleMenu: () => void
@@ -14,7 +13,6 @@ export default function MenuAccount({toggleMenu}:PropsType){
   const { selectedTab } = useTab()
   const { isLoggedIn } = useContext(AuthContext)
   const { unReadMessages } = useContext(UnReadMessagesContext)
-  const { showInterstitial } = useInterstitialAd()
 
   return(
     <>
@@ -34,7 +32,6 @@ export default function MenuAccount({toggleMenu}:PropsType){
             name="points"
             url="/user/points"
             toggleMenu={toggleMenu}
-            fun={showInterstitial}
           />
           <MenuItem
             icon={<FontAwesome5 name="rocketchat" size={20} color={selectedTab === "chat"? 'white': '#444444'}/>}

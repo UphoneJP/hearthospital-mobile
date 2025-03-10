@@ -79,7 +79,10 @@ export default function PointsHeader () {
           })}
         </View>
       )}
+<<<<<<< HEAD
 
+=======
+>>>>>>> edf4333 (InterstitialAdsによりアプリがクラッシュしたため、再度作り直した。)
       <View style={{padding: 8}} />
     </>
   )
@@ -92,6 +95,14 @@ const styles = StyleSheet.create({
     marginTop: 32,
     marginBottom: 8
   },
+<<<<<<< HEAD
+=======
+  userPoints: { 
+    flexDirection: "row", 
+    justifyContent: 'center',
+    marginVertical: 16
+  },
+>>>>>>> edf4333 (InterstitialAdsによりアプリがクラッシュしたため、再度作り直した。)
   point: {
     color: 'red', 
     fontWeight: 'bold', 

@@ -62,6 +62,8 @@ export default function TalkingRoom () {
             talkThemes={talkThemes} 
             setNum={setNum}
           />
+
+          <View style={{padding: 64}} />
         </ScrollView>
         
         <View style={{position: 'absolute', bottom: 0}}>

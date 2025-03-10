@@ -74,6 +74,9 @@ export default function MyPage () {
         ):(
           <Text>アカウント情報がありません</Text>
         )}
+
+        <View style={{padding: 64}} />
+        
       </ScrollView>
 
       <View style={{position: 'absolute', bottom: 0}}>

@@ -20,11 +20,18 @@ export default function MenuOthers({toggleMenu}:PropsType){
         toggleMenu={toggleMenu}
       />
       <MenuItem
-        icon={<Entypo name="browser" size={20} color="#444444"/>}
-        label="ブラウザ版を開く"
-        url='https://www.hearthospital.jp'
+        icon={<AntDesign name="form" size={20} color={selectedTab === "form"? 'white': '#444444'}/>}
+        label="お問い合わせ"
+        name="form"
+        url="/others/form"
         toggleMenu={toggleMenu}
-        externalIcon={true}
+      />
+      <MenuItem
+        icon={<MaterialIcons name="feedback" size={20} color={selectedTab === "feedback"? 'white': '#444444'}/>}
+        label="フィードバック"
+        name="feedback"
+        url="/others/feedback"
+        toggleMenu={toggleMenu}
       />
       <MenuItem
         icon={<MaterialIcons name="policy" size={20} color={selectedTab === "policy"? 'white': '#444444'}/>}
@@ -41,18 +48,11 @@ export default function MenuOthers({toggleMenu}:PropsType){
         externalIcon={true}
       />
       <MenuItem
-        icon={<AntDesign name="form" size={20} color={selectedTab === "form"? 'white': '#444444'}/>}
-        label="お問い合わせ"
-        name="form"
-        url="/others/form"
+        icon={<Entypo name="browser" size={20} color="#444444"/>}
+        label="ブラウザ版を開く"
+        url='https://www.hearthospital.jp'
         toggleMenu={toggleMenu}
-      />
-      <MenuItem
-        icon={<MaterialIcons name="feedback" size={20} color={selectedTab === "feedback"? 'white': '#444444'}/>}
-        label="フィードバック"
-        name="feedback"
-        url="/others/feedback"
-        toggleMenu={toggleMenu}
+        externalIcon={true}
       />
     </>
   )
