@@ -1,8 +1,9 @@
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import axiosClient from "@/utils/axiosClient"
 import { talkThemeType } from "@/src/types/types"
 import { AuthContext } from "@/src/context/loginContext"
+import { saveToken, getToken, deleteToken } from "@/utils/secureStore"
 
 interface PropsType {
   talkTheme: talkThemeType | undefined
@@ -17,8 +18,18 @@ export default function TalkForm (prop:PropsType) {
   const [sending, setSending] = useState<boolean>(false)
   const { user, setUser } = useContext(AuthContext)
 
+  
+  useEffect(()=>{
+    if(!talkTheme) return
+    (async()=>{
+      const leftReview = await getToken(talkTheme._id)
+      setReviewText(leftReview || '')
+    })()
+  },[])
+
   function sendForm () {
     if(!reviewText.trim()) return
+    if(!talkTheme) return
     
     setSending(true)
     axiosClient.post(`/api/talkingRoom/${talkTheme?._id}`, { reviewText, user })
@@ -26,6 +37,7 @@ export default function TalkForm (prop:PropsType) {
       setNum(prev => prev + 1)
       Alert.alert('口コミ投稿しました')
       setReviewText('')
+      deleteToken(talkTheme._id)
       setSending(false)
       setInputVisible(false)
       setAddButtonVisible(true)
@@ -46,7 +58,11 @@ export default function TalkForm (prop:PropsType) {
         autoCapitalize='none'
         value={reviewText}
         placeholder="口コミ入力"
-        onChangeText={(text)=>setReviewText(text)}
+        onChangeText={async(text)=>{
+          setReviewText(text)
+          if(!talkTheme) return
+          await saveToken(talkTheme._id, text)
+        }}
         style={styles.textInput}
       />
       <TouchableOpacity
