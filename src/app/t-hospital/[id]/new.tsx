@@ -12,6 +12,7 @@ import { AuthContext } from "@/src/context/loginContext"
 import DiseasesBox from "@/src/components/review/DiseasesBox"
 import RaisedButton from "@/src/components/parts/RaisedButton"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
+import { saveToken, getToken, deleteToken } from "@/utils/secureStore"
 
 export default function New(){
   const [hospital, setHospital] = useState<hospitalType|undefined>(undefined)
@@ -19,15 +20,35 @@ export default function New(){
   const [diseaseNames, setDiseaseNames] = useState<string>('')
   const [url, setUrl] = useState<string>('')
   const currentYear = new Date().getFullYear()
+  const currentMonth = new Date().getMonth() + 1
   const [year, setYear] = useState(currentYear)
-  const [month, setMonth] = useState(new Date().getMonth() + 1)
+  const [month, setMonth] = useState(currentMonth)
   const [comment, setComment] = useState<string>('')
   const [diseases, setDiseases] = useState<string[]>([])
   const id = useSearchParams().get('id')
   const {user} = useContext(AuthContext)
 
+  if(!id)return
 
   useEffect(()=>{
+
+    // 途中入力の読み込み
+    (async () => {
+      const leftTitle = await getToken(`${id}-title`)
+      const leftDiseases = await getToken(`${id}-diseases`)
+      const leftYear = await getToken(`${id}-year`)
+      const leftMonth = await getToken(`${id}-month`)
+      const leftUrl = await getToken(`${id}-url`)
+      const leftComment = await getToken(`${id}-comment`)
+      setTitleName(leftTitle || '')
+      setDiseaseNames(leftDiseases || '')
+      setYear(Number(leftYear) || currentYear)
+      setMonth(Number(leftMonth) || currentMonth)
+      setUrl(leftUrl || '')
+      setComment(leftComment || '')
+    })()
+
+    // 病院の読み込み
     axiosClient.get(`/api/hospital/${id}`)
     .then((response)=>{
       setHospital(response.data.hospital)
@@ -35,6 +56,8 @@ export default function New(){
     .catch(()=>{
       Alert.alert("病院情報が取得できませんでした")
     })
+
+    // 病名一覧の読み込み
     axiosClient.get('/api/hospital/reviews')
     .then((response)=>{
       const allDiseases = response.data.reviews.map((review: { diseaseNames: string[] }) => review.diseaseNames).flat()
@@ -42,7 +65,7 @@ export default function New(){
     })
     .catch(()=>{
       Alert.alert("病名の取得に失敗しました")
-    })
+    })    
   }, [])
 
   function sendFun () {
@@ -57,6 +80,12 @@ export default function New(){
       }
     ).then(()=>{
       Alert.alert('投稿いただきありがとうございます。確認後に掲載いたします。')
+      deleteToken(`${id}-title`)
+      deleteToken(`${id}-diseases`)
+      deleteToken(`${id}-year`)
+      deleteToken(`${id}-month`)
+      deleteToken(`${id}-url`)
+      deleteToken(`${id}-comment`)
       router.replace(`/t-hospital/${id}`)
     }).catch(()=>{
       Alert.alert('投稿エラーが発生しました')
@@ -82,6 +111,8 @@ export default function New(){
             label="タイトル"
             val={titleName}
             setVal={setTitleName}
+            id={id}
+            sessionName="title"
           />
 
           <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -89,7 +120,10 @@ export default function New(){
             <Picker 
               selectedValue={year} 
               style={{ flex:1 }} 
-              onValueChange={(value) => setYear(value)}
+              onValueChange={async(value) => {
+                setYear(value)
+                await saveToken(`${id}-year`, value.toString())
+              }}
               
             >
               {[...Array(30)].map((_, i) => (
@@ -105,7 +139,10 @@ export default function New(){
               selectedValue={month} 
               style={{ flex:1 }} 
               itemStyle={{ borderWidth: 1, borderColor: 'black'}}
-              onValueChange={(value) => setMonth(value)}
+              onValueChange={async(value) => {
+                setMonth(value)
+                await saveToken(`${id}-month`, value.toString())
+              }}
             >
               {[...Array(12)].map((_, i) => (
                 <Picker.Item 
@@ -124,6 +161,8 @@ export default function New(){
             setVal={setDiseaseNames}
             multiline={true}
             style={{height: 120}}
+            id={id}
+            sessionName="diseases"
           />
           <Text style={styles.tips}>
             ※病名が複数の場合は、全角スペースまたは半角スペースを区切りとしてお使いください。
@@ -138,6 +177,8 @@ export default function New(){
             val={url}
             setVal={setUrl}
             style={{marginTop: 16}}
+            id={id}
+            sessionName="url"
           />
           <CustomInput 
             label="治療経験や医療従事者への謝意"
@@ -145,6 +186,8 @@ export default function New(){
             setVal={setComment}
             style={{height:400, marginTop: 16}}
             multiline={true}
+            id={id}
+            sessionName="comment"
           />
 
           <RaisedButton

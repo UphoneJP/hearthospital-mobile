@@ -1,4 +1,5 @@
 import { TextInput } from "react-native-paper"
+import { saveToken } from "@/utils/secureStore"
 
 interface PropsType {
   label: string
@@ -6,17 +7,26 @@ interface PropsType {
   setVal: (value: React.SetStateAction<string>) => void
   style?: object
   multiline?: boolean
+  id?: string
+  sessionName?: string
 }
 
 export default function CustomInput(prop:PropsType){
-  const { label, val, setVal, style, multiline=false } = prop
+  const { label, val, setVal, style, multiline=false, id, sessionName } = prop
 
   return (
     <TextInput
       label={label}
       mode="outlined"
       value={val}
-      onChangeText={text => setVal(text)}
+      onChangeText={async(text) => {
+        setVal(text)
+        if(id){
+          await saveToken(`${id}-${sessionName}`, text)
+        } else {
+          await saveToken(`${sessionName}`, text)
+        }
+      }}
       autoCapitalize="none"
       activeOutlineColor="green"
       outlineColor={val?"green":"gray"}

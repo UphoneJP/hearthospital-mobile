@@ -1,7 +1,7 @@
 import CustomInput from "@/src/components/parts/CustomInput"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import { AuthContext } from "@/src/context/loginContext"
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { Card } from "@rneui/themed"
 import { ScrollView } from "react-native-gesture-handler"
@@ -9,11 +9,20 @@ import RaisedButton from "@/src/components/parts/RaisedButton"
 import axiosClient from "@/utils/axiosClient"
 import { router } from "expo-router"
 import { useTab } from "@/src/context/tabContext"
+import { getToken, deleteToken } from "@/utils/secureStore"
+
 
 export default function Form(){
   const { user } = useContext(AuthContext)
   const [formContent, setFormContent] = useState<string>('')
   const { onTabPress } = useTab()
+
+  useEffect(()=>{
+    (async () => {
+      const leftForm = await getToken('form')
+      setFormContent(leftForm || '')
+    })()
+  }, [])
 
   function sendFun(){
     axiosClient.post('/api/others/form', {
@@ -21,6 +30,7 @@ export default function Form(){
       author: user
     })
     Alert.alert('問い合わせを送信いたしました。ご返答をお待ちください。')
+    deleteToken('form')
     onTabPress('home')
     router.replace('/t-home')
   }
@@ -43,6 +53,7 @@ export default function Form(){
               setVal={setFormContent}
               style={{height:400}}
               multiline={true}
+              sessionName="form"
             />
           </Card>
           <RaisedButton

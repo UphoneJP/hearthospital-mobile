@@ -4,6 +4,8 @@ import { Picker } from "@react-native-picker/picker"
 import { useEffect, useState } from "react"
 import axiosClient from "@/utils/axiosClient"
 import { hospitalType } from "@/src/types/types"
+import { saveToken } from "@/utils/secureStore"
+
 
 interface PropsType {
   selectedHospitalname: string
@@ -31,7 +33,7 @@ export default function SelectableHospital(prop: PropsType){
 
   useEffect(()=>{
     if(hospitals&&areas) {
-      setSelectedHospitalname(areas[0])
+      if(!selectedHospitalname)setSelectedHospitalname(areas[0])
       setLoading(false)
     }
   }, [hospitals, areas])
@@ -48,7 +50,11 @@ export default function SelectableHospital(prop: PropsType){
 
       <Picker 
         selectedValue={selectedHospitalname}
-        onValueChange={(hospitalname) => setSelectedHospitalname(hospitalname)}
+        onValueChange={async(hospitalname) => {
+          setSelectedHospitalname(hospitalname)
+          await saveToken('reveiwNoID-hospital', hospitalname)
+          console.log(hospitalname)
+        }}
         style={{flex: 1, marginVertical: 8}}
       >
         {hospitals&&areas.flatMap(area => [

@@ -1,6 +1,6 @@
 import CustomInput from "@/src/components/parts/CustomInput"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Alert, StyleSheet, Text } from "react-native"
 import { Card } from "@rneui/themed"
 import { ScrollView } from "react-native-gesture-handler"
@@ -8,14 +8,23 @@ import RaisedButton from "@/src/components/parts/RaisedButton"
 import axiosClient from "@/utils/axiosClient"
 import { router } from "expo-router"
 import { useTab } from "@/src/context/tabContext"
+import { getToken, deleteToken } from "@/utils/secureStore"
 
 export default function Feedback(){
   const [feedbackContent, setFeedbackContent] = useState<string>('')
   const { onTabPress } = useTab()
 
+  useEffect(()=>{
+    (async () => {
+      const leftFeedback = await getToken('feedback')
+      setFeedbackContent(leftFeedback || '')
+    })()
+  }, [])
+
   function sendFun(){
     axiosClient.post('/api/others/feedback', {feedbackContent})
     Alert.alert('フィードバックを送信いたしました。ご意見、ありがとうございます。')
+    deleteToken('feedback')
     onTabPress('home')
     router.replace('/t-home')
   }
@@ -34,6 +43,7 @@ export default function Feedback(){
             setVal={setFeedbackContent}
             style={{height:400}}
             multiline={true}
+            sessionName="feedback"
           />
         </Card>
         <RaisedButton

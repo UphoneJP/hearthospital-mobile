@@ -1,5 +1,4 @@
 import { createContext, useState, useEffect } from "react"
-import * as SecureStore from "expo-secure-store"
 import { io } from "socket.io-client"
 import Constants from "expo-constants"
 import { appleAuth } from '@invertase/react-native-apple-authentication'
@@ -10,18 +9,9 @@ import { Alert } from "react-native"
 import { router } from "expo-router"
 import { type AuthSessionResult } from "expo-auth-session"
 import { useTab } from "./tabContext"
+import { saveToken, getToken, deleteToken } from "@/utils/secureStore"
 
 const socket = io(Constants.expoConfig?.extra?.API_BASE_URL)
-
-async function saveToken (key: string, value: string) {
-  await SecureStore.setItemAsync(key, value)
-}
-async function getToken(key: string) {
-  return await SecureStore.getItemAsync(key)
-}
-async function deleteToken(key: string) {
-  await SecureStore.deleteItemAsync(key)
-};
 
 interface AuthContextType {
   isLoggedIn: boolean

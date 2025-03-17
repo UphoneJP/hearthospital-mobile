@@ -11,6 +11,7 @@ import { Card } from "@rneui/themed"
 import { router } from "expo-router"
 import { useContext, useEffect, useState } from "react"
 import { Alert, ScrollView, StyleSheet, Text, View } from "react-native"
+import { saveToken, getToken, deleteToken } from "@/utils/secureStore"
 
 export default function newReviewWithSelectableHospital (){
   const { user } = useContext(AuthContext)
@@ -18,14 +19,35 @@ export default function newReviewWithSelectableHospital (){
   const [diseaseNames, setDiseaseNames] = useState<string>('')
   const [url, setUrl] = useState<string>('')
   const currentYear = new Date().getFullYear()
+  const currentMonth = new Date().getMonth() + 1
   const [year, setYear] = useState(currentYear)
-  const [month, setMonth] = useState(new Date().getMonth() + 1)
+  const [month, setMonth] = useState(currentMonth)
   const [comment, setComment] = useState<string>('')
   const [diseases, setDiseases] = useState<string[]>([])
   const [hospitals, setHospitals] = useState<hospitalType[]|undefined>(undefined)
   const [selectedHospitalname, setSelectedHospitalname] = useState<string>("")
 
   useEffect(()=>{
+
+    // 途中入力の読み込み
+    (async () => {
+      const leftHospital = await getToken('reveiwNoID-hospital')
+      const leftTitle = await getToken('reveiwNoID-title')
+      const leftDiseases = await getToken('reveiwNoID-diseases')
+      const leftYear = await getToken('reveiwNoID-year')
+      const leftMonth = await getToken('reveiwNoID-month')
+      const leftUrl = await getToken('reveiwNoID-url')
+      const leftComment = await getToken('reveiwNoID-comment')
+      setSelectedHospitalname(leftHospital || '')
+      setTitleName(leftTitle || '')
+      setDiseaseNames(leftDiseases || '')
+      setYear(Number(leftYear) || currentYear)
+      setMonth(Number(leftMonth) || currentMonth)
+      setUrl(leftUrl || '')
+      setComment(leftComment || '')
+    })()
+
+    // 病名一覧の読み込み
     axiosClient.get('/api/hospital/reviews')
     .then((response)=>{
       const allDiseases = response.data.reviews.map((review: { diseaseNames: string[] }) => review.diseaseNames).flat()
@@ -47,6 +69,13 @@ export default function newReviewWithSelectableHospital (){
       }
     ).then(()=>{
       Alert.alert('投稿いただきありがとうございます。確認後に掲載いたします。')
+      deleteToken('reveiwNoID-hospital')
+      deleteToken('reveiwNoID-title')
+      deleteToken('reveiwNoID-diseases')
+      deleteToken('reveiwNoID-year')
+      deleteToken('reveiwNoID-month')
+      deleteToken('reveiwNoID-url')
+      deleteToken('reveiwNoID-comment')
       router.replace(`/t-hospital/${selectedHospital?._id}`)
     }).catch(()=>{
       Alert.alert('投稿エラーが発生しました')
@@ -73,6 +102,7 @@ export default function newReviewWithSelectableHospital (){
             label="タイトル"
             val={titleName}
             setVal={setTitleName}
+            sessionName="reveiwNoID-title"
           />
 
           {/* 病院選択 */}
@@ -89,7 +119,10 @@ export default function newReviewWithSelectableHospital (){
             <Picker 
               selectedValue={year} 
               style={{ flex:1 }} 
-              onValueChange={(value) => setYear(value)}
+              onValueChange={async(value) => {
+                setYear(value)
+                await saveToken('reveiwNoID-year', value.toString())
+              }}
             >
               {[...Array(30)].map((_, i) => (
                 <Picker.Item 
@@ -104,7 +137,10 @@ export default function newReviewWithSelectableHospital (){
               selectedValue={month} 
               style={{ flex:1 }} 
               itemStyle={{ borderWidth: 1, borderColor: 'black'}}
-              onValueChange={(value) => setMonth(value)}
+              onValueChange={async(value) => {
+                setMonth(value)
+                await saveToken('reveiwNoID-month', value.toString())
+              }}
             >
               {[...Array(12)].map((_, i) => (
                 <Picker.Item 
@@ -124,6 +160,7 @@ export default function newReviewWithSelectableHospital (){
             setVal={setDiseaseNames}
             multiline={true}
             style={{height: 120}}
+            sessionName="reveiwNoID-diseases"
           />
           <Text style={styles.tips}>
             ※病名が複数の場合は、全角スペースまたは半角スペースを区切りとしてお使いください。
@@ -139,6 +176,7 @@ export default function newReviewWithSelectableHospital (){
             val={url}
             setVal={setUrl}
             style={{marginTop: 16}}
+            sessionName="reveiwNoID-url"
           />
 
           {/* 内容入力 */}
@@ -148,6 +186,7 @@ export default function newReviewWithSelectableHospital (){
             setVal={setComment}
             style={{height:400, marginTop: 16}}
             multiline={true}
+            sessionName="reveiwNoID-comment"
           />
 
           <RaisedButton
