@@ -8,7 +8,7 @@ interface PropsType {
   style?: object
   multiline?: boolean
   id?: string
-  sessionName?: string
+  sessionName: string
 }
 
 export default function CustomInput(prop:PropsType){
