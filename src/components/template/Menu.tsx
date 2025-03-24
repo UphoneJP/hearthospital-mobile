@@ -96,9 +96,11 @@ export default function Menu(){
           }
         }}>
           <Image 
-            source={require('./../../../assets/hearton.png')}
+            source={require('./../../../assets/hearton-jogging.png')}
             style={styles.hearton}
           />
+          <Text style={[styles.additional, {marginTop: -20}]}>口コミ投稿は</Text>
+          <Text style={styles.additional}>ボクをクリック!!</Text>
         </TouchableOpacity>
         
       </Animated.View>
@@ -135,13 +137,14 @@ const styles = StyleSheet.create({
   },
   hertonBack: {
     position: 'absolute',
-    right: 24,
+    right: 16,
     bottom: 24,
     zIndex: 20
   },
   hearton: {
-    width: 160,
-    height: 160
+    width: 144,
+    height: 200,
+    objectFit: 'contain'
   },
   drawer: {
     position: 'absolute',
@@ -155,5 +158,15 @@ const styles = StyleSheet.create({
   title: {
     textAlign: 'center',
     fontSize: 16
+  },
+  additional: {
+    fontWeight: 'bold',
+    transform: [{ rotate: '-5deg' }],
+    backgroundColor: '#FFA50099',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingBottom: 4,
+    alignSelf: 'center',
+    marginLeft: 16
   }
 })

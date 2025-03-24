@@ -59,7 +59,7 @@ export default function Topic (prop: PropsType) {
                     {title}
                   </Text>
                 </View>
-                <Image source={require('@/assets/heartonOnly.png')} style={styles.hearton}/>
+                <Image source={heartonAssets[backImageNum]} style={styles.hearton}/>
               </View>
               
               <Card.Divider/>
@@ -129,3 +129,11 @@ const colorAssets = [
   require('@/assets/colors/green3.jpg'),
   require('@/assets/colors/yellow3.jpg')
 ]
+const heartonAssets = [
+  require('@/assets/hearton-heart.png'),
+  require('@/assets/hearton-jogging.png'),
+  require('@/assets/hearton-holding.png'),
+  require('@/assets/hearton-singing.png'),
+  require('@/assets/heartonOnly.png')
+]
+

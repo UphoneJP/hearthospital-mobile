@@ -2,8 +2,10 @@ import { StyleSheet, Text, View } from 'react-native'
 import BackgroundTemplate from '@/src/components/template/BackgroundTemplete'
 import RewardedAds from '@/src/components/template/RewardedAds'
 import BannerAds from '@/src/components/template/BannerAds'
+import { useState } from 'react'
 
 export default function AdMobForData() {
+  const [errorHappened, setErrorHappened] = useState(false)
   return (
     <BackgroundTemplate>
       <Text style={styles.headerTitle}>数字で見る病院データ</Text>
@@ -17,7 +19,10 @@ export default function AdMobForData() {
         </Text>
       </View>
 
-      <RewardedAds />
+      <RewardedAds
+        errorHappened={errorHappened}
+        setErrorHappened={setErrorHappened}
+      />
       
       <View style={{position: 'absolute', bottom: 0}}>
         <BannerAds />

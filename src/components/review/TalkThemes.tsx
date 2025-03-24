@@ -4,8 +4,21 @@ import { talkThemeType } from "@/src/types/types"
 import axiosClient from "@/utils/axiosClient"
 import { router } from "expo-router"
 import { Fragment, useContext, useEffect, useState } from "react"
-import { Alert, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { Button, Dialog, Portal, TextInput } from "react-native-paper"
+import { Platform, StatusBar } from 'react-native'
+import { InterstitialAd, AdEventType, TestIds } from 'react-native-google-mobile-ads'
+import Constants from "expo-constants"
+import * as Device from "expo-device"
+
+// const androidAdmobInterstitial = Constants.expoConfig?.extra?.INTERSTITIAL_ANDROID_UNIT_ID
+// const iosAdmobInterstitial = Constants.expoConfig?.extra?.INTERSTITIAL_IOS_UNIT_ID
+// const productionID = Device.osName === "Android" ? androidAdmobInterstitial : iosAdmobInterstitial
+// const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : productionID
+const adUnitId = TestIds.INTERSTITIAL
+const interstitial = InterstitialAd.createForAdRequest(adUnitId, {
+  requestNonPersonalizedAdsOnly: true
+})
 
 interface PropsType {
   talkThemes: talkThemeType[]
@@ -13,6 +26,8 @@ interface PropsType {
 }
 export default function TalkThemes ({ talkThemes, setNum }: PropsType) {
   const { user } = useContext(AuthContext)
+  const [loaded, setLoaded] = useState(false)
+  const [adError, setAdError] = useState<boolean>(false)
   const [editDialogVisible, setEditDialogVisible] = useState<boolean>(false)
   const [deleteDialogVisible, setDeleteDialogVisible] = useState<boolean>(false)
   const [talkThemeEdit, setTalkThemeEdit] = useState<string>('')
@@ -21,6 +36,36 @@ export default function TalkThemes ({ talkThemes, setNum }: PropsType) {
   const sortedTalkThemes = [...talkThemes].sort(
     (a, b) => new Date(b.touchAt).getTime() - new Date(a.touchAt).getTime()
   )
+
+  useEffect(() => {
+    const unsubscribeLoaded = interstitial.addAdEventListener(AdEventType.LOADED, () => { 
+      setLoaded(true) 
+    })
+    const unsubscribeOpened = interstitial.addAdEventListener(AdEventType.OPENED, () => {
+      if (Platform.OS === 'ios') {
+        StatusBar.setHidden(true)
+      }
+    })
+    const unsubscribeClosed = interstitial.addAdEventListener(AdEventType.CLOSED, () => {
+      if (Platform.OS === 'ios') {
+        StatusBar.setHidden(false)
+      }
+    })
+    const timer = setTimeout(() => {
+      if (!loaded) {
+        setAdError(true)
+        setLoaded(true)
+      }
+    }, 10000)
+
+    interstitial.load()
+    return () => {
+      unsubscribeLoaded()
+      unsubscribeOpened()
+      unsubscribeClosed()
+      clearTimeout(timer)
+    }
+  }, [])
 
   function openEditDialog(talkTheme: talkThemeType) {
     setSelectedTalkTheme(talkTheme)
@@ -58,6 +103,15 @@ export default function TalkThemes ({ talkThemes, setNum }: PropsType) {
     }
   }
 
+  if (!loaded) {
+    return (
+      <View style={{width: '100%', alignItems: 'center', marginTop: 64}}>
+        <Text>データを取得中です</Text>
+        <ActivityIndicator size="large" color="orange" />
+      </View>
+    )
+  }
+
   return (
     <>
       {sortedTalkThemes.map(talkTheme => {        
@@ -69,7 +123,10 @@ export default function TalkThemes ({ talkThemes, setNum }: PropsType) {
           <Fragment key={talkTheme._id} >
             <TouchableOpacity
               style={styles.tBox}
-              onPress={()=>router.push(`t-talkingRoom/${talkTheme._id}`)}
+              onPress={()=> {
+                if(!adError)interstitial.show()
+                router.push(`t-talkingRoom/${talkTheme._id}`)
+              }}
               activeOpacity={0.6}
             >
               <ImageBackground

@@ -11,7 +11,7 @@ export default function news(){
       <ScrollView style={{width: '100%'}}>
         <View style={{flexDirection: 'row', justifyContent: 'center', marginVertical: 16}}>
           <Text style={styles.headerTitle}>お知らせ</Text>
-          <Image source={require('@/assets/heartonOnly.png')} style={{width: 120, height: 160, objectFit: 'contain'}}/>
+          <Image source={require('@/assets/hearton-singing.png')} style={{width: 120, height: 160, objectFit: 'contain'}}/>
         </View>
         <View style={styles.container}>
 
