@@ -1,13 +1,16 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { Alert, Animated, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import { useContext, useEffect, useRef } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import { MenuContext } from "@/src/context/menuContext"
 import { useTab } from "@/src/context/tabContext"
 import { router } from "expo-router"
 import { AuthContext } from "@/src/context/loginContext"
+import Tips from "@/src/components/template/Tips"
+import { getToken, saveToken } from "@/utils/secureStore"
 
 export default function Home() {
+  const [showTips, setShowTips] = useState(false)
   const { menuVisible } = useContext(MenuContext)
   const { user } = useContext(AuthContext)
   const { onTabPress } = useTab()
@@ -18,6 +21,20 @@ export default function Home() {
   const heartonMoveX = useRef(new Animated.Value(0)).current
   const heartonMoveY = useRef(new Animated.Value(0)).current
   const heartonRotate = useRef(new Animated.Value(0)).current
+
+  useEffect(() => {
+    const checkFirstLaunch = async () => {
+      const isFirstLaunchDone = await getToken('dammy') // ダミーコード
+      // const isFirstLaunchDone = await getToken('isFirstLaunchDone')
+      if (!isFirstLaunchDone) {
+        setTimeout(async()=>{
+          setShowTips(true)
+          await saveToken('isFirstLaunchDone', 'true')
+        }, 6000)
+      }
+    }
+    checkFirstLaunch()
+  }, [])
 
   useEffect(() => {
     Animated.sequence([
@@ -129,6 +146,10 @@ export default function Home() {
   return (
     <BackgroundTemplate>
 
+      {showTips&&
+        <Tips setShowTips={setShowTips} />
+      }
+
       <Animated.Image
         source={require('../../../assets/HeartHospital-wide-throw.png')}
         style={[
@@ -151,7 +172,7 @@ export default function Home() {
 
       <View style={{padding:50}} />
 
-      {!menuVisible&&
+      {!menuVisible&&!showTips&&
         <TouchableOpacity 
           style={styles.heartonBack}
           onPress={()=>{
