@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react"
 import { ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { AuthContext } from "../../context/loginContext"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 
 export default function PenName () {
   const { user, setUser } = useContext(AuthContext)
@@ -12,6 +12,21 @@ export default function PenName () {
   useEffect(()=>{
     setPenNameInput(user?.penName)
   }, [user])
+
+  async function changePenName () {
+    setLoading(true)
+    setPenNameEdit(false)
+    try {
+      const axiosClient = await createAxiosClient()
+      const response = await axiosClient?.patch(`/api/user/penName/${user?._id}`, {penNameInput})
+      setUser(response?.data.user)
+      Alert.alert('ペンネームを変更しました。')
+      setLoading(false)
+    } catch {
+      Alert.alert('エラーが発生しました。')
+      setLoading(false)
+    }
+  }
 
   return (
     <>
@@ -27,20 +42,7 @@ export default function PenName () {
           />
           <TouchableOpacity 
             style={styles.editButton}
-            onPress={()=>{
-              setLoading(true)
-              setPenNameEdit(false)
-              axiosClient.patch(`/api/user/penName/${user?._id}`, {penNameInput})
-              .then((response)=>{
-                setUser(response.data.user)
-                Alert.alert('ペンネームを変更しました。')
-                setLoading(false)
-              })
-              .catch(()=>{
-                Alert.alert('エラーが発生しました。')
-                setLoading(false)
-              })
-            }}  
+            onPress={changePenName}  
           >
             <Text>変更</Text>
           </TouchableOpacity>

@@ -6,7 +6,7 @@ import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { Card } from "@rneui/themed"
 import { ScrollView } from "react-native-gesture-handler"
 import RaisedButton from "@/src/components/parts/RaisedButton"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 import { router } from "expo-router"
 import { useTab } from "@/src/context/tabContext"
 import { getToken, deleteToken } from "@/utils/secureStore"
@@ -24,15 +24,20 @@ export default function Form(){
     })()
   }, [])
 
-  function sendFun(){
-    axiosClient.post('/api/others/form', {
-      formContent,
-      author: user
-    })
-    Alert.alert('問い合わせを送信いたしました。ご返答をお待ちください。')
-    deleteToken('form')
-    onTabPress('home')
-    router.replace('/t-home')
+  async function sendFun(){
+    try {
+      const axiosClient = await createAxiosClient()
+      await axiosClient?.post('/api/others/form', {
+        formContent,
+        author: user
+      })
+      Alert.alert('問い合わせを送信いたしました。ご返答をお待ちください。')
+      deleteToken('form')
+      onTabPress('home')
+      router.replace('/t-home')
+    } catch {
+      Alert.alert('エラーで送信できませんでした')
+    }
   }
 
   return (

@@ -3,7 +3,7 @@ import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from "re
 
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import { type hospitalType } from "@/src/types/types"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 import Selector from "@/src/components/chart/Selector"
 import DPCcodeSummary from "@/src/components/chart/DPCcodeSummary"
 import KcodeSummary from "@/src/components/chart/KcodeSummary"
@@ -17,15 +17,18 @@ export default function Data() {
   const [selectedValue, setSelectedValue] = useState("R5")
   
   useEffect(()=>{
-    axiosClient.get('/api/hospital')
-    .then((response)=>{
-      setAreas(response.data.areas)
-      setHospitals(response.data.hospitals)
-      setLoading(false)
-    })
-    .catch(()=>{
-      Alert.alert('データを取得できませんでした。')
-    })
+    async function getAxiosClient(){
+      try {
+        const axiosClient = await createAxiosClient()
+        const response = await axiosClient?.get('/api/hospital')
+        setAreas(response?.data.areas)
+        setHospitals(response?.data.hospitals)
+        setLoading(false)
+      } catch {
+        Alert.alert('データを取得できませんでした。')
+      }
+    }
+    getAxiosClient()
   }, [])
 
   if(loading){

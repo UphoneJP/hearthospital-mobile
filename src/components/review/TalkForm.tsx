@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react"
 import { ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 import { talkThemeType } from "@/src/types/types"
 import { AuthContext } from "@/src/context/loginContext"
 import { saveToken, getToken, deleteToken } from "@/utils/secureStore"
@@ -27,13 +27,13 @@ export default function TalkForm (prop:PropsType) {
     })()
   },[])
 
-  function sendForm () {
+  async function sendForm () {
     if(!reviewText.trim()) return
     if(!talkTheme) return
-    
     setSending(true)
-    axiosClient.post(`/api/talkingRoom/${talkTheme?._id}`, { reviewText, user })
-    .then((response)=>{
+    try {
+      const axiosClient = await createAxiosClient()
+      const response = await axiosClient?.post(`/api/talkingRoom/${talkTheme?._id}`, { reviewText, user })
       setNum(prev => prev + 1)
       Alert.alert('口コミ投稿しました')
       setReviewText('')
@@ -41,13 +41,11 @@ export default function TalkForm (prop:PropsType) {
       setSending(false)
       setInputVisible(false)
       setAddButtonVisible(true)
-      setUser(response.data.DBuser)
-    })
-    .catch((e)=>{
+      setUser(response?.data.DBuser)
+    } catch {
       Alert.alert('エラーが発生しました。')
-      console.log(e)
       setSending(false)
-    })
+    }
   }
 
   return (

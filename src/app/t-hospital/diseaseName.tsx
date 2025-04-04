@@ -4,7 +4,7 @@ import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from "re
 import { Input, Icon } from '@rneui/themed'
 
 import { type reviewType } from "@/src/types/types"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import DiseasesBox from "@/src/components/review/DiseasesBox"
 import ReviewsBox from "@/src/components/review/ReviewsBox"
@@ -20,19 +20,22 @@ export default function DiseaseName () {
   const disease = decodeURIComponent(params.get('disease') || '')
 
   useEffect(()=>{
-    axiosClient.get('/api/hospital/reviews')
-    .then((response)=>{
-      setReviews(response.data.reviews)
-      setReviewsCopy(response.data.reviews)
-      setLoading(false)
-      const allDiseases = response.data.reviews.map((review: { diseaseNames: string[] }) => review.diseaseNames).flat()
-      setDiseases([...new Set<string>(allDiseases)])
-      setDiseasesCopy([...new Set<string>(allDiseases)])
-      setInputVal(disease)
-    })
-    .catch(()=>{
-      Alert.alert("病院情報の取得に失敗しました。")
-    })
+    async function getAxiosClient(){
+      try {
+        const axiosClient = await createAxiosClient()
+        const response = await axiosClient?.get('/api/hospital/reviews')
+        setReviews(response?.data.reviews)
+        setReviewsCopy(response?.data.reviews)
+        setLoading(false)
+        const allDiseases = response?.data.reviews.map((review: { diseaseNames: string[] }) => review.diseaseNames).flat()
+        setDiseases([...new Set<string>(allDiseases)])
+        setDiseasesCopy([...new Set<string>(allDiseases)])
+        setInputVal(disease)
+      } catch {
+        Alert.alert("病院情報の取得に失敗しました。")
+      }
+    }
+    getAxiosClient()
   }, [])
 
   useEffect(()=>{

@@ -4,7 +4,7 @@ import Constants from "expo-constants"
 import { appleAuth } from '@invertase/react-native-apple-authentication'
 
 import { type userType } from "../types/types"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 import { Alert } from "react-native"
 import { router } from "expo-router"
 import { type AuthSessionResult } from "expo-auth-session"
@@ -50,11 +50,12 @@ const AuthProvider: React.FC<ChildrenType> = ({ children }:ChildrenType) => {
       return
     }
     try {
-      const response = await axiosClient.post("/api/user/validateToken", {
+      const axiosClient = await createAxiosClient()
+      const response = await axiosClient?.post("/api/user/validateToken", {
         Authorization: `Bearer ${token}`
       })
       setIsLoggedIn(true)
-      setUser(response.data.user)
+      setUser(response?.data.user)
     } catch {
       await refreshToken()
     }
@@ -67,8 +68,9 @@ const AuthProvider: React.FC<ChildrenType> = ({ children }:ChildrenType) => {
       return
     }
     try {
-      const response = await axiosClient.post("/api/user/refreshToken", { refreshToken })
-      await saveToken("accessToken", response.data.accessToken)
+      const axiosClient = await createAxiosClient()
+      const response = await axiosClient?.post("/api/user/refreshToken", { refreshToken })
+      await saveToken("accessToken", response?.data.accessToken)
       await checkLoginStatus()
     } catch {
       await logout()
@@ -77,8 +79,9 @@ const AuthProvider: React.FC<ChildrenType> = ({ children }:ChildrenType) => {
 
   async function register(penName: string, email: string, password: string) {
     try{
-      const response = await axiosClient.post("/api/user/register", { penName, email, password })
-      if(response.data.success){
+      const axiosClient = await createAxiosClient()
+      const response = await axiosClient?.post("/api/user/register", { penName, email, password })
+      if(response?.data.success){
         login( email, password )
       } else {
         Alert.alert('登録は完了しましたが、エラーが発生しログインできませんでした')
@@ -90,11 +93,12 @@ const AuthProvider: React.FC<ChildrenType> = ({ children }:ChildrenType) => {
 
   async function login( email: string, password: string) {
     try {
-      const response = await axiosClient.post("/api/user/login", { email, password })
-      await saveToken("accessToken", response.data.accessToken)
-      await saveToken("refreshToken", response.data.refreshToken)
+      const axiosClient = await createAxiosClient()
+      const response = await axiosClient?.post("/api/user/login", { email, password })
+      await saveToken("accessToken", response?.data.accessToken)
+      await saveToken("refreshToken", response?.data.refreshToken)
       setIsLoggedIn(true)
-      setUser(response.data.user)
+      setUser(response?.data.user)
       Alert.alert('ログインしました。')
       onTabPress('myPage')
       router.replace('/user/myPage')
@@ -105,7 +109,8 @@ const AuthProvider: React.FC<ChildrenType> = ({ children }:ChildrenType) => {
 
   async function googleLogin( response: AuthSessionResult | null){
     if (response?.type === "success"&& response.authentication){
-      const res = await axiosClient.post(
+      const axiosClient = await createAxiosClient()
+      const res = await axiosClient?.post(
         '/api/user/auth/google', 
         { accessToken: response.authentication.accessToken}
       )
@@ -133,15 +138,16 @@ const AuthProvider: React.FC<ChildrenType> = ({ children }:ChildrenType) => {
       })
       const credentialState = await appleAuth.getCredentialStateForUser(appleAuthRequestResponse.user)
       if (credentialState === appleAuth.State.AUTHORIZED) {
-        const res = await axiosClient.post('/api/user/auth/apple', {
+        const axiosClient = await createAxiosClient()
+        const res = await axiosClient?.post('/api/user/auth/apple', {
           username: appleAuthRequestResponse.fullName,
           email: appleAuthRequestResponse.email,
           appleId: appleAuthRequestResponse.authorizationCode
         })
-        await saveToken("accessToken", res.data.accessToken)
-        await saveToken("refreshToken", res.data.refreshToken)
+        await saveToken("accessToken", res?.data.accessToken)
+        await saveToken("refreshToken", res?.data.refreshToken)
         setIsLoggedIn(true)
-        setUser(res.data.user)
+        setUser(res?.data.user)
         Alert.alert('ログインしました。')
         onTabPress('myPage')
         router.replace('/user/myPage')

@@ -5,7 +5,7 @@ import { Alert, StyleSheet, Text } from "react-native"
 import { Card } from "@rneui/themed"
 import { ScrollView } from "react-native-gesture-handler"
 import RaisedButton from "@/src/components/parts/RaisedButton"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 import { router } from "expo-router"
 import { useTab } from "@/src/context/tabContext"
 import { getToken, deleteToken } from "@/utils/secureStore"
@@ -21,12 +21,17 @@ export default function Feedback(){
     })()
   }, [])
 
-  function sendFun(){
-    axiosClient.post('/api/others/feedback', {feedbackContent})
-    Alert.alert('フィードバックを送信いたしました。ご意見、ありがとうございます。')
-    deleteToken('feedback')
-    onTabPress('home')
-    router.replace('/t-home')
+  async function sendFun(){
+    try {
+      const axiosClient = await createAxiosClient()
+      await axiosClient?.post('/api/others/feedback', {feedbackContent})
+      Alert.alert('フィードバックを送信いたしました。ご意見、ありがとうございます。')
+      deleteToken('feedback')
+      onTabPress('home')
+      router.replace('/t-home')
+    } catch {
+      Alert.alert('エラーで送信できませんでした')
+    }
   }
 
   return (

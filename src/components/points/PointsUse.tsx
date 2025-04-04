@@ -4,7 +4,7 @@ import { Alert, StyleSheet, Text, TouchableOpacity } from "react-native"
 import { pointType } from "@/src/types/types"
 import { useContext, useState } from "react"
 import { AuthContext } from "@/src/context/loginContext"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 
 export default function PointsUse () {
   const { user, setUser } = useContext(AuthContext)
@@ -32,8 +32,9 @@ export default function PointsUse () {
 
   async function usingPoints(){
     try {
-      const response = await axiosClient.post('/api/user/usingPoints', {userId: user?._id})
-      setUser(response.data.user)
+      const axiosClient = await createAxiosClient()
+      const response = await axiosClient?.post('/api/user/usingPoints', {userId: user?._id})
+      setUser(response?.data.user)
       Alert.alert(
         'お申込みありがとうございます。交換手続きを行います。',
         'ご指定の品はAmazonからご登録のEmailアドレス宛に送られます。しばらくお待ちください。'

@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react"
 import { ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { AuthContext } from "../../context/loginContext"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 
 export default function Promotion () {
   const { user, setUser } = useContext(AuthContext)
@@ -12,6 +12,21 @@ export default function Promotion () {
   useEffect(()=>{
     setPromotionInput(user?.promotion)
   }, [user])
+
+  async function changePromotion () {
+    setLoading(true)
+    setPromotionEdit(false)
+    try {
+      const axiosClient = await createAxiosClient()
+      const response = await axiosClient?.patch(`/api/user/promotion/${user?._id}`, {promotionInput})
+      setUser(response?.data.user)
+      Alert.alert('自己紹介文を変更しました。')
+      setLoading(false)
+    } catch {
+      Alert.alert('エラーが発生しました。')
+      setLoading(false)
+    }
+  }
 
   return (
     <>
@@ -29,20 +44,7 @@ export default function Promotion () {
           />
           <TouchableOpacity 
             style={styles.editButtonEditting}
-            onPress={()=>{
-              setLoading(true)
-              setPromotionEdit(false)
-              axiosClient.patch(`/api/user/promotion/${user?._id}`, {promotionInput})
-              .then((response)=>{
-                setUser(response.data.user)
-                Alert.alert('自己紹介文を変更しました。')
-                setLoading(false)
-              })
-              .catch(()=>{
-                Alert.alert('エラーが発生しました。')
-                setLoading(false)
-              })
-            }}  
+            onPress={changePromotion}  
           >
             <Text>変更</Text>
           </TouchableOpacity>

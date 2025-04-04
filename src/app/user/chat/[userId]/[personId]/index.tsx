@@ -1,7 +1,7 @@
 import { useSearchParams } from "expo-router/build/hooks"
 import { useContext, useEffect, useState } from "react"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 import MessageHeader from "@/src/components/chatRoom/MessageHeader"
 import MessageForm from "@/src/components/chatRoom/MessageForm"
 import Messsages from "@/src/components/chatRoom/Messages"
@@ -14,20 +14,24 @@ export default function ChatRoom(){
   const [recieverName, setRecieverName] = useState<string>('')
   const { setMessages } = useContext(UnReadMessagesContext)
 
-  function getMessages(){
-    axiosClient.get(`/api/others/chat/${userId}/${personId}`)
-    .then((response)=>{ setMessages(response.data.messages) })
-    .catch(()=>{
+  async function getMessages(){
+    try {
+      const axiosClient = await createAxiosClient()
+      const response = await axiosClient?.get(`/api/others/chat/${userId}/${personId}`)
+      setMessages(response?.data.messages)
+    } catch {
       Alert.alert('エラーが発生し。メッセージデータを取得できませんでした')
-    })
+    }
   }
 
-  function getRecieverName(){
-    axiosClient.get(`/api/others/chat/recieverName/${personId}`)
-    .then((response)=>{ setRecieverName(response.data.penName) })
-    .catch(()=>{
+  async function getRecieverName(){
+    try {
+      const axiosClient = await createAxiosClient()
+      const response = await axiosClient?.get(`/api/others/chat/recieverName/${personId}`)
+      setRecieverName(response?.data.penName)
+    } catch {
       Alert.alert('エラーが発生し。送信相手のデータを取得できませんでした')
-    })
+    }
   }
 
   useEffect(()=>{

@@ -2,7 +2,7 @@ import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import { AuthContext } from "@/src/context/loginContext"
 import { useTab } from "@/src/context/tabContext"
 import { userType } from "@/src/types/types"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 import { router } from "expo-router"
 import { useSearchParams } from "expo-router/build/hooks"
 import { useContext, useEffect, useState } from "react"
@@ -17,14 +17,17 @@ export default function othersPage () {
   const id = useSearchParams().get('othersId')
   
   useEffect(()=>{
-    axiosClient.post('/api/others/othersPage', {id})
-    .then((response)=>{
-      setOtherPerson(response.data.other)
-      setLoading(false)
-    })
-    .catch(()=>{
-      Alert.alert('相手のデータを取得できませんでした')
-    })
+    async function getAxiosClient(){
+      try {
+        const axiosClient = await createAxiosClient()
+        const response = await axiosClient?.post('/api/others/othersPage', {id})
+        setOtherPerson(response?.data.other)
+        setLoading(false)
+      } catch {
+        Alert.alert('相手のデータを取得できませんでした')
+      }
+    }
+    getAxiosClient()
   }, [])
 
   if(loading){

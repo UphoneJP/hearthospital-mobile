@@ -6,7 +6,7 @@ import { Linking } from "react-native"
 
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import { reviewType } from "@/src/types/types"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 import BannerAds from "@/src/components/template/BannerAds"
 
 export default function ReveiwDetail () {
@@ -16,15 +16,18 @@ export default function ReveiwDetail () {
   const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(()=> {
-    axiosClient.get('/api/hospital/reviews')
-    .then((response)=>{
-      const rev = response.data.reviews.filter((review: { _id: { toString: () => string | null } })=>review._id.toString()===reviewId)
-      setReview(rev[0])
-      setLoading(false)
-    })
-    .catch(()=>{
-      Alert.alert('病院情報を取得できませんでした。')
-  })
+    async function fetchReview(){
+      try {
+        const axiosClient = await createAxiosClient()
+        const response = await axiosClient?.get('/api/hospital/reviews')
+        const rev = response?.data.reviews.filter((review: { _id: { toString: () => string | null } })=>review._id.toString()===reviewId)
+        setReview(rev[0])
+        setLoading(false)
+      } catch {
+        Alert.alert('病院情報を取得できませんでした。')
+      }
+    }
+    fetchReview()
   }, [])
 
 

@@ -8,6 +8,22 @@ import { router } from "expo-router"
 import { AuthContext } from "@/src/context/loginContext"
 import Tips from "@/src/components/template/Tips"
 import { getToken, saveToken } from "@/utils/secureStore"
+import * as Application from "expo-application"
+import Constants from "expo-constants"
+import axios from "axios"
+import CryptoJS from 'crypto-js'
+import {jwtDecode} from "jwt-decode"
+
+interface DecodedToken {
+  apiKey: string
+  JWTSecret: string
+  deviceId: string
+  iat: number
+}
+
+const axiosClient = axios.create({
+  baseURL: Constants.expoConfig?.extra?.API_BASE_URL
+})
 
 export default function Home() {
   const [showTips, setShowTips] = useState(false)
@@ -23,14 +39,48 @@ export default function Home() {
   const heartonRotate = useRef(new Animated.Value(0)).current
 
   useEffect(() => {
-    const checkFirstLaunch = async () => {
-      const isFirstLaunchDone = await getToken('dammy') // ダミーコード
-      // const isFirstLaunchDone = await getToken('isFirstLaunchDone')
+    // 初回起動時の処理
+    async function checkFirstLaunch () {
+      // const isFirstLaunchDone = await getToken('dammy') // ダミーコード
+      const isFirstLaunchDone = await getToken('isFirstLaunchDone')
+      
       if (!isFirstLaunchDone) {
+        // 6秒後にTipsを表示
         setTimeout(async()=>{
           setShowTips(true)
-          await saveToken('isFirstLaunchDone', 'true')
         }, 6000)
+
+        try {
+          // デバイスIDを取得してHmacを生成してサーバーに送信
+          const deviceId = Application.getAndroidId()
+          const timestamp = new Date().getTime()
+
+          // 署名生成
+          const payload = `${deviceId}:${timestamp}`
+          const apiKeyIni = Constants.expoConfig?.extra?.API_KEY_INI
+          const signature = CryptoJS.HmacSHA256(
+            CryptoJS.enc.Utf8.parse(payload),  // UTF-8 を明示
+            CryptoJS.enc.Utf8.parse(apiKeyIni) // UTF-8 を明示
+          ).toString(CryptoJS.enc.Hex)
+
+          const response = await axiosClient.post("/firstLaunch", {
+            deviceId,
+            timestamp,
+            signature
+          })
+          // サーバーから返ってきたtokenをデコードしてデバイスIDが一致するか確認
+          const token = response.data.token
+          const decoded = jwtDecode<DecodedToken>(token)
+          if(!decoded || !decoded.iat || decoded.iat + 300 < Math.floor(new Date().getTime() / 1000) || deviceId !== decoded.deviceId){
+            Alert.alert('データベースとの通信初期設定に失敗しました。')
+            return
+          }
+          await saveToken('apiKey', decoded.apiKey)
+          await saveToken('JWTSecret', decoded.JWTSecret)
+          await saveToken('isFirstLaunchDone', 'true')
+        } catch {
+          Alert.alert('エラーが発生しました。データベースへアクセスできません。')
+        }
       }
     }
     checkFirstLaunch()

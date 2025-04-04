@@ -4,7 +4,7 @@ import { router } from "expo-router"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import { AuthContext } from "@/src/context/loginContext"
 import { type usersExceptContactPersonsType, type contactPersonType } from "@/src/types/types"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 import SearchFriend from "@/src/components/chatRoom/SearchFriend"
 import FriendsList from "@/src/components/chatRoom/FriendsList"
 import { UnReadMessagesContext } from "@/src/context/messageContext"
@@ -23,14 +23,18 @@ export default function Chat() {
 
   useEffect(()=>{
     setMessages([])
-    axiosClient.post('/api/others/chatBox', {user})
-    .then((response)=>{
-      setContactPersons(response.data.contactPersons)
-      setUsersExceptContactPersons(response.data.usersExceptContactPersons)
-    })
-    .catch(()=>{
-      Alert.alert('エラーが発生し、メッセージデータを取得できませんでした')
-    })
+    async function fetchData(){
+      if(!user)return
+      try {
+        const axiosClient = await createAxiosClient()
+        const response = await axiosClient?.post('/api/others/chatBox', {user})
+        setContactPersons(response?.data.contactPersons)
+        setUsersExceptContactPersons(response?.data.usersExceptContactPersons)
+      } catch {
+        Alert.alert('エラーが発生し、メッセージデータを取得できませんでした')
+      }
+    }
+    fetchData()
   }, [])
 
   useEffect(()=>{

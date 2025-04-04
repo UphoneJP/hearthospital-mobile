@@ -3,19 +3,24 @@ import RaisedButton from "../parts/RaisedButton"
 import { router } from "expo-router"
 import { useContext } from "react"
 import { AuthContext } from "../../context/loginContext"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 
 export default function LogoutBox ( ){
   const {logout, user} = useContext(AuthContext)
 
   async function deleteFun() {
-    const response = await axiosClient.delete(`/api/user/${user?._id}`)
-    if(response.data.delete){
-      logout()
-      .then(()=>{
-        Alert.alert('アカウントを削除しました。')
-      })
-      router.replace('/user/login')
+    try {
+      const axiosClient = await createAxiosClient()
+      const response = await axiosClient?.delete(`/api/user/${user?._id}`)
+      if(response?.data.delete){
+        logout()
+        .then(()=>{
+          Alert.alert('アカウントを削除しました。')
+        })
+        router.replace('/user/login')
+      }
+    } catch {
+      Alert.alert('エラーが発生しました。')
     }
   }
 

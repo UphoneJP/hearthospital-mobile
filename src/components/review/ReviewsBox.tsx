@@ -3,7 +3,7 @@ import { reviewType, type hospitalType } from "../../types/types"
 import { router } from "expo-router"
 import { SetStateAction, useContext } from "react"
 import { AuthContext } from "@/src/context/loginContext"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 
 interface PropsType {
   reviews: reviewType[] | undefined,
@@ -25,15 +25,15 @@ export default function ReviewsBox ( prop: PropsType ) {
     <>
       {reviews?.filter(review => !review.author?.isDeleted).map(review=>{
 
-        function deleteFun (){
-          axiosClient.delete(`/api/hospital/${review.hospital}/${review._id}`)
-          .then((response)=>{
+        async function deleteFun (){
+          try {
+            const axiosClient = await createAxiosClient()
+            const response = await axiosClient?.post(`/api/hospital/${review.hospital}/${review._id}`, {user})
             Alert.alert('口コミを削除しました')
-            if(setHospital) setHospital(response.data.hospital)
-          })
-          .catch(()=>{
+            if(setHospital) setHospital(response?.data.hospital)
+          } catch {
             Alert.alert('エラーで削除できませんでした')
-          })
+          }
         }
 
         if(!review.ownerCheck)return null

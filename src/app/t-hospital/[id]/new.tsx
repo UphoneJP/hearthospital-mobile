@@ -6,7 +6,7 @@ import { Picker } from "@react-native-picker/picker"
 import { Card } from "@rneui/themed"
 
 import { hospitalType } from "@/src/types/types"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 import CustomInput from "@/src/components/parts/CustomInput"
 import { AuthContext } from "@/src/context/loginContext"
 import DiseasesBox from "@/src/components/review/DiseasesBox"
@@ -49,36 +49,42 @@ export default function New(){
     })()
 
     // 病院の読み込み
-    axiosClient.get(`/api/hospital/${id}`)
-    .then((response)=>{
-      setHospital(response.data.hospital)
-    })
-    .catch(()=>{
-      Alert.alert("病院情報が取得できませんでした")
-    })
+    async function fetchHospital(){
+      try {
+        const axiosClient = await createAxiosClient()
+        const response = await axiosClient?.get(`/api/hospital/${id}`)
+        setHospital(response?.data.hospital)
+      } catch {
+        Alert.alert("病院情報が取得できませんでした")
+      }
+    }
+    fetchHospital()
 
     // 病名一覧の読み込み
-    axiosClient.get('/api/hospital/reviews')
-    .then((response)=>{
-      const allDiseases = response.data.reviews.map((review: { diseaseNames: string[] }) => review.diseaseNames).flat()
-      setDiseases([...new Set<string>(allDiseases)])
-    })
-    .catch(()=>{
-      Alert.alert("病名の取得に失敗しました")
-    })    
+    async function fetchDiseases(){
+      try {
+        const axiosClient = await createAxiosClient()
+        const response = await axiosClient?.get('/api/hospital/reviews')
+        const allDiseases = response?.data.reviews.map((review: { diseaseNames: string[] }) => review.diseaseNames).flat()
+        setDiseases([...new Set<string>(allDiseases)])
+      } catch {
+        Alert.alert("病名の取得に失敗しました")
+      }
+    }
+    fetchDiseases()
   }, [])
 
-  function sendFun () {
-    axiosClient.post(`/api/hospital/${id}/new`, 
-      {
+  async function sendFun () {
+    try {
+      const axiosClient = await createAxiosClient()
+      await axiosClient?.post(`/api/hospital/${id}/new`, {
         title: titleName.trim(),
         diseaseNames: diseaseNames.trim(),
         url: url.trim(),
         treatmentTiming: `${year}年${month}月頃`,
         comment: comment.trim(),
         user
-      }
-    ).then(()=>{
+      })
       Alert.alert('投稿いただきありがとうございます。確認後に掲載いたします。')
       deleteToken(`${id}-title`)
       deleteToken(`${id}-diseases`)
@@ -87,9 +93,9 @@ export default function New(){
       deleteToken(`${id}-url`)
       deleteToken(`${id}-comment`)
       router.replace(`/t-hospital/${id}`)
-    }).catch(()=>{
+    } catch {
       Alert.alert('投稿エラーが発生しました')
-    })
+    }
   }
 
   function func(disease: string){

@@ -1,7 +1,7 @@
-import axiosClient from '@/utils/axiosClient'
+import createAxiosClient from '@/utils/axiosClient'
 import { Input } from '@rneui/themed'
 import { useState } from 'react'
-import { ActivityIndicator, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 
 interface PropsType {
   email: string
@@ -19,10 +19,16 @@ export default function EmailInputForm (prop: PropsType) {
 
   async function sendEmailFun() {
     setSending(true)
-    const response = await axiosClient.post('/api/user/checkEmail', {email})
-    setAnswer(response.data.nums)
-    setExpire(response.data.expire10min)
-    setSent(true)
+    try {
+      const axiosClient = await createAxiosClient()
+      const response = await axiosClient?.post('/api/user/checkEmail', {email})
+      setAnswer(response?.data.nums)
+      setExpire(response?.data.expire10min)
+      setSent(true)
+    } catch {
+      Alert.alert('エラー', 'メールの送信に失敗しました')
+      setSending(false)
+    }
   }
 
   return (

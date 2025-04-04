@@ -4,7 +4,7 @@ import MapView, { Marker } from 'react-native-maps'
 import { router } from "expo-router"
 
 import { type hospitalType } from "@/src/types/types"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import BannerAds from "@/src/components/template/BannerAds"
 
@@ -13,14 +13,17 @@ export default function Map () {
   const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(()=>{
-    axiosClient.get(`/api/hospital`)
-    .then(response => {
-      setHospitals(response.data.hospitals)
-      setLoading(false)
-    })
-    .catch(() => {
-      Alert.alert("病院情報の取得に失敗しました。")
-    })
+    async function getAxiosClient(){
+      try {
+        const axiosClient = await createAxiosClient()
+        const response = await axiosClient?.get('/api/hospital')
+        setHospitals(response?.data.hospitals)
+        setLoading(false)
+      } catch {
+        Alert.alert("病院情報の取得に失敗しました。")
+      }
+    }
+    getAxiosClient()
   },[])
 
   if(loading){

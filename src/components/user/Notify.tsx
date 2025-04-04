@@ -1,7 +1,7 @@
 import { Alert, StyleSheet, Text, View } from "react-native"
 import { RadioButton } from 'react-native-paper'
 import { useContext, useEffect, useState } from "react"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 import { AuthContext } from "../../context/loginContext"
 
 export default function Notify () {
@@ -14,32 +14,32 @@ export default function Notify () {
     }
   }, [])
 
-  function changeToNotify () {
+  async function changeToNotify () {
     if(checked === 'notify') return
-    axiosClient.get(`/api/user/${user?._id}/notifyTrue`)
-    .then((response)=>{
-      if(response.data.success){
+    try {
+      const axiosClient = await createAxiosClient()
+      const response = await axiosClient?.get(`/api/user/${user?._id}/notifyTrue`)
+      if(response?.data.success){
         setChecked('notify')
         Alert.alert('通知設定を「メールで通知する」に変更しました。')
       }
-    })
-    .catch(()=>{
+    } catch {
       Alert.alert('エラーが発生しました')
-    })
+    }
   }
 
-  function changeToNotNotify () {
+  async function changeToNotNotify () {
     if(checked === 'not-notify') return
-    axiosClient.get(`/api/user/${user?._id}/notifyFalse`)
-    .then((response)=>{
-      if(response.data.success){
+    try {
+      const axiosClient = await createAxiosClient()
+      const response = await axiosClient?.get(`/api/user/${user?._id}/notifyFalse`)
+      if(response?.data.success){
         setChecked('not-notify')
         Alert.alert('通知設定を「通知しない」に変更しました。')
       }
-    })
-    .catch(()=>{
+    } catch {
       Alert.alert('エラーが発生しました')
-    })
+    }
   }
 
   return (

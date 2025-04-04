@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { AuthContext } from "@/src/context/loginContext"
 import { talkThemeType } from "@/src/types/types"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 import { router } from "expo-router"
 import { Fragment, useContext, useEffect, useState } from "react"
 import { ActivityIndicator, Alert, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native"
@@ -77,9 +77,10 @@ export default function TalkThemes ({ talkThemes, setNum }: PropsType) {
       setDetailEdit(selectedTalkTheme.detail)
     }
   }, [editDialogVisible, selectedTalkTheme])
-  function editFun(){
+  async function editFun(){
     try {
-      axiosClient.patch(`/api/talkingRoom/${selectedTalkTheme?._id}`, { talkThemeEdit, detailEdit })
+      const axiosClient = await createAxiosClient()
+      await axiosClient?.patch(`/api/talkingRoom/${selectedTalkTheme?._id}`, { talkThemeEdit, detailEdit })
       setEditDialogVisible(false)
       setNum((prev)=>prev + 1)
       Alert.alert('編集が完了しました')
@@ -92,9 +93,10 @@ export default function TalkThemes ({ talkThemes, setNum }: PropsType) {
     setSelectedTalkTheme(talkTheme)
     setDeleteDialogVisible(true)
   }
-  function deleteFun(){
+  async function deleteFun(){
     try {
-      axiosClient.delete(`/api/talkingRoom/${selectedTalkTheme?._id}`)
+      const axiosClient = await createAxiosClient()
+      await axiosClient?.post(`/api/talkingRoom/${selectedTalkTheme?._id}`, {user})
       setDeleteDialogVisible(false)
       setNum((prev)=>prev + 1)
       Alert.alert('トークテーマを削除しました')

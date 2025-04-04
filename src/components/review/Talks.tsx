@@ -2,7 +2,7 @@ import { useContext } from "react"
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { AuthContext } from "@/src/context/loginContext"
 import { talkThemeType } from "@/src/types/types"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 import BannerAds from "../template/BannerAds"
 
 interface PropsType {
@@ -27,7 +27,8 @@ export default function Talks ({talkTheme, id, setNum}:PropsType) {
   }
   async function deleteFun(talkId: string) {
     try {
-      await axiosClient.delete(`/api/talkingRoom/${id}/${talkId}`)
+      const axiosClient = await createAxiosClient()
+      await axiosClient?.post(`/api/talkingRoom/${id}/${talkId}`, {user})
       setNum(prev => prev + 1)
       Alert.alert('投稿を削除しました')
     } catch {

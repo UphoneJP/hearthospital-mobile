@@ -5,7 +5,7 @@ import { ActivityIndicator, Alert, StyleSheet, Text } from "react-native"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import AddButton from "@/src/components/parts/AddButton"
 import { type talkThemeType } from "@/src/types/types"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 import TalkForm from "@/src/components/review/TalkForm"
 import Talks from "@/src/components/review/Talks"
 
@@ -20,12 +20,17 @@ export default function eachTheme() {
   const id = params.get('id')
   
   useEffect(()=>{
-    axiosClient.get(`/api/talkingRoom/${id}`)
-    .then((response)=>{
-      setTalkTheme(response.data.talkTheme)
-      setLoading(false)
-    })
-    .catch(()=> Alert.alert('データが取得できませんでした。'))
+    async function fetchTalkTheme(){
+      try {
+        const axiosClient = await createAxiosClient()
+        const response = await axiosClient?.get(`/api/talkingRoom/${id}`)
+        setTalkTheme(response?.data.talkTheme)
+        setLoading(false)
+      } catch {
+        Alert.alert('データが取得できませんでした。')
+      }
+    }
+    fetchTalkTheme()
   }, [num])
 
   if(loading&&!talkTheme){

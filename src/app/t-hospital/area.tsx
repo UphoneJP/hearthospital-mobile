@@ -3,7 +3,7 @@ import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacit
 import { router } from "expo-router"
 
 import { type hospitalType } from "@/src/types/types"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import CustomButton from "@/src/components/parts/CustomButton"
 
@@ -13,15 +13,18 @@ export default function Area () {
   const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(()=>{
-    axiosClient.get('/api/hospital')
-    .then(response => {
-      setAreas(response.data.areas)
-      setHospitals(response.data.hospitals)
-      setLoading(false)
-    })
-    .catch(() => {
-      Alert.alert("病院情報の取得に失敗しました。")
-    })
+    async function getAxiosClient(){
+      try {
+        const axiosClient = await createAxiosClient()
+        const response = await axiosClient?.get('/api/hospital')
+        setAreas(response?.data.areas)
+        setHospitals(response?.data.hospitals)
+        setLoading(false)
+      } catch {
+        Alert.alert("病院情報の取得に失敗しました。")
+      }
+    }
+    getAxiosClient()
   }, [])
 
   if(loading){

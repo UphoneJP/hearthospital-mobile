@@ -3,7 +3,7 @@ import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity } from "re
 import Constants from "expo-constants"
 import * as Device from 'expo-device'
 import { RewardedAd, RewardedAdEventType, TestIds } from 'react-native-google-mobile-ads'
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 import { AuthContext } from "@/src/context/loginContext"
 
 export default function EarningPoints() {
@@ -106,8 +106,9 @@ export default function EarningPoints() {
 
   async function earningPointFun() {
     try {
-      const response = await axiosClient.post(`/api/user/${user?._id}/earningPoint`)
-      setUser(response.data.user)
+      const axiosClient = await createAxiosClient()
+      const response = await axiosClient?.post(`/api/user/${user?._id}/earningPoint`)
+      setUser(response?.data.user)
       Alert.alert('ハートポイントを2ポイント獲得しました!')
     } catch {
       Alert.alert('エラーが発生しポイントを追加できませんでした')

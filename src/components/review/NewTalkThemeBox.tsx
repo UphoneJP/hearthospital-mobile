@@ -1,5 +1,5 @@
 import { AuthContext } from "@/src/context/loginContext"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 import { router } from "expo-router"
 import { useContext, useState } from "react"
 import { Alert } from "react-native"
@@ -26,7 +26,8 @@ export default function NewTalkThemeBox ( prop: PropsType) {
       return
     }
     try {
-      await axiosClient.post('/api/talkingRoom/new', {title, detailNoSpace, user})
+      const axiosClient = await createAxiosClient()
+      await axiosClient?.post('/api/talkingRoom/new', {title, detailNoSpace, user})
       hideDialog()
       setNewTalkTheme('')
       setDetail('')

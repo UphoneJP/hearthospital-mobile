@@ -5,7 +5,7 @@ import { PaperProvider, Text } from 'react-native-paper'
 
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import { talkThemeType } from "@/src/types/types"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 import NewTalkThemeBox from "@/src/components/review/NewTalkThemeBox"
 import TalkThemes from "@/src/components/review/TalkThemes"
 import BannerAds from "@/src/components/template/BannerAds"
@@ -18,13 +18,16 @@ export default function TalkingRoom () {
   function showDialog() { setDialogVisible(true) }
   
   useEffect(()=>{
-    axiosClient.get('/api/talkingRoom')
-    .then((response)=>{
-      setTalkThemes(response.data.talkThemes)
-    })
-    .catch(()=>{
-      Alert.alert('データを取得できませんでした。')
-    })
+    async function fetchTalkThemes(){
+      try {
+        const axiosClient = await createAxiosClient()
+        const response = await axiosClient?.get('/api/talkingRoom')
+        setTalkThemes(response?.data.talkThemes)
+      } catch {
+        Alert.alert('データを取得できませんでした。')
+      }
+    }
+    fetchTalkThemes()
   }, [num])
 
   useEffect(() => {

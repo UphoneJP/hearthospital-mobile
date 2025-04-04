@@ -2,7 +2,7 @@ import RaisedButton from "@/src/components/parts/RaisedButton"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import BannerAds from "@/src/components/template/BannerAds"
 import EmailInputForm from "@/src/components/user/EmailInputForm"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 import { Card, Input } from "@rneui/themed"
 import { router } from "expo-router"
 import { useState } from "react"
@@ -16,9 +16,14 @@ export default function resetPW(){
   const [password, setPassword] = useState<string>('')
 
   async function resetPWFun(email: string, password: string){
-    await axiosClient.post('/api/user/resetPassword', {email, password})
-    router.replace('/user/login')
-    Alert.alert('パスワードを再設定しました')
+    try {
+      const axiosClient = await createAxiosClient()
+      await axiosClient?.post('/api/user/resetPassword', {email, password})
+      router.replace('/user/login')
+      Alert.alert('パスワードを再設定しました')
+    } catch {
+      Alert.alert('エラーが発生しました')
+    }
   }
 
   return (

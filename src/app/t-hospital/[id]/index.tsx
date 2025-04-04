@@ -8,7 +8,7 @@ import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import ReviewsBox from "@/src/components/review/ReviewsBox"
 import AddButton from "@/src/components/parts/AddButton"
 import HospitalMap from "@/src/components/review/HospitalMap"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 import BannerAds from "@/src/components/template/BannerAds"
 
 export default function HospitalDetail () {
@@ -27,13 +27,16 @@ export default function HospitalDetail () {
   }, [hospital])
   
   useEffect(()=>{
-    axiosClient.get(`/api/hospital/${id}`)
-    .then(response => {
-      setHospital(response.data.hospital)
-    })
-    .catch(() => {
-      Alert.alert("病院情報の取得に失敗しました。")
-    })
+    async function getAxiosClient(){
+      try {
+        const axiosClient = await createAxiosClient()
+        const response = await axiosClient?.get(`/api/hospital/${id}`)
+        setHospital(response?.data.hospital)
+      } catch {
+        Alert.alert("病院情報の取得に失敗しました。")
+      }
+    }
+    getAxiosClient()
   },[id])
 
   if(!hospital || reviewLength === undefined) {

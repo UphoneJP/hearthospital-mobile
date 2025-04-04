@@ -1,8 +1,8 @@
 /* eslint-disable no-unsafe-optional-chaining */
-import { ActivityIndicator, Text, View } from "react-native"
+import { ActivityIndicator, Alert, Text, View } from "react-native"
 import { Picker } from "@react-native-picker/picker"
 import { useEffect, useState } from "react"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 import { hospitalType } from "@/src/types/types"
 import { saveToken } from "@/utils/secureStore"
 
@@ -24,11 +24,17 @@ export default function SelectableHospital(prop: PropsType){
   const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(()=>{
-    axiosClient.get('/api/hospital')
-    .then(response=>{
-      setHospitals(response.data.hospitals)
-      setAreas(response.data.areas)
-    })
+    async function getHospitals(){
+      try {
+        const axiosClient = await createAxiosClient()
+        const response = await axiosClient?.get('/api/hospital')
+        setHospitals(response?.data.hospitals)
+        setAreas(response?.data.areas)
+      } catch {
+        Alert.alert('エラーで病院情報を取得できませんでした')
+      }
+    }
+    getHospitals()
   }, [])
 
   useEffect(()=>{
@@ -53,7 +59,6 @@ export default function SelectableHospital(prop: PropsType){
         onValueChange={async(hospitalname) => {
           setSelectedHospitalname(hospitalname)
           await saveToken('reveiwNoID-hospital', hospitalname)
-          console.log(hospitalname)
         }}
         style={{flex: 1, marginVertical: 8}}
       >

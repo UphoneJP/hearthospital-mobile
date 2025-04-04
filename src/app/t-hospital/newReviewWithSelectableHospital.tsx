@@ -5,7 +5,7 @@ import SelectableHospital from "@/src/components/review/SelectableHospital"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import { AuthContext } from "@/src/context/loginContext"
 import { hospitalType } from "@/src/types/types"
-import axiosClient from "@/utils/axiosClient"
+import createAxiosClient from "@/utils/axiosClient"
 import { Picker } from "@react-native-picker/picker"
 import { Card } from "@rneui/themed"
 import { router } from "expo-router"
@@ -48,26 +48,34 @@ export default function newReviewWithSelectableHospital (){
     })()
 
     // 病名一覧の読み込み
-    axiosClient.get('/api/hospital/reviews')
-    .then((response)=>{
-      const allDiseases = response.data.reviews.map((review: { diseaseNames: string[] }) => review.diseaseNames).flat()
-      setDiseases([...new Set<string>(allDiseases)])
-    })
+    async function getAxiosClient(){
+      try {
+        const axiosClient = await createAxiosClient()
+        const response = await axiosClient?.get('/api/hospital/reviews')
+        const allDiseases = response?.data.reviews.map((review: { diseaseNames: string[] }) => review.diseaseNames).flat()
+        setDiseases([...new Set<string>(allDiseases)])
+      } catch {
+        Alert.alert('病名の一覧を取得できませんでした。')
+      }
+    }
+    getAxiosClient()
   }, [])
 
-  function sendFun () {
-    const selectedHospital = hospitals?.find(h=>h.hospitalname === selectedHospitalname)
-    if(!selectedHospital) return Alert.alert('病院を選択してください')
-    axiosClient.post(`/api/hospital/${selectedHospital?._id}/new`, 
-      {
-        title: titleName.trim(),
-        diseaseNames: diseaseNames.trim(),
-        url: url.trim(),
-        treatmentTiming: `${year}年${month}月頃`,
-        comment: comment.trim(),
-        user
-      }
-    ).then(()=>{
+  async function sendFun () {
+    try {
+      const selectedHospital = hospitals?.find(h=>h.hospitalname === selectedHospitalname)
+      if(!selectedHospital) return Alert.alert('病院を選択してください')
+      const axiosClient = await createAxiosClient()
+      await axiosClient?.post(`/api/hospital/${selectedHospital?._id}/new`, 
+        {
+          title: titleName.trim(),
+          diseaseNames: diseaseNames.trim(),
+          url: url.trim(),
+          treatmentTiming: `${year}年${month}月頃`,
+          comment: comment.trim(),
+          user
+        }
+      )
       Alert.alert('投稿いただきありがとうございます。確認後に掲載いたします。')
       deleteToken('reveiwNoID-hospital')
       deleteToken('reveiwNoID-title')
@@ -77,9 +85,9 @@ export default function newReviewWithSelectableHospital (){
       deleteToken('reveiwNoID-url')
       deleteToken('reveiwNoID-comment')
       router.replace(`/t-hospital/${selectedHospital?._id}`)
-    }).catch(()=>{
+    } catch{
       Alert.alert('投稿エラーが発生しました')
-    })
+    }
   }
 
   function func(disease: string){

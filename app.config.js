@@ -3,7 +3,7 @@ export default{
     name: "hearthospital-mobile",
     slug: "hearthospital-mobile",
     scheme: "jp.hearthospital",
-    version: "1.0.8",
+    version: "1.1.3",
     orientation: "portrait",
     icon: "./assets/icon(1024x1024).png",
     splash: {
@@ -15,7 +15,7 @@ export default{
     newArchEnabled: true,
     ios: {
       bundleIdentifier: "jp.hearthospital",
-      buildNumber: "1.0.8",
+      buildNumber: "1.1.3",
       supportsTablet: false,
       config: {
         googleMapsApiKey: process.env.GOOGLE_MAP_API_KEY_FOR_IOS
@@ -27,7 +27,7 @@ export default{
     },
     android: {
       package: "jp.hearthospital",
-      versionCode: 8,
+      versionCode: 13,
       permissions: [],
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive(432x432).png",
@@ -129,10 +129,10 @@ export default{
       // 広告関連
       REWARDED_ANDROID_UNIT_ID: process.env.REWARDED_ANDROID_UNIT_ID,
       REWARDED_IOS_UNIT_ID: process.env.REWARDED_IOS_UNIT_ID,
-      NATIVE_ANDROID_UNIT_ID: process.env.NATIVE_ANDROID_UNIT_ID,
-      NATIVE_IOS_UNIT_ID: process.env.NATIVE_IOS_UNIT_ID,
       BANNER_ANDROID_UNIT_ID: process.env.BANNER_ANDROID_UNIT_ID,
-      BANNER_IOS_UNIT_ID: process.env.BANNER_IOS_UNIT_ID
+      BANNER_IOS_UNIT_ID: process.env.BANNER_IOS_UNIT_ID,
+      INTERSTITIAL_ANDROID_UNIT_ID: process.env.INTERSTITIAL_ANDROID_UNIT_ID,
+      INTERSTITIAL_IOS_UNIT_ID: process.env.INTERSTITIAL_IOS_UNIT_ID
     }
   }
 }
