@@ -15,11 +15,11 @@ export default function RewardedAds(prop: propsType) {
   const [adLoaded, setAdLoaded] = useState(false)
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null)
 
-  // const androidAdmobRewarded = Constants.expoConfig?.extra?.REWARDED_ANDROID_UNIT_ID
-  // const iosAdmobRewarded = Constants.expoConfig?.extra?.REWARDED_IOS_UNIT_ID
-  // const productionID = Device.osName === 'Android' ? androidAdmobRewarded : iosAdmobRewarded
-  // const adUnitId = __DEV__ ? TestIds.REWARDED : productionID
-  const adUnitId =TestIds.REWARDED
+  const androidAdmobRewarded = Constants.expoConfig?.extra?.REWARDED_ANDROID_UNIT_ID
+  const iosAdmobRewarded = Constants.expoConfig?.extra?.REWARDED_IOS_UNIT_ID
+  const productionID = Device.osName === 'Android' ? androidAdmobRewarded : iosAdmobRewarded
+  const adUnitId = __DEV__ ? TestIds.REWARDED : productionID
+  // const adUnitId =TestIds.REWARDED
 
   function loadFun () {
     setLoading(true)

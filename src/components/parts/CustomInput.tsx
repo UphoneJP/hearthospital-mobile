@@ -9,10 +9,11 @@ interface PropsType {
   multiline?: boolean
   id?: string
   sessionName: string
+  placeholder?: string
 }
 
 export default function CustomInput(prop:PropsType){
-  const { label, val, setVal, style, multiline=false, id, sessionName } = prop
+  const { label, val, setVal, style, multiline=false, id, sessionName, placeholder } = prop
 
   return (
     <TextInput
@@ -35,6 +36,7 @@ export default function CustomInput(prop:PropsType){
         color={val.trim()===''?'transparent':'green'}        
       />}
       multiline={multiline}
+      placeholder={placeholder ? placeholder : ""}
     />
   )
 }

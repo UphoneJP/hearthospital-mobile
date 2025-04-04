@@ -5,11 +5,11 @@ import Constants from "expo-constants"
 import * as Device from 'expo-device'
 
 export default function BannerAds() {
-  // const androidAdmobBanner = Constants.expoConfig?.extra?.BANNER_ANDROID_UNIT_ID
-  // const iosAdmobBanner = Constants.expoConfig?.extra?.BANNER_IOS_UNIT_ID
-  // const productionID = Device.osName === 'Android' ? androidAdmobBanner : iosAdmobBanner
-  // const adUnitId = __DEV__ ? TestIds.BANNER : productionID
-  const adUnitId =TestIds.BANNER
+  const androidAdmobBanner = Constants.expoConfig?.extra?.BANNER_ANDROID_UNIT_ID
+  const iosAdmobBanner = Constants.expoConfig?.extra?.BANNER_IOS_UNIT_ID
+  const productionID = Device.osName === 'Android' ? androidAdmobBanner : iosAdmobBanner
+  const adUnitId = __DEV__ ? TestIds.BANNER : productionID
+  // const adUnitId =TestIds.BANNER
 
   useEffect(() => {
     MobileAds().initialize()

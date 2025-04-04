@@ -11,11 +11,11 @@ import { InterstitialAd, AdEventType, TestIds } from 'react-native-google-mobile
 import Constants from "expo-constants"
 import * as Device from "expo-device"
 
-// const androidAdmobInterstitial = Constants.expoConfig?.extra?.INTERSTITIAL_ANDROID_UNIT_ID
-// const iosAdmobInterstitial = Constants.expoConfig?.extra?.INTERSTITIAL_IOS_UNIT_ID
-// const productionID = Device.osName === "Android" ? androidAdmobInterstitial : iosAdmobInterstitial
-// const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : productionID
-const adUnitId = TestIds.INTERSTITIAL
+const androidAdmobInterstitial = Constants.expoConfig?.extra?.INTERSTITIAL_ANDROID_UNIT_ID
+const iosAdmobInterstitial = Constants.expoConfig?.extra?.INTERSTITIAL_IOS_UNIT_ID
+const productionID = Device.osName === "Android" ? androidAdmobInterstitial : iosAdmobInterstitial
+const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : productionID
+// const adUnitId = TestIds.INTERSTITIAL
 const interstitial = InterstitialAd.createForAdRequest(adUnitId, {
   requestNonPersonalizedAdsOnly: true
 })

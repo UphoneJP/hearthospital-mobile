@@ -10,7 +10,7 @@ import { Picker } from "@react-native-picker/picker"
 import { Card } from "@rneui/themed"
 import { router } from "expo-router"
 import { useContext, useEffect, useState } from "react"
-import { Alert, ScrollView, StyleSheet, Text, View } from "react-native"
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from "react-native"
 import { saveToken, getToken, deleteToken } from "@/utils/secureStore"
 
 export default function newReviewWithSelectableHospital (){
@@ -18,6 +18,7 @@ export default function newReviewWithSelectableHospital (){
   const [titleName, setTitleName] = useState<string>('')
   const [diseaseNames, setDiseaseNames] = useState<string>('')
   const [url, setUrl] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false)
   const currentYear = new Date().getFullYear()
   const currentMonth = new Date().getMonth() + 1
   const [year, setYear] = useState(currentYear)
@@ -63,6 +64,7 @@ export default function newReviewWithSelectableHospital (){
 
   async function sendFun () {
     try {
+      setLoading(true)
       const selectedHospital = hospitals?.find(h=>h.hospitalname === selectedHospitalname)
       if(!selectedHospital) return Alert.alert('病院を選択してください')
       const axiosClient = await createAxiosClient()
@@ -76,7 +78,7 @@ export default function newReviewWithSelectableHospital (){
           user
         }
       )
-      Alert.alert('投稿いただきありがとうございます。確認後に掲載いたします。')
+      Alert.alert('投稿いただきありがとうございます。','管理人が確認後に掲載いたします。')
       deleteToken('reveiwNoID-hospital')
       deleteToken('reveiwNoID-title')
       deleteToken('reveiwNoID-diseases')
@@ -85,8 +87,10 @@ export default function newReviewWithSelectableHospital (){
       deleteToken('reveiwNoID-url')
       deleteToken('reveiwNoID-comment')
       router.replace(`/t-hospital/${selectedHospital?._id}`)
-    } catch{
+    } catch(e){
+      console.log(e)
       Alert.alert('投稿エラーが発生しました')
+      setLoading(false)
     }
   }
 
@@ -180,7 +184,8 @@ export default function newReviewWithSelectableHospital (){
 
           {/* URL入力 */}
           <CustomInput 
-            label="外部サイトURL"
+            label="外部サイトURL(任意)"
+            placeholder="https://example.com"
             val={url}
             setVal={setUrl}
             style={{marginTop: 16}}
@@ -198,9 +203,9 @@ export default function newReviewWithSelectableHospital (){
           />
 
           <RaisedButton
-            title="口コミを投稿する"
+            title={loading ? <ActivityIndicator size="small" color="green" /> : "口コミを投稿する"}
             color="green"
-            disabled={!titleName || !diseaseNames || !comment ? true : false}
+            disabled={!titleName || !diseaseNames || !comment || loading ? true : false}
             fun={sendFun}
             styleChange={{margin: 32}}
           />

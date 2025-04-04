@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react"
-import { Alert, ScrollView, StyleSheet, Text, View } from "react-native"
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from "react-native"
 import { useSearchParams } from "expo-router/build/hooks"
 import { router } from "expo-router"
 import { Picker } from "@react-native-picker/picker"
@@ -19,6 +19,7 @@ export default function New(){
   const [titleName, setTitleName] = useState<string>('')
   const [diseaseNames, setDiseaseNames] = useState<string>('')
   const [url, setUrl] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false)
   const currentYear = new Date().getFullYear()
   const currentMonth = new Date().getMonth() + 1
   const [year, setYear] = useState(currentYear)
@@ -76,6 +77,7 @@ export default function New(){
 
   async function sendFun () {
     try {
+      setLoading(true)
       const axiosClient = await createAxiosClient()
       await axiosClient?.post(`/api/hospital/${id}/new`, {
         title: titleName.trim(),
@@ -85,7 +87,7 @@ export default function New(){
         comment: comment.trim(),
         user
       })
-      Alert.alert('投稿いただきありがとうございます。確認後に掲載いたします。')
+      Alert.alert('投稿いただきありがとうございます','管理人が確認後に掲載いたします。。')
       deleteToken(`${id}-title`)
       deleteToken(`${id}-diseases`)
       deleteToken(`${id}-year`)
@@ -95,6 +97,7 @@ export default function New(){
       router.replace(`/t-hospital/${id}`)
     } catch {
       Alert.alert('投稿エラーが発生しました')
+      setLoading(false)
     }
   }
 
@@ -179,7 +182,8 @@ export default function New(){
           />
 
           <CustomInput 
-            label="外部サイトURL"
+            label="外部サイト(任意)"
+            placeholder="https://example.com"
             val={url}
             setVal={setUrl}
             style={{marginTop: 16}}
@@ -197,9 +201,9 @@ export default function New(){
           />
 
           <RaisedButton
-            title="口コミを投稿する"
+            title={loading ? <ActivityIndicator size="small" color="green" /> : "口コミを投稿する"}
             color="green"
-            disabled={!titleName || !diseaseNames || !comment ? true : false}
+            disabled={!titleName || !diseaseNames || !comment || loading ? true : false}
             fun={sendFun}
             styleChange={{margin: 32}}
           />

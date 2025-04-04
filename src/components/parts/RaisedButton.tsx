@@ -1,7 +1,7 @@
 import { Button } from "@rneui/themed"
 
 interface PropsType {
-  title: string
+  title: string | JSX.Element
   color: string
   fun?: ()=>void
   styleChange?: object

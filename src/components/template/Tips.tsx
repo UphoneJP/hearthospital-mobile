@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { useEffect, useRef, useState } from "react"
-import { Animated, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Animated, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 
 export default function Tips({setShowTips}: {setShowTips: (value: boolean) => void}) {
   const [tipsNum, setTipsNum] = useState(0)
   const fadeMask = useRef(new Animated.Value(0)).current
   const fadeTextBox = useRef(new Animated.Value(0)).current
+  const fadeImage = useRef(new Animated.Value(1)).current
 
   useEffect(() => {
     Animated.sequence([
@@ -24,6 +25,39 @@ export default function Tips({setShowTips}: {setShowTips: (value: boolean) => vo
     ]).start()
   }, [fadeMask])
 
+  function handleNext() {
+    Animated.parallel([
+      Animated.timing(fadeTextBox, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true
+      }),
+      Animated.timing(fadeImage, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true
+      })
+    ]).start(() => {
+      if (tipsNum === 6) {
+        setShowTips(false)
+      } else {
+        setTipsNum(prev => prev + 1)
+        Animated.parallel([
+          Animated.timing(fadeTextBox, {
+            toValue: 1,
+            duration: 300,
+            useNativeDriver: true
+          }),
+          Animated.timing(fadeImage, {
+            toValue: 1,
+            duration: 300,
+            useNativeDriver: true
+          })
+        ]).start()
+      }
+    })
+  }
+
   return (
     // Mask
     <Animated.View style={[styles.mask, { opacity: fadeMask }]}>
@@ -35,14 +69,13 @@ export default function Tips({setShowTips}: {setShowTips: (value: boolean) => vo
       </TouchableOpacity>
 
       {/* ハートン */}
-      <Image 
+      <Animated.Image 
         source={imagesOfHearton[tipsNum]}
-        style={{ width: 200, height: 200, objectFit: 'contain' }}
+        style={[ styles.hearton, {opacity: fadeImage} ]}
       />
 
       {/* 吹き出しテキスト */}
       <Animated.View style={[styles.textBox, { opacity: fadeTextBox }]}>
-        <Text style={styles.fukidashi}>◢</Text>
         <Text style={styles.text}>
           {tipsNum===0?
             'HeartHospitalへようこそ!!ボクは『ハートン』、よろしくね。あなたと家族の幸せをサポートするアプリだよ。このアプリの使い方を一緒に見てみよう！'
@@ -69,14 +102,10 @@ export default function Tips({setShowTips}: {setShowTips: (value: boolean) => vo
             <Text style={{color: tipsNum===0?'transparent':'gray'}}>戻る</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => {
-            if(tipsNum===6){
-              setShowTips(false)
-            } else {
-              setTipsNum(prev => prev + 1)
-            }
-          }}>
-            <Text style={{color: 'orange'}}>{tipsNum!==6?'次へ':'アプリをスタート'}</Text>
+          <TouchableOpacity onPress={handleNext}>
+            <Text style={{color: 'orange'}}>
+              {tipsNum!==6?'次へ':'アプリをスタート'}
+            </Text>
           </TouchableOpacity>
         </View>
       </Animated.View>
@@ -132,12 +161,10 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 16
   },
-  fukidashi: {
-    position: 'absolute',
-    top: -36,
-    left: 120,
-    fontSize: 32,
-    color: 'orange'
+  hearton: {
+    width: 200, 
+    height: 200, 
+    objectFit: 'contain'
   },
   textBox: {
     backgroundColor: '#ffffff',

@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   },
   hearton: {
     width: 144,
-    height: 200,
+    height: 160,
     objectFit: 'contain'
   },
   drawer: {
