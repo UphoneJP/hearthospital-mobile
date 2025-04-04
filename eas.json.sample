@@ -16,9 +16,6 @@
     },
     "production": {
       "autoIncrement": false,
-      "android": {
-        "gradleCommand": ":app:assembleRelease"
-      },
       "env": {
         "API_BASE_URL": "XXXX",
         "API_KEY_INI": "XXXX",
