@@ -3,14 +3,15 @@ import { AuthContext } from "@/src/context/loginContext"
 import { talkThemeType } from "@/src/types/types"
 import createAxiosClient from "@/utils/axiosClient"
 import { router } from "expo-router"
-import { Fragment, useContext, useEffect, useState } from "react"
-import { ActivityIndicator, Alert, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Fragment, useContext, useEffect, useRef, useState } from "react"
+import { Alert, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { Button, Dialog, Portal, TextInput } from "react-native-paper"
 import { Platform, StatusBar } from 'react-native'
 import { InterstitialAd, AdEventType, TestIds } from 'react-native-google-mobile-ads'
 import Constants from "expo-constants"
 import * as Device from "expo-device"
 
+// interstitial広告
 const androidAdmobInterstitial = Constants.expoConfig?.extra?.INTERSTITIAL_ANDROID_UNIT_ID
 const iosAdmobInterstitial = Constants.expoConfig?.extra?.INTERSTITIAL_IOS_UNIT_ID
 const productionID = Device.osName === "Android" ? androidAdmobInterstitial : iosAdmobInterstitial
@@ -27,19 +28,24 @@ interface PropsType {
 export default function TalkThemes ({ talkThemes, setNum }: PropsType) {
   const { user } = useContext(AuthContext)
   const [loaded, setLoaded] = useState(false)
-  const [adError, setAdError] = useState<boolean>(false)
+  const [loadingAd, setLoadingAd] = useState(false)
   const [editDialogVisible, setEditDialogVisible] = useState<boolean>(false)
   const [deleteDialogVisible, setDeleteDialogVisible] = useState<boolean>(false)
-  const [talkThemeEdit, setTalkThemeEdit] = useState<string>('')
-  const [detailEdit, setDetailEdit] = useState<string>('')
-  const [selectedTalkTheme, setSelectedTalkTheme] = useState<talkThemeType | null>(null)
+  const titleRef = useRef<string>("")
+  const detailRef = useRef<string>("")
+  const inputRef = useRef<React.ElementRef<typeof TextInput> | null>(null)
+  const detailInputRef = useRef<React.ElementRef<typeof TextInput> | null>(null)
+  const [talkThemeToEdit, setTalkThemeToEdit] = useState<talkThemeType | null>(null)
+  const [talkThemeToDelete, setTalkThemeToDelete] = useState<talkThemeType | null>(null)
   const sortedTalkThemes = [...talkThemes].sort(
     (a, b) => new Date(b.touchAt).getTime() - new Date(a.touchAt).getTime()
   )
 
+  // interstitial広告
   useEffect(() => {
     const unsubscribeLoaded = interstitial.addAdEventListener(AdEventType.LOADED, () => { 
       setLoaded(true) 
+      setLoadingAd(false)
     })
     const unsubscribeOpened = interstitial.addAdEventListener(AdEventType.OPENED, () => {
       if (Platform.OS === 'ios') {
@@ -51,36 +57,35 @@ export default function TalkThemes ({ talkThemes, setNum }: PropsType) {
         StatusBar.setHidden(false)
       }
     })
-    const timer = setTimeout(() => {
-      if (!loaded) {
-        setAdError(true)
-        setLoaded(true)
-      }
-    }, 10000)
 
     interstitial.load()
     return () => {
       unsubscribeLoaded()
       unsubscribeOpened()
       unsubscribeClosed()
-      clearTimeout(timer)
     }
   }, [])
 
-  function openEditDialog(talkTheme: talkThemeType) {
-    setSelectedTalkTheme(talkTheme)
-    setEditDialogVisible(true)
-  }
+  // editDialogを表示
   useEffect(() => {
-    if (editDialogVisible && selectedTalkTheme) {
-      setTalkThemeEdit(selectedTalkTheme.title)
-      setDetailEdit(selectedTalkTheme.detail)
+    if (talkThemeToEdit) {
+      titleRef.current = talkThemeToEdit.title
+      detailRef.current = talkThemeToEdit.detail
+      setEditDialogVisible(true)
+      setTalkThemeToEdit(null)
     }
-  }, [editDialogVisible, selectedTalkTheme])
+  }, [talkThemeToEdit])
+  
   async function editFun(){
     try {
+      const talkThemeEdit = titleRef.current.trim()
+      const detailEdit = detailRef.current.trim()
+      if(!talkThemeEdit || !detailEdit){
+        Alert.alert('タイトルと説明の両方を記述してください')
+        return
+      }
       const axiosClient = await createAxiosClient()
-      await axiosClient?.patch(`/api/talkingRoom/${selectedTalkTheme?._id}`, { talkThemeEdit, detailEdit })
+      await axiosClient?.patch(`/api/talkingRoom/${talkThemeToEdit?._id}`, { talkThemeEdit, detailEdit })
       setEditDialogVisible(false)
       setNum((prev)=>prev + 1)
       Alert.alert('編集が完了しました')
@@ -89,29 +94,33 @@ export default function TalkThemes ({ talkThemes, setNum }: PropsType) {
     }
   }
 
-  function openDeleteDialog(talkTheme: talkThemeType) {
-    setSelectedTalkTheme(talkTheme)
-    setDeleteDialogVisible(true)
-  }
-  async function deleteFun(){
+  async function deleteFun() {
     try {
       const axiosClient = await createAxiosClient()
-      await axiosClient?.post(`/api/talkingRoom/${selectedTalkTheme?._id}`, {user})
+      await axiosClient?.post(`/api/talkingRoom/${talkThemeToDelete?._id}`, {user})
       setDeleteDialogVisible(false)
       setNum((prev)=>prev + 1)
       Alert.alert('トークテーマを削除しました')
     } catch {
-      Alert.alert('エラーで削除できませんでした')
+      Alert.alert('エラー', '削除できませんでした')
     }
   }
 
-  if (!loaded) {
-    return (
-      <View style={{width: '100%', alignItems: 'center', marginTop: 64}}>
-        <Text>データを取得中です</Text>
-        <ActivityIndicator size="large" color="orange" />
-      </View>
-    )
+  const handleTalkThemePress = (talkThemeId: string) => {
+    if (loaded) {
+      interstitial.show()
+      const unsubscribeClosed = interstitial.addAdEventListener(AdEventType.CLOSED, () => {
+        router.push(`t-talkingRoom/${talkThemeId}`)
+        unsubscribeClosed()
+      })
+    } else {
+      console.log('Ad not loaded yet')
+      router.push(`t-talkingRoom/${talkThemeId}`)
+      if (!loadingAd) {
+        setLoadingAd(true)
+        interstitial.load()
+      }
+    }
   }
 
   return (
@@ -125,10 +134,7 @@ export default function TalkThemes ({ talkThemes, setNum }: PropsType) {
           <Fragment key={talkTheme._id} >
             <TouchableOpacity
               style={styles.tBox}
-              onPress={()=> {
-                if(!adError)interstitial.show()
-                router.push(`t-talkingRoom/${talkTheme._id}`)
-              }}
+              onPress={()=> handleTalkThemePress(talkTheme._id)}
               activeOpacity={0.6}
             >
               <ImageBackground
@@ -147,14 +153,17 @@ export default function TalkThemes ({ talkThemes, setNum }: PropsType) {
                   <View style={styles.buttons}>
                     <Text
                       style={[styles.deleteButton, {backgroundColor: 'blue'}]}
-                      onPress={()=>openEditDialog(talkTheme)}
+                      onPress={()=>setTalkThemeToEdit(talkTheme)}
                     >
                       編集
                     </Text>
 
                     <Text
                       style={styles.deleteButton}
-                      onPress={()=>openDeleteDialog(talkTheme)}
+                      onPress={()=>{
+                        setTalkThemeToDelete(talkTheme)
+                        setDeleteDialogVisible(true)
+                    }}
                     >
                       削除
                     </Text>
@@ -174,26 +183,28 @@ export default function TalkThemes ({ talkThemes, setNum }: PropsType) {
                   トークテーマを編集
                 </Dialog.Title>
                 <Dialog.Content>
+                  <Text style={{color: 'orange'}}>タイトル</Text>
                   <TextInput
-                    label="タイトル"
                     mode="outlined"
-                    value={talkThemeEdit}
-                    onChangeText={text => setTalkThemeEdit(text)}
+                    onChangeText={text => titleRef.current = text}
+                    ref={input => inputRef.current = input}
                     autoFocus
                     outlineStyle={{borderColor: 'orange', backgroundColor: 'white'}}
                     contentStyle={{color: 'orange'}}
                     theme={{ colors: { primary: 'orange', onSurfaceVariant: 'orange' } }}
+                    placeholder={titleRef.current}
                   />
+                  <Text style={{color: 'orange'}}>説明</Text>
                   <TextInput
-                    label="説明"
                     mode="outlined"
-                    value={detailEdit}
-                    onChangeText={text => setDetailEdit(text)}
+                    onChangeText={text => detailRef.current = text}
+                    ref={input => detailInputRef.current = input}
                     style={{height: 120}}
                     multiline
                     outlineStyle={{borderColor: 'orange', backgroundColor: 'white'}}
                     contentStyle={{color: 'orange'}}
                     theme={{ colors: { primary: 'orange', onSurfaceVariant: 'orange' } }}
+                    placeholder={detailRef.current}
                   />
                 </Dialog.Content>
                 <Dialog.Actions>

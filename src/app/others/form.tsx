@@ -29,7 +29,7 @@ export default function Form(){
       const axiosClient = await createAxiosClient()
       await axiosClient?.post('/api/others/form', {
         formContent,
-        author: user
+        authorId: user?._id
       })
       Alert.alert('問い合わせを送信いたしました。ご返答をお待ちください。')
       deleteToken('form')

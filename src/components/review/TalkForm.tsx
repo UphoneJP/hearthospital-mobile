@@ -33,7 +33,7 @@ export default function TalkForm (prop:PropsType) {
     setSending(true)
     try {
       const axiosClient = await createAxiosClient()
-      const response = await axiosClient?.post(`/api/talkingRoom/${talkTheme?._id}`, { reviewText, user })
+      const response = await axiosClient?.post(`/api/talkingRoom/${talkTheme?._id}/new`, { reviewText, userId: user?._id })
       setNum(prev => prev + 1)
       Alert.alert('口コミ投稿しました')
       setReviewText('')

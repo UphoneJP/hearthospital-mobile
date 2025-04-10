@@ -31,17 +31,8 @@ export default function TalkingRoom () {
   }, [num])
 
   useEffect(() => {
-    if(talkThemes) { setLoading(false) }
+    if(talkThemes && talkThemes.length !== 0) { setLoading(false) }
   }, [talkThemes])
-
-  if(loading){
-    return (
-      <BackgroundTemplate>
-        <ActivityIndicator size="large" color="orange" />
-        <Text>サーバーから読み込み中...</Text>
-      </BackgroundTemplate>
-    )
-  }
 
   return (
     <PaperProvider>
@@ -57,17 +48,25 @@ export default function TalkingRoom () {
           setNum={setNum}
         />
 
-        <ScrollView 
-          style={styles.scrollBox} 
-          contentContainerStyle={styles.scrollContent}
-        >
-          <TalkThemes 
-            talkThemes={talkThemes} 
-            setNum={setNum}
-          />
+        {loading ? (
+          <View style={{flex: 1, justifyContent: 'center'}}>
+            <ActivityIndicator size="large" color="orange" />
+            <Text style={{textAlign: 'center'}}>サーバーから読み込み中...</Text>
+            <View style={{padding: 64}} />
+          </View>
+        ) : (
+          <ScrollView 
+            style={styles.scrollBox} 
+            contentContainerStyle={styles.scrollContent}
+          >
+            <TalkThemes 
+              talkThemes={talkThemes} 
+              setNum={setNum}
+            />
+            <View style={{padding: 64}} />
+          </ScrollView>
+        )}
 
-          <View style={{padding: 64}} />
-        </ScrollView>
         
         <View style={{position: 'absolute', bottom: 0}}>
           <BannerAds />

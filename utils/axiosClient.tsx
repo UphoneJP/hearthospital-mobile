@@ -1,7 +1,7 @@
 import axios from "axios"
 import Constants from "expo-constants"
 import JWT, { SupportedAlgorithms } from "expo-jwt"
-import { getToken, saveToken } from "./secureStore"
+import { getToken } from "./secureStore"
 import { Alert } from "react-native"
 import * as Application from "expo-application"
 import { router } from "expo-router"
@@ -33,38 +33,10 @@ export default async function createAxiosClient () {
       CryptoJS.enc.Utf8.parse(payload),
       CryptoJS.enc.Utf8.parse(deviceId)
     ).toString(CryptoJS.enc.Hex)
-
-    // キャッシュに保存
-    const integrityJWT = JWT.encode(
-      { nonce, timestamp, cryptoToken, signature },
-      deviceId
-    )
-    await saveToken('ANDROID_INTEGRITY', integrityJWT)
   }
 
   try {
-    // ■キャッシュをチェック
-    const cachedToken = await getToken('ANDROID_INTEGRITY')
-
-    if(cachedToken){
-      // ■キャッシュがあればデコードして、■4.5分以内に生成したものであれば利用
-      const decoded = JWT.decode(cachedToken, deviceId)
-
-      if(decoded.timestamp + 1000 * 60 * 4.5 > new Date().getTime()){
-        nonce = decoded.nonce
-        timestamp = decoded.timestamp
-        cryptoToken = decoded.cryptoToken
-        signature = decoded.signature
-      } else {
-        // ■4.5分を過ぎていたら再生成
-        await generateAndSave()
-      }
-
-    } else {
-      // ■キャッシュが無ければ生成
-      await generateAndSave()
-    }
-
+    await generateAndSave()
   } catch {
     Alert.alert('エラーでサーバーアクセスが拒否されました。')
     router.replace('/t-home')

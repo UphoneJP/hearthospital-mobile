@@ -75,7 +75,7 @@ export default function newReviewWithSelectableHospital (){
           url: url.trim(),
           treatmentTiming: `${year}年${month}月頃`,
           comment: comment.trim(),
-          user
+          userId: user?._id
         }
       )
       Alert.alert('投稿いただきありがとうございます。','管理人が確認後に掲載いたします。')
