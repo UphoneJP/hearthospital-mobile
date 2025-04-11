@@ -8,6 +8,7 @@ import { type talkThemeType } from "@/src/types/types"
 import createAxiosClient from "@/utils/axiosClient"
 import TalkForm from "@/src/components/review/TalkForm"
 import Talks from "@/src/components/review/Talks"
+import BannerAds from "@/src/components/template/BannerAds"
 
 export default function eachTheme() {
   const [talkTheme, setTalkTheme] = useState<talkThemeType|undefined>(undefined)
@@ -63,13 +64,15 @@ export default function eachTheme() {
         setAddButtonVisible={setAddButtonVisible}
       />
 
-      {inputVisible&&(
+      {inputVisible ? (
         <TalkForm 
           talkTheme={talkTheme} 
           setNum={setNum}
           setInputVisible={setInputVisible}
           setAddButtonVisible={setAddButtonVisible}
         />
+      ) : (
+        <BannerAds />
       )}
     
     </BackgroundTemplate>

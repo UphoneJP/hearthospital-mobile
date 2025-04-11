@@ -1,6 +1,6 @@
 import { useSearchParams } from "expo-router/build/hooks"
 import { useEffect, useState } from "react"
-import { ScrollView, StyleSheet, ActivityIndicator, Linking, TouchableOpacity } from "react-native"
+import { ScrollView, StyleSheet, ActivityIndicator, Linking, TouchableOpacity, View } from "react-native"
 import { Text, Alert } from "react-native"
 
 import { hospitalType } from "@/src/types/types"
@@ -87,10 +87,11 @@ export default function HospitalDetail () {
           </Text>
         )}
 
+        <View style={{padding: 64}} />
         
-        <BannerAds />
       </ScrollView>
       
+      <BannerAds />
 
     </BackgroundTemplate>
   )    

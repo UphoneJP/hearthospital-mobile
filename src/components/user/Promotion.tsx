@@ -43,10 +43,10 @@ export default function Promotion () {
             style={styles.editInput}
           />
           <TouchableOpacity 
-            style={styles.editButtonEditting}
+            style={[styles.editButtonEditting, {backgroundColor: 'orange'}]}
             onPress={changePromotion}  
           >
-            <Text>変更</Text>
+            <Text>変更する</Text>
           </TouchableOpacity>
         </View>
       ):(

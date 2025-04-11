@@ -17,7 +17,7 @@ interface AuthContextType {
   isLoggedIn: boolean
   user: userType | null
   setUser: React.Dispatch<React.SetStateAction<null>>
-  register: (penName: string, email: string, password: string )=> Promise<void>
+  register: (penName: string, email: string, password: string, setLoading: React.Dispatch<React.SetStateAction<boolean>> )=> Promise<void>
   login: (email: string, password: string) => Promise<void>
   googleLogin: (response: AuthSessionResult | null) => Promise<void>
   appleLogin: () => Promise<void>
@@ -77,7 +77,7 @@ const AuthProvider: React.FC<ChildrenType> = ({ children }:ChildrenType) => {
     }
   };
 
-  async function register(penName: string, email: string, password: string) {
+  async function register(penName: string, email: string, password: string, setLoading: React.Dispatch<React.SetStateAction<boolean>>) {
     try{
       const axiosClient = await createAxiosClient()
       const response = await axiosClient?.post("/api/user/register", { penName, email, password })
@@ -88,6 +88,7 @@ const AuthProvider: React.FC<ChildrenType> = ({ children }:ChildrenType) => {
       }
     } catch {
       Alert.alert('エラーが発生し登録できませんでした')
+      setLoading(false)
     }
   }
 

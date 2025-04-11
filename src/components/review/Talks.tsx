@@ -3,7 +3,6 @@ import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "rea
 import { AuthContext } from "@/src/context/loginContext"
 import { talkThemeType } from "@/src/types/types"
 import createAxiosClient from "@/utils/axiosClient"
-import BannerAds from "../template/BannerAds"
 
 interface PropsType {
   talkTheme: talkThemeType | undefined
@@ -90,8 +89,6 @@ export default function Talks ({talkTheme, id, setNum}:PropsType) {
           </View>  
         )
       })}
-      
-      <BannerAds />
 
       <View style={{padding:64}}></View>
 

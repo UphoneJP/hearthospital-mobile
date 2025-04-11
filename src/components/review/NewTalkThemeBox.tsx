@@ -2,7 +2,7 @@ import { AuthContext } from "@/src/context/loginContext"
 import createAxiosClient from "@/utils/axiosClient"
 import { router } from "expo-router"
 import { useContext, useRef, useState } from "react"
-import { ActivityIndicator, Alert } from "react-native"
+import { ActivityIndicator, Alert, StyleSheet } from "react-native"
 import { Button, Dialog, Portal, TextInput } from "react-native-paper"
 
 interface PropsType {
@@ -96,11 +96,11 @@ export default function NewTalkThemeBox ( prop: PropsType) {
           </>
         ): (
           <>
-            <Dialog.Title>ログインが必要です</Dialog.Title>
+            <Dialog.Title style={styles.dialogTitle}>ログインが必要です</Dialog.Title>
             <Dialog.Actions>
-              <Button onPress={hideDialog}>キャンセル</Button>
-              <Button onPress={()=>router.push('/user/login')}>ログイン</Button>
-              <Button onPress={()=>router.push('/user/register')}>新規アカウント登録</Button>
+              <Button style={styles.dialogButton} onPress={hideDialog}>戻る</Button>
+              <Button style={styles.dialogButton} onPress={()=>router.push('/user/login')}>ログイン</Button>
+              <Button style={styles.dialogButton} onPress={()=>router.push('/user/register')}>新規アカウント登録</Button>
             </Dialog.Actions>
           </>
         )}
@@ -109,3 +109,13 @@ export default function NewTalkThemeBox ( prop: PropsType) {
     </Portal>
   )
 }
+const styles = StyleSheet.create({
+  dialogTitle: {
+    fontSize: 20,
+    textAlign: 'center'
+  },
+  dialogButton: {
+    fontSize: 12,
+    padding: 0
+  }
+})

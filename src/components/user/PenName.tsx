@@ -41,10 +41,10 @@ export default function PenName () {
             style={styles.editInput}
           />
           <TouchableOpacity 
-            style={styles.editButton}
+            style={[styles.editButton, {backgroundColor: 'orange'}]}
             onPress={changePenName}  
           >
-            <Text>変更</Text>
+            <Text>変更する</Text>
           </TouchableOpacity>
         </View>
       ):(

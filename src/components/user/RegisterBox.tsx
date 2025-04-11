@@ -2,7 +2,7 @@ import { Card, Input } from '@rneui/themed'
 import { useContext, useState } from 'react'
 import RaisedButton from '../parts/RaisedButton'
 import { AuthContext } from '@/src/context/loginContext'
-import { StyleSheet } from 'react-native'
+import { ActivityIndicator, StyleSheet } from 'react-native'
 import EmailInputForm from './EmailInputForm'
 
 export default function RegisterBox(){
@@ -12,6 +12,7 @@ export default function RegisterBox(){
   const [answer, setAnswer] = useState<string>('')
   const [expire, setExpire] = useState<number>(0)
   const [password, setPassword] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false)
   const { register } = useContext(AuthContext)
 
   return(
@@ -49,11 +50,22 @@ export default function RegisterBox(){
       />
 
       <RaisedButton 
-        title='新規ユーザー登録' 
+        title={loading? <ActivityIndicator size='small' color='orange'/> : '新規ユーザー登録' }
         color='orange'
-        fun={()=>register(penName, email, password)}
+        fun={()=>{
+          if(!penName || !email || !password) return
+          setLoading(true)
+          register(penName, email, password, setLoading)
+        }}
         styleChange={styles.button}
-        disabled={penName&&email&&authNum===answer&&Date.now() < expire&&password?false:true}
+        disabled={
+          penName
+          &&email
+          &&authNum===answer
+          &&Date.now() < expire
+          &&password
+          &&!loading
+          ? false : true }
       />
 
     </Card>

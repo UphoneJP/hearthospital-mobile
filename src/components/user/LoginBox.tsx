@@ -2,12 +2,13 @@ import { Card, Input } from '@rneui/themed'
 import { useContext, useState } from 'react'
 import RaisedButton from '../parts/RaisedButton'
 import { AuthContext } from '@/src/context/loginContext'
-import { StyleSheet, Text, TouchableOpacity } from 'react-native'
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity } from 'react-native'
 import { router } from 'expo-router'
 
 export default function LoginBox(){
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false)
   const { login } = useContext(AuthContext)
 
   return(
@@ -38,10 +39,14 @@ export default function LoginBox(){
       />
 
       <RaisedButton 
-        title='ログイン' 
+        title={loading? <ActivityIndicator size='small' color='orange'/> : 'ログイン'}
         color='orange'
-        fun={()=>login(email, password)}
-        disabled={email&&password?false:true}
+        fun={()=>{
+          if(!email || !password) return
+          setLoading(true)
+          login(email, password)
+        }}
+        disabled={email&&password&&!loading ? false : true }
         styleChange={styles.button}
       />
 
