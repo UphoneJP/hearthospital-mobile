@@ -1,8 +1,8 @@
 import { AuthContext } from "@/src/context/loginContext"
 import createAxiosClient from "@/utils/axiosClient"
 import { router } from "expo-router"
-import { useContext, useRef } from "react"
-import { Alert } from "react-native"
+import { useContext, useRef, useState } from "react"
+import { ActivityIndicator, Alert } from "react-native"
 import { Button, Dialog, Portal, TextInput } from "react-native-paper"
 
 interface PropsType {
@@ -14,6 +14,7 @@ interface PropsType {
 export default function NewTalkThemeBox ( prop: PropsType) {
   const { dialogVisible, setDialogVisible, setNum } = prop
   const { user } = useContext(AuthContext)
+  const [loading, setLoading] = useState<boolean>(false)
   const titleRef = useRef<string>("")
   const detailRef = useRef<string>("")
   // クリア用
@@ -23,6 +24,7 @@ export default function NewTalkThemeBox ( prop: PropsType) {
   function hideDialog () { setDialogVisible(false) }
 
   async function sendNewTalkTheme(){
+    setLoading(true)
     const title = titleRef.current.trim()
     const detailNoSpace = detailRef.current.trim()
     if(!title || !detailNoSpace){
@@ -32,10 +34,12 @@ export default function NewTalkThemeBox ( prop: PropsType) {
     try {
       const axiosClient = await createAxiosClient()
       await axiosClient?.post('/api/talkingRoom/new', {title, detailNoSpace, userId: user?._id})
-      hideDialog()
       inputRef.current?.clear()
       detailInputRef.current?.clear()
       setNum((prev)=>prev + 1)
+      hideDialog()
+      setLoading(false)
+      Alert.alert('トークテーマを作成しました')
     } catch(err) {
       console.error(err)
       Alert.alert('エラーでトークテーマを作成できませんでした')
@@ -82,7 +86,11 @@ export default function NewTalkThemeBox ( prop: PropsType) {
                 textColor="orange" 
                 onPress={sendNewTalkTheme}
               >
-                作成
+                {loading? (
+                  <ActivityIndicator size="small" color="orange" style={{marginRight: 8}} />
+                ): (
+                  "作成"
+                )}
               </Button>
             </Dialog.Actions>
           </>

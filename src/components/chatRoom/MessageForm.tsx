@@ -17,12 +17,15 @@ export default function MessageForm (prop:PropsType){
     if (text.length <= 300) {setMessageInput(text)}
   }
   function handlePress () {
-    setMessageInput(messageInput.trim())
+    const content = messageInput.trim()
+    if(content.length === 0){
+      return
+    }
     if(userId&&personId){
       sendForm(
         userId,
         personId,
-        messageInput,
+        content,
         setMessageInput,
         setSending
       )

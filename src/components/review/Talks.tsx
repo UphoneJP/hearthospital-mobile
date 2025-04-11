@@ -17,8 +17,8 @@ export default function Talks ({talkTheme, id, setNum}:PropsType) {
 
   function confirmFun(talkId: string) {
     Alert.alert(
-      '指定のコメントを削除します',
-      '削除すると戻すことはできませんが、削除しますか？',
+      '指定のコメントを削除します。',
+      '削除して良いですか？',
       [
         { text: 'キャンセル', style: 'cancel'},
         { text: '削除する', onPress: async ()=> await deleteFun(talkId)}
@@ -28,7 +28,7 @@ export default function Talks ({talkTheme, id, setNum}:PropsType) {
   async function deleteFun(talkId: string) {
     try {
       const axiosClient = await createAxiosClient()
-      await axiosClient?.post(`/api/talkingRoom/${id}/${talkId}`, {user})
+      await axiosClient?.delete(`/api/talkingRoom/${id}/${talkId}/${user?._id}`)
       setNum(prev => prev + 1)
       Alert.alert('投稿を削除しました')
     } catch {
@@ -59,12 +59,10 @@ export default function Talks ({talkTheme, id, setNum}:PropsType) {
               </>
             ):(
               <>
-                <View style={
-                  [
-                    styles.talkHeader, 
-                    {backgroundColor: bgcolors[talk.loggedInUser?.num || 0]}
-                  ]
-                }>
+                <View style={[
+                  styles.talkHeader, 
+                  {backgroundColor: bgcolors[talk.loggedInUser?.num || 0]}
+                ]}>
                   <Text selectable={true}>
                     {talksLength - index}. {talk.guestName || talk.loggedInUser?.penName || talk.loggedInUser?.username}
                   </Text>

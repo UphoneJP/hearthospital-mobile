@@ -28,7 +28,7 @@ export default function Messsages({ userId, personId }: PropsType){
     ({viewableItems}:{viewableItems:ViewToken[]}) => {
       viewableItems.forEach((item) => {
         const message = item.item as messageType
-        if ( message.sender !== userId && !message.shown && personId && userId) {
+        if ( userId && message.sender !== userId && !message.shown && personId ) {
           markAsReadIO(userId, personId, message._id)
         }
       })
@@ -53,7 +53,6 @@ export default function Messsages({ userId, personId }: PropsType){
       viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
       contentContainerStyle={{ paddingBottom: 160 }}
       onEndReachedThreshold={0.2}
-      getItemLayout={(_, index) => ({ length: 60, offset: 60 * index, index })} // 各アイテムの高さを固定
     />
   )
 }

@@ -46,13 +46,19 @@ const MessageProvider = ({children}:{children: React.ReactNode}) => {
   async function sendForm(  // ⑦自分がメッセージを送信した
     userId: string,
     personId: string,
-    messageInput: string,
+    content: string,
     setMessageInput: React.Dispatch<React.SetStateAction<string>>,
     setSending: React.Dispatch<React.SetStateAction<boolean>>
   ){
     setSending(true)
     try {
-      socket.emit("sendMessage", {userId, personId, messageInput})
+      socket.emit("sendMessage", {userId, personId, content}, (response: { status: number })=>{
+        if (response.status === 200) {
+          console.log("メッセージを送信しました")
+        } else {
+          Alert.alert('エラーでメッセージを送信できませんでした')
+        }
+      })
     } catch {
       Alert.alert('エラーでメッセージを送信できませんでした')
     }
@@ -70,8 +76,9 @@ const MessageProvider = ({children}:{children: React.ReactNode}) => {
     // ■EMIT
     // ①初回登録・通信開始
     socket.emit("register", user._id)
+    console.log("socket connected")
     // ②未読数取得request
-    socket.emit("requestUnReadMessages", user)
+    socket.emit("requestUnReadMessages", user._id)
 
     // ■ON
     // ③未読数取得return
@@ -91,8 +98,9 @@ const MessageProvider = ({children}:{children: React.ReactNode}) => {
       )
     })
     // ⑧送信したら自分も更新
-    socket.on("sentMessage", (arrangedNewMessage: messageType) => {
-      setMessages((prev) => [...prev, arrangedNewMessage])
+    socket.on("sentMessage", (newMessage: messageType) => {
+      console.log("newMessage", newMessage)
+      setMessages((prev) => [...prev, newMessage])
     })
     // ⑨newMessageを受信側へ通知
     socket.on("recieveMessage", (newMessage: messageType, unReadArray: messageType[]) => {

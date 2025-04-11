@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { AuthContext } from "@/src/context/loginContext"
 import { talkThemeType } from "@/src/types/types"
-import createAxiosClient from "@/utils/axiosClient"
 import { router } from "expo-router"
-import { Fragment, useContext, useEffect, useRef, useState } from "react"
-import { Alert, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import { Button, Dialog, Portal, TextInput } from "react-native-paper"
+import { Fragment, useContext, useEffect, useState } from "react"
+import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { Platform, StatusBar } from 'react-native'
 import { InterstitialAd, AdEventType, TestIds } from 'react-native-google-mobile-ads'
 import Constants from "expo-constants"
 import * as Device from "expo-device"
+import EditButton from "../parts/EditButton"
+import DeleteButton from "../parts/DeleteButton"
 
 // interstitial広告
 const androidAdmobInterstitial = Constants.expoConfig?.extra?.INTERSTITIAL_ANDROID_UNIT_ID
@@ -29,14 +29,6 @@ export default function TalkThemes ({ talkThemes, setNum }: PropsType) {
   const { user } = useContext(AuthContext)
   const [loaded, setLoaded] = useState(false)
   const [loadingAd, setLoadingAd] = useState(false)
-  const [editDialogVisible, setEditDialogVisible] = useState<boolean>(false)
-  const [deleteDialogVisible, setDeleteDialogVisible] = useState<boolean>(false)
-  const titleRef = useRef<string>("")
-  const detailRef = useRef<string>("")
-  const inputRef = useRef<React.ElementRef<typeof TextInput> | null>(null)
-  const detailInputRef = useRef<React.ElementRef<typeof TextInput> | null>(null)
-  const [talkThemeToEdit, setTalkThemeToEdit] = useState<talkThemeType | null>(null)
-  const [talkThemeToDelete, setTalkThemeToDelete] = useState<talkThemeType | null>(null)
   const sortedTalkThemes = [...talkThemes].sort(
     (a, b) => new Date(b.touchAt).getTime() - new Date(a.touchAt).getTime()
   )
@@ -66,47 +58,8 @@ export default function TalkThemes ({ talkThemes, setNum }: PropsType) {
     }
   }, [])
 
-  // editDialogを表示
-  useEffect(() => {
-    if (talkThemeToEdit) {
-      titleRef.current = talkThemeToEdit.title
-      detailRef.current = talkThemeToEdit.detail
-      setEditDialogVisible(true)
-      setTalkThemeToEdit(null)
-    }
-  }, [talkThemeToEdit])
-  
-  async function editFun(){
-    try {
-      const talkThemeEdit = titleRef.current.trim()
-      const detailEdit = detailRef.current.trim()
-      if(!talkThemeEdit || !detailEdit){
-        Alert.alert('タイトルと説明の両方を記述してください')
-        return
-      }
-      const axiosClient = await createAxiosClient()
-      await axiosClient?.patch(`/api/talkingRoom/${talkThemeToEdit?._id}`, { talkThemeEdit, detailEdit })
-      setEditDialogVisible(false)
-      setNum((prev)=>prev + 1)
-      Alert.alert('編集が完了しました')
-    } catch {
-      Alert.alert('エラーで編集できませんでした')
-    }
-  }
-
-  async function deleteFun() {
-    try {
-      const axiosClient = await createAxiosClient()
-      await axiosClient?.post(`/api/talkingRoom/${talkThemeToDelete?._id}`, {user})
-      setDeleteDialogVisible(false)
-      setNum((prev)=>prev + 1)
-      Alert.alert('トークテーマを削除しました')
-    } catch {
-      Alert.alert('エラー', '削除できませんでした')
-    }
-  }
-
-  const handleTalkThemePress = (talkThemeId: string) => {
+  // talkThemeのBOXを押したときの処理
+  function handleTalkThemePress(talkThemeId: string) {
     if (loaded) {
       interstitial.show()
       const unsubscribeClosed = interstitial.addAdEventListener(AdEventType.CLOSED, () => {
@@ -128,127 +81,54 @@ export default function TalkThemes ({ talkThemes, setNum }: PropsType) {
       {sortedTalkThemes.map(talkTheme => {        
         const touchDate = new Date(talkTheme.touchAt || "")
         const now = new Date()
-        const threeDaysInMs = 1000 * 60 * 60 * 24 * 30
+        const thirtyDaysInMillis = 1000 * 60 * 60 * 24 * 30
 
         return (
           <Fragment key={talkTheme._id} >
+            {/* talkThemeのBOX */}
             <TouchableOpacity
               style={styles.tBox}
               onPress={()=> handleTalkThemePress(talkTheme._id)}
               activeOpacity={0.6}
             >
+              {/* 背景 */}
               <ImageBackground
                 source={colorAssets[talkTheme.colorNum]}
                 style={styles.background}
               >
-                <Text style={styles.title}>{talkTheme.title}</Text>
-                {now.getTime() - touchDate.getTime() < threeDaysInMs &&
+                {/* タイトル */}
+                <Text style={styles.title}>
+                  {talkTheme.title}
+                </Text>
+
+                {/* 最新更新日 */}
+                {now.getTime() - touchDate.getTime() < thirtyDaysInMillis &&
                   <Text style={styles.latest}>
                     {new Date(talkTheme.touchAt).toLocaleDateString('ja-JP', { timeZone: 'Asia/Tokyo' })}更新
                   </Text>
                 }
+
+                {/* 詳細 */}
                 <Text style={styles.detail}>{talkTheme.detail}</Text>
 
+                {/* 編集・削除ボタン（トークテーマの作成者の場合のみ） */}
                 {talkTheme.author === user?._id && (
                   <View style={styles.buttons}>
-                    <Text
-                      style={[styles.deleteButton, {backgroundColor: 'blue'}]}
-                      onPress={()=>setTalkThemeToEdit(talkTheme)}
-                    >
-                      編集
-                    </Text>
+                    
+                    <EditButton
+                      talkTheme={talkTheme}
+                      setNum={setNum}
+                    />
 
-                    <Text
-                      style={styles.deleteButton}
-                      onPress={()=>{
-                        setTalkThemeToDelete(talkTheme)
-                        setDeleteDialogVisible(true)
-                    }}
-                    >
-                      削除
-                    </Text>
+                    <DeleteButton
+                      talkTheme={talkTheme}
+                      setNum={setNum}
+                    />
+
                   </View>
                 )}
               </ImageBackground>
             </TouchableOpacity>
-
-            {/* 編集画面 */}
-            <Portal>
-              <Dialog 
-                visible={editDialogVisible} 
-                onDismiss={()=>setEditDialogVisible(false)}
-                style={{backgroundColor: 'white'}}
-              >
-                <Dialog.Title style={{color: 'orange', textAlign: 'center', fontSize: 20}}>
-                  トークテーマを編集
-                </Dialog.Title>
-                <Dialog.Content>
-                  <Text style={{color: 'orange'}}>タイトル</Text>
-                  <TextInput
-                    mode="outlined"
-                    onChangeText={text => titleRef.current = text}
-                    ref={input => inputRef.current = input}
-                    autoFocus
-                    outlineStyle={{borderColor: 'orange', backgroundColor: 'white'}}
-                    contentStyle={{color: 'orange'}}
-                    theme={{ colors: { primary: 'orange', onSurfaceVariant: 'orange' } }}
-                    placeholder={titleRef.current}
-                  />
-                  <Text style={{color: 'orange'}}>説明</Text>
-                  <TextInput
-                    mode="outlined"
-                    onChangeText={text => detailRef.current = text}
-                    ref={input => detailInputRef.current = input}
-                    style={{height: 120}}
-                    multiline
-                    outlineStyle={{borderColor: 'orange', backgroundColor: 'white'}}
-                    contentStyle={{color: 'orange'}}
-                    theme={{ colors: { primary: 'orange', onSurfaceVariant: 'orange' } }}
-                    placeholder={detailRef.current}
-                  />
-                </Dialog.Content>
-                <Dialog.Actions>
-                  <Button 
-                    textColor="orange" 
-                    onPress={editFun}
-                  >
-                    変更する
-                  </Button>
-                </Dialog.Actions>          
-              </Dialog>
-            </Portal>
-
-            {/* 削除画面 */}
-            <Portal>
-              <Dialog 
-                visible={deleteDialogVisible} 
-                onDismiss={()=>setDeleteDialogVisible(false)}
-                style={{backgroundColor: 'white'}}
-              >
-                <Dialog.Title style={{color: 'orange', textAlign: 'center', fontSize: 20}}>
-                  トークテーマを編集
-                </Dialog.Title>
-                <Dialog.Content>
-                  <Text>
-                    トークテーマを削除します。トークテーマ内の全ての投稿が削除されます。よろしいですか？
-                  </Text>
-                </Dialog.Content>
-                <Dialog.Actions>
-                  <Button 
-                    textColor="orange" 
-                    onPress={()=>setDeleteDialogVisible(false)}
-                  >
-                    キャンセル
-                  </Button>
-                  <Button 
-                    textColor="red" 
-                    onPress={deleteFun}
-                  >
-                    削除する
-                  </Button>
-                </Dialog.Actions>          
-              </Dialog>
-            </Portal>
           </Fragment>
         )
       })}
@@ -300,14 +180,5 @@ const styles = StyleSheet.create({
     gap: 8, 
     justifyContent: 'center', 
     marginTop: 8
-  },
-  deleteButton: {
-    backgroundColor: 'red',
-    color: 'white',
-    textAlign: 'center',
-    width: 48,
-    paddingBottom: 4,
-    paddingTop: 2,
-    borderRadius: 4
   }
 })

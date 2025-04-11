@@ -6,12 +6,13 @@ import MessageHeader from "@/src/components/chatRoom/MessageHeader"
 import MessageForm from "@/src/components/chatRoom/MessageForm"
 import Messsages from "@/src/components/chatRoom/Messages"
 import { UnReadMessagesContext } from "@/src/context/messageContext"
-import { Alert, Text } from "react-native"
+import { ActivityIndicator, Alert, Text } from "react-native"
 
 export default function ChatRoom(){
   const userId = useSearchParams().get('userId')
   const personId = useSearchParams().get('personId')
   const [recieverName, setRecieverName] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(true)
   const { setMessages } = useContext(UnReadMessagesContext)
 
   async function getMessages(){
@@ -21,6 +22,9 @@ export default function ChatRoom(){
       setMessages(response?.data.messages)
     } catch {
       Alert.alert('エラーが発生し。メッセージデータを取得できませんでした')
+    }
+    finally {
+      setLoading(false)
     }
   }
 
@@ -43,6 +47,15 @@ export default function ChatRoom(){
     return(
       <BackgroundTemplate>
         <Text>エラーが発生しました</Text>
+      </BackgroundTemplate>
+    )
+  }
+
+  if(loading){
+    return(
+      <BackgroundTemplate>
+        <ActivityIndicator size="large" color="orange" />
+        <Text>サーバーから読み込み中...</Text>
       </BackgroundTemplate>
     )
   }

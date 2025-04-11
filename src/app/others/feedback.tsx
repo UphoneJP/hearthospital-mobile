@@ -40,7 +40,7 @@ export default function Feedback(){
       <ScrollView style={{width: '100%'}}>
         <Card containerStyle={styles.card}>
           <Text style={styles.tips}>
-            お気付き・ご意見をご記入ください。返答はいたしませんのでご了承ください。
+            管理人へお気付き・ご意見をご記入ください。送信者秘匿での送信となるため、返答はいたしかねます。ご了承ください。
           </Text>
           <CustomInput 
             label="お気付き・ご意見"
