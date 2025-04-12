@@ -20,6 +20,8 @@ export default function EarningPoints() {
   const [loading3, setLoading3] = useState<boolean>(false)
   const [done3, setDone3] = useState<boolean>(false)
 
+  const [loadingGetPoints, setLoadingGetPoints] = useState<boolean>(false)
+
   const androidAdmobRewarded = Constants.expoConfig?.extra?.REWARDED_ANDROID_UNIT_ID
   const iosAdmobRewarded = Constants.expoConfig?.extra?.REWARDED_IOS_UNIT_ID
   const productionID = Device.osName === 'Android' ? androidAdmobRewarded : iosAdmobRewarded
@@ -105,6 +107,7 @@ export default function EarningPoints() {
   }
 
   async function earningPointFun() {
+    setLoadingGetPoints(true)
     try {
       const axiosClient = await createAxiosClient()
       const response = await axiosClient?.post(`/api/user/${user?._id}/earningPoint`)
@@ -112,6 +115,7 @@ export default function EarningPoints() {
       Alert.alert('ハートポイントを2ポイント獲得しました!')
     } catch {
       Alert.alert('エラーが発生しポイントを追加できませんでした')
+      setLoadingGetPoints(false)
     }
   }
   
@@ -173,9 +177,12 @@ export default function EarningPoints() {
       </TouchableOpacity>
 
       {done1 && done2 && done3 &&
-        <TouchableOpacity onPress={earningPointFun}>
-          <Text style={[styles.button, {backgroundColor: 'orange'}]}>
-            ハートポイント2pointを獲得する
+        <TouchableOpacity onPress={earningPointFun} disabled={loadingGetPoints}>
+          <Text style={[styles.button, {backgroundColor: loadingGetPoints ? 'gray': 'orange'}]} disabled={loadingGetPoints}>
+            {loadingGetPoints?
+              <ActivityIndicator size="small" color='white'/>
+              : 'ハートポイント2pointsを獲得する'
+            }
           </Text>
         </TouchableOpacity>
       }

@@ -6,7 +6,7 @@ import createAxiosClient from "@/utils/axiosClient"
 import { Card, Input } from "@rneui/themed"
 import { router } from "expo-router"
 import { useState } from "react"
-import { Alert, StyleSheet, View } from "react-native"
+import { ActivityIndicator, Alert, StyleSheet, View } from "react-native"
 
 export default function resetPW(){
   const [email, setEmail] = useState<string>('')
@@ -14,9 +14,11 @@ export default function resetPW(){
   const [answer, setAnswer] = useState<string>('')
   const [expire, setExpire] = useState<number>(0)
   const [password, setPassword] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false)
 
   async function resetPWFun(email: string, password: string){
     try {
+      setLoading(true)
       const axiosClient = await createAxiosClient()
       await axiosClient?.post('/api/user/resetPassword', {email, password})
       router.replace('/user/login')
@@ -24,6 +26,7 @@ export default function resetPW(){
     } catch {
       Alert.alert('エラーが発生しました')
     }
+    setLoading(false)
   }
 
   return (
@@ -55,11 +58,13 @@ export default function resetPW(){
         />
       
         <RaisedButton 
-          title='パスワード再設定' 
+          title={loading? 
+            <ActivityIndicator size="small" color="orange" /> : 'パスワード再設定' 
+          } 
           color='orange'
           fun={()=>resetPWFun(email, password)}
           styleChange={styles.button}
-          disabled={email&&authNum===answer&&Date.now() < expire&&password?false:true}
+          disabled={email&&authNum===answer&&Date.now() < expire&&password&&!loading?false:true}
         />
       </Card>
 

@@ -111,11 +111,10 @@ export default function ReveiwDetail () {
 
         <View style={{padding:64}} />
 
-        <View style={{position: 'absolute', bottom: 0}}>
-          <BannerAds />
-        </View>
-
       </ScrollView>
+
+      <BannerAds />
+
     </BackgroundTemplate>
   )
 }
