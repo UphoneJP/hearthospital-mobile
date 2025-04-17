@@ -9,23 +9,33 @@ export default function Password () {
   return (
     <View style={{flexDirection:'row'}}>
       <Text style={{fontWeight:'bold'}}>パスワード: </Text>
-      <Text style={{flex:1}}> {user?.googleId?(
-        <View>
-          <RaisedButton
-            title="Googleアカウントでログイン中"
-            color="orange"
-            disabled={true}
-          />
-        </View>
-      ):(
-        <View>
-          <RaisedButton
-            title="パスワードを変更する"
-            color="blue"
-            fun={()=>router.push('/user/resetPW')}
-          />
-        </View>
-      )}</Text>
+      <Text style={{flex:1}}>
+        {user?.googleId?(
+          <View>
+            <RaisedButton
+              title="Googleアカウントでログイン中"
+              color="orange"
+              disabled={true}
+            />
+          </View>
+        ) : ( user?.appleUserId ? (
+          <View>
+            <RaisedButton
+              title="appleアカウントでログイン中"
+              color="orange"
+              disabled={true}
+            />
+          </View>
+        ) : (
+          <View>
+            <RaisedButton
+              title="パスワードを変更する"
+              color="blue"
+              fun={()=>router.push('/user/resetPW')}
+            />
+          </View>
+        ))}
+      </Text>
     </View>
   )
 }

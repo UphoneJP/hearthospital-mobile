@@ -2,13 +2,20 @@ import axios from "axios"
 import Constants from "expo-constants"
 import JWT, { SupportedAlgorithms } from "expo-jwt"
 import { getToken } from "./secureStore"
-import { Alert } from "react-native"
+import { Alert, Platform } from "react-native"
 import * as Application from "expo-application"
 import { router } from "expo-router"
 import CryptoJS from 'crypto-js'
 
 export default async function createAxiosClient () {
-  const deviceId = Application.getAndroidId() || 'testDeviceId'
+  let deviceId: string
+  if (Platform.OS === "android") {
+    deviceId = Application.getAndroidId() || "testDeviceId"
+  } else if (Platform.OS === "ios") {
+    deviceId = await Application.getIosIdForVendorAsync() || "testDeviceId"
+  } else {
+    deviceId = "testDeviceId"
+  }
   let nonce = 'thisIsTestNonce'
   let timestamp = 1800000000000
   let cryptoToken = "thisIsTestCryptoToken"
@@ -37,7 +44,8 @@ export default async function createAxiosClient () {
 
   try {
     await generateAndSave()
-  } catch {
+  } catch(err) {
+    console.log('generateAndSave Error; ', err)
     Alert.alert('エラーでサーバーアクセスが拒否されました。')
     router.replace('/t-home')
     return
@@ -51,9 +59,9 @@ export default async function createAxiosClient () {
     router.replace('/t-home')
     return
   }
-  const token = JWT.encode( 
-    { apiKey, timestamp: new Date().getTime() }, 
-    JWTSecret, 
+  const token = JWT.encode(
+    { apiKey, timestamp: new Date().getTime() },
+    JWTSecret,
     { algorithm: SupportedAlgorithms.HS256 }
   )
 

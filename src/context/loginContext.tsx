@@ -1,7 +1,8 @@
 import { createContext, useState, useEffect } from "react"
 import { io } from "socket.io-client"
 import Constants from "expo-constants"
-import { appleAuth } from '@invertase/react-native-apple-authentication'
+// import { appleAuth } from '@invertase/react-native-apple-authentication'
+import * as AppleAuthentication from 'expo-apple-authentication'
 
 import { type userType } from "../types/types"
 import createAxiosClient from "@/utils/axiosClient"
@@ -20,7 +21,7 @@ interface AuthContextType {
   register: (penName: string, email: string, password: string, setLoading: React.Dispatch<React.SetStateAction<boolean>> )=> Promise<void>
   login: (email: string, password: string) => Promise<void>
   googleLogin: (response: AuthSessionResult | null) => Promise<void>
-  appleLogin: () => Promise<void>
+  appleLogin: (credential: AppleAuthentication.AppleAuthenticationCredential) => Promise<void>
   logout: () => Promise<void>
 }
 const defaultAuthContext: AuthContextType = {
@@ -112,7 +113,7 @@ const AuthProvider: React.FC<ChildrenType> = ({ children }:ChildrenType) => {
     if (response?.type === "success"&& response.authentication){
       const axiosClient = await createAxiosClient()
       const res = await axiosClient?.post(
-        '/api/user/auth/google', 
+        '/api/user/auth/google',
         { accessToken: response.authentication.accessToken}
       )
       if(!res){
@@ -131,30 +132,20 @@ const AuthProvider: React.FC<ChildrenType> = ({ children }:ChildrenType) => {
     }
   }
 
-  async function appleLogin() {
+  async function appleLogin(credential: AppleAuthentication.AppleAuthenticationCredential) {
     try {
-      const appleAuthRequestResponse = await appleAuth.performRequest({
-        requestedOperation: appleAuth.Operation.LOGIN,
-        requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL]
+      const axiosClient = await createAxiosClient()
+      const response = await axiosClient?.post('/api/user/auth/apple', {
+        username: credential.fullName?.familyName + ' ' + credential.fullName?.givenName,
+        identityToken: credential.identityToken,
       })
-      const credentialState = await appleAuth.getCredentialStateForUser(appleAuthRequestResponse.user)
-      if (credentialState === appleAuth.State.AUTHORIZED) {
-        const axiosClient = await createAxiosClient()
-        const res = await axiosClient?.post('/api/user/auth/apple', {
-          username: appleAuthRequestResponse.fullName,
-          email: appleAuthRequestResponse.email,
-          appleId: appleAuthRequestResponse.authorizationCode
-        })
-        await saveToken("accessToken", res?.data.accessToken)
-        await saveToken("refreshToken", res?.data.refreshToken)
-        setIsLoggedIn(true)
-        setUser(res?.data.user)
-        Alert.alert('ログインしました。')
-        onTabPress('myPage')
-        router.replace('/user/myPage')
-      } else {
-        Alert.alert("Apple認証に失敗しました")
-      }
+      await saveToken("accessToken", response?.data.accessToken)
+      await saveToken("refreshToken", response?.data.refreshToken)
+      setIsLoggedIn(true)
+      setUser(response?.data.user)
+      Alert.alert('ログインしました。')
+      onTabPress('myPage')
+      router.replace('/user/myPage')
     } catch {
       Alert.alert("Appleログインができませんでした")
     }

@@ -1,4 +1,4 @@
-import { TouchableOpacity, StyleSheet, Text } from 'react-native'
+import { TouchableOpacity, StyleSheet, Text, Platform } from 'react-native'
 import { router } from 'expo-router'
 import { Entypo, FontAwesome6, Foundation, Fontisto } from '@expo/vector-icons'
 import { useTab } from '../../context/tabContext'
@@ -14,11 +14,12 @@ interface Props {
 export default function Tab(prop:Props) {
     const {name, title, select, onTabPress, children} = prop
     const { selectedTab } = useTab()
+    const deviceOS = Platform.OS
     const styles = StyleSheet.create({
         tabBox: {
             width: '25%',
             backgroundColor: select?'#fede9d':'orange',
-            paddingVertical: 4
+            paddingVertical: deviceOS === 'android' ? 4 : 20
         },
         imageStyle: {
             textAlign: 'center'
@@ -37,10 +38,10 @@ export default function Tab(prop:Props) {
 
     return (
         <>
-          <TouchableOpacity 
-              key={name} 
+          <TouchableOpacity
+              key={name}
               style={styles.tabBox}
-              onPress={()=>linkFun(name)}    
+              onPress={()=>linkFun(name)}
           >
               {name==='home'&&
                   <Entypo name="home" size={20} color='white' style={styles.imageStyle} />

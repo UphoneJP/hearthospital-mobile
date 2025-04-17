@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import { Alert, Animated, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Alert, Animated, StyleSheet, Text, TouchableOpacity, View, Platform } from "react-native"
 import { useContext, useEffect, useRef, useState } from "react"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import { MenuContext } from "@/src/context/menuContext"
@@ -31,7 +31,7 @@ export default function Home() {
   const { user } = useContext(AuthContext)
   const { onTabPress } = useTab()
   const fadeAnim = useRef(new Animated.Value(0)).current
-  const translateAnim = useRef(new Animated.Value(0)).current 
+  const translateAnim = useRef(new Animated.Value(0)).current
   const textFadeAnim = useRef(new Animated.Value(0)).current
   const heartonOpacity = useRef(new Animated.Value(0)).current
   const heartonMoveX = useRef(new Animated.Value(0)).current
@@ -43,7 +43,7 @@ export default function Home() {
     async function checkFirstLaunch () {
       // const isFirstLaunchDone = await getToken('dammy') // ダミーコード
       const isFirstLaunchDone = await getToken('isFirstLaunchDone')
-      
+
       if (!isFirstLaunchDone) {
         // 6秒後にTipsを表示
         setTimeout(async()=>{
@@ -52,7 +52,14 @@ export default function Home() {
 
         try {
           // デバイスIDを取得してHmacを生成してサーバーに送信
-          const deviceId = Application.getAndroidId()
+          let deviceId: string
+          if (Platform.OS === "android") {
+            deviceId = Application.getAndroidId() || "testDeviceId"
+          } else if (Platform.OS === "ios") {
+            deviceId = await Application.getIosIdForVendorAsync() || "testDeviceId"
+          } else {
+            deviceId = "testDeviceId"
+          }
           const timestamp = new Date().getTime()
 
           // 署名生成
@@ -78,7 +85,8 @@ export default function Home() {
           await saveToken('apiKey', decoded.apiKey)
           await saveToken('JWTSecret', decoded.JWTSecret)
           await saveToken('isFirstLaunchDone', 'true')
-        } catch {
+        } catch(err) {
+          console.log('初期通信エラー: ', err)
           Alert.alert('エラーが発生しました。データベースへアクセスできません。')
         }
       }
@@ -189,13 +197,21 @@ export default function Home() {
           delay: 300,
           useNativeDriver: true
         })
-      ]) 
+      ])
     ]).start()
   }, [fadeAnim, translateAnim, textFadeAnim])
 
   return (
     <BackgroundTemplate>
 
+      <TouchableOpacity
+        style={{position: 'absolute', bottom: '15%', left: '10%'}}
+        onPress={()=>setShowTips(true)}
+      >
+        <Animated.View style={[styles.textContainer, { opacity: textFadeAnim }]}>
+          <Text style={{color: 'white', backgroundColor: 'orange', paddingBottom: 8, paddingTop: 6, paddingHorizontal: 16, borderRadius: 16 }}>アプリの使い方</Text>
+        </Animated.View>
+      </TouchableOpacity>
       {showTips&&
         <Tips setShowTips={setShowTips} />
       }
@@ -223,7 +239,7 @@ export default function Home() {
       <View style={{padding:50}} />
 
       {!menuVisible&&!showTips&&
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.heartonBack}
           onPress={()=>{
            if(user){
@@ -250,7 +266,7 @@ export default function Home() {
                 { translateX: heartonMoveX },
                 { translateY: heartonMoveY },
                 { rotate: heartonRotate.interpolate({
-                  inputRange: [-3, 0, 3], 
+                  inputRange: [-3, 0, 3],
                   outputRange: ["-3deg", "0deg", "3deg"]
                 })}
               ]
@@ -259,7 +275,7 @@ export default function Home() {
           />
         </TouchableOpacity>
       }
-        
+
     </BackgroundTemplate>
   )
 }

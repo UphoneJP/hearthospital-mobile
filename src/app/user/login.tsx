@@ -27,13 +27,8 @@ export default function Login () {
       <GoogleLogin />
 
       {/* appleログイン */}
-      {Platform.OS === 'ios' && (
-        <>
-          <View style={{padding:8}}/>
-          <AppleLogin />
-        </>
-      )}
-      
+      {Platform.OS === 'ios' && <AppleLogin />}
+
       {/* デバイダー */}
       <View style={styles.divider} />
 
@@ -45,7 +40,7 @@ export default function Login () {
       <View style={{position: 'absolute', bottom: 0}}>
         <BannerAds />
       </View>
-      
+
     </BackgroundTemplate>
   )
 }
@@ -60,6 +55,6 @@ const styles = StyleSheet.create({
   link: {
     textDecorationLine: 'underline',
     color: 'blue',
-    marginVertical: 16
+    marginVertical: 0
   }
 })

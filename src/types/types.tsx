@@ -8,6 +8,7 @@ interface pointType {
 interface userType {
   _id: string,
   googleId: string,
+  appleUserId: string,
   username: string,
   penName: string,
   email: string,

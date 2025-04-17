@@ -65,11 +65,11 @@ export default function Tips({setShowTips}: {setShowTips: (value: boolean) => vo
       {/* Skip */}
       <TouchableOpacity style={styles.skip} onPress={() => setShowTips(false)}>
         <MaterialCommunityIcons name="skip-forward" size={24} color="gray" />
-        <Text style={{color: 'gray'}}>説明を省略する</Text>
+        <Text style={{color: 'gray', alignSelf: 'center'}}>説明を省略する</Text>
       </TouchableOpacity>
 
       {/* ハートン */}
-      <Animated.Image 
+      <Animated.Image
         source={imagesOfHearton[tipsNum]}
         style={[ styles.hearton, {opacity: fadeImage} ]}
       />
@@ -90,12 +90,12 @@ export default function Tips({setShowTips}: {setShowTips: (value: boolean) => vo
             :tipsNum===5?
               'あと、右上に可動式のメニューボタンがあるよ。ここからアカウント作成や、お問い合わせ、お知らせ等を見ることができるんだ。ログインすると、【ポイ活】もできるし、チャットで連絡も取り合えるよ。アカウントを作って、機能をフルに使いこなそう!!'
             :tipsNum===6?
-              '説明はこれでおしまいだよ。あなたの投稿はきっとみんなの力になるから、ぜひ投稿してね。ハートンとの約束だよ!!それじゃあ、またね!!'
+              '説明はこれでおしまいだよ。口コミの投稿でポイントをたくさん獲得できるし、あなたの投稿はきっとみんなの力になるから、ぜひ投稿してね。ハートンとの約束だよ!!'
             :''
           }
         </Text>
         <View style={styles.bottom}>
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => setTipsNum(prev => prev - 1)}
             disabled={tipsNum===0}
           >
@@ -111,13 +111,13 @@ export default function Tips({setShowTips}: {setShowTips: (value: boolean) => vo
       </Animated.View>
 
       {/* pointer */}
-      {tipsNum < 5 && 
-        <MaterialCommunityIcons 
-          name="hand-pointing-down" 
-          size={48} 
+      {tipsNum < 5 &&
+        <MaterialCommunityIcons
+          name="hand-pointing-down"
+          size={48}
           color="red"
-          style={[styles.pointer, { 
-            left: 
+          style={[styles.pointer, {
+            left:
               tipsNum===1?'8%'
               :tipsNum===2?'32%'
               :tipsNum===3?'57%'
@@ -127,15 +127,14 @@ export default function Tips({setShowTips}: {setShowTips: (value: boolean) => vo
         />
       }
       {tipsNum===5 &&
-        <MaterialCommunityIcons 
-          name="hand-pointing-right" 
-          size={48} 
+        <MaterialCommunityIcons
+          name="hand-pointing-right"
+          size={48}
           color="red"
-          style={{position: 'absolute', right: 96, top: 72}}  
+          style={{position: 'absolute', right: 96, top: 72}}
         />
       }
-      
-      
+
     </Animated.View>
   )
 }
@@ -162,8 +161,8 @@ const styles = StyleSheet.create({
     borderRadius: 16
   },
   hearton: {
-    width: 200, 
-    height: 200, 
+    width: 200,
+    height: 200,
     objectFit: 'contain'
   },
   textBox: {
@@ -178,14 +177,14 @@ const styles = StyleSheet.create({
     padding: 32,
     overflow: 'visible'
   },
-  bottom: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-around', 
-    marginBottom: 16 
+  bottom: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 16
   },
-  pointer: { 
-    position: 'absolute', 
-    bottom: 12 
+  pointer: {
+    position: 'absolute',
+    bottom: 12
   }
 })
 const imagesOfHearton = [

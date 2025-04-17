@@ -3,7 +3,7 @@ export default{
     name: "hearthospital-mobile",
     slug: "hearthospital-mobile",
     scheme: "jp.hearthospital",
-    version: "1.1.6",
+    version: "1.1.8",
     orientation: "portrait",
     icon: "./assets/icon(1024x1024).png",
     splash: {
@@ -15,7 +15,7 @@ export default{
     newArchEnabled: true,
     ios: {
       bundleIdentifier: "jp.hearthospital",
-      buildNumber: "1.1.6",
+      buildNumber: "1.1.8",
       supportsTablet: false,
       config: {
         googleMapsApiKey: process.env.GOOGLE_MAP_API_KEY_FOR_IOS
@@ -27,7 +27,7 @@ export default{
     },
     android: {
       package: "jp.hearthospital",
-      versionCode: 16,
+      versionCode: 18,
       permissions: [],
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive(432x432).png",
@@ -46,7 +46,8 @@ export default{
       hidden: true
     },
     plugins: [
-       "expo-router",
+       'expo-router',
+       'expo-apple-authentication',
       [
         'expo-tracking-transparency',
         {

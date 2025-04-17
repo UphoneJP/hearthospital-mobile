@@ -3,9 +3,10 @@ import { useContext, useEffect } from "react"
 import { router } from "expo-router"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import RegisterBox from "@/src/components/user/RegisterBox"
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import GoogleLogin from "@/src/components/OAuth/GoogleLogin"
 import BannerAds from "@/src/components/template/BannerAds"
+import AppleLogin from "@/src/components/OAuth/AppleLogin"
 
 export default function Register () {
   const { isLoggedIn } = useContext(AuthContext)
@@ -25,7 +26,10 @@ export default function Register () {
 
       {/* Googleログイン */}
       <GoogleLogin />
-      
+
+      {/* appleログイン */}
+      {Platform.OS === 'ios' && <AppleLogin />}
+
       {/* デバイダー */}
       <View style={styles.divider} />
 
@@ -37,7 +41,7 @@ export default function Register () {
       <View style={{position: 'absolute', bottom: 0}}>
         <BannerAds />
       </View>
-      
+
     </BackgroundTemplate>
   )
 }
@@ -52,6 +56,6 @@ const styles = StyleSheet.create({
   link: {
     textDecorationLine: 'underline',
     color: 'blue',
-    marginVertical: 16
+    marginVertical: 4
   }
 })
