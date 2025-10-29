@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from "react"
-import { StyleSheet, Text } from "react-native"
-import { Card } from "@rneui/themed"
+import { StyleSheet, Text, View } from "react-native"
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { AuthContext } from "@/src/context/loginContext"
 import EarningPoints from "../template/EarningPoints"
+import CustomCard from "../parts/CustomCard"
 
 export default function PointsGet () {
   const { user } = useContext(AuthContext)
@@ -29,11 +29,13 @@ export default function PointsGet () {
   }, [user?.timeOfGotPoint])
 
   return (
-    <Card containerStyle={{borderRadius: 16}}>
-      <Card.Title style={{color: 'orange'}}>
-        <MaterialCommunityIcons name="numeric-1-box" size={20} />
-        ハートポイントをGET
-      </Card.Title>
+    <CustomCard>
+      <View style={{flexDirection: 'row'}}>
+        <MaterialCommunityIcons name="numeric-1-box" size={20} color="orange" />
+        <Text style={{ color: 'orange' }}>
+          ハートポイントをGET
+        </Text>
+      </View>
       {!user?.points.length || canWatchAd ? (
         <EarningPoints />
       ) : (
@@ -42,7 +44,7 @@ export default function PointsGet () {
           <Text style={styles.remainingTime}>{hours}時間 {minutes}分 {seconds}秒</Text>            
         </>
       )}
-    </Card>
+    </CustomCard>
   )
 }
 const styles = StyleSheet.create({

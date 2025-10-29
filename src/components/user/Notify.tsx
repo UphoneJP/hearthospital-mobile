@@ -3,10 +3,12 @@ import { RadioButton } from 'react-native-paper'
 import { useContext, useEffect, useState } from "react"
 import createAxiosClient from "@/utils/axiosClient"
 import { AuthContext } from "../../context/loginContext"
+import { LoadingContext } from "@/src/context/loadingContext"
 
 export default function Notify () {
   const [checked, setChecked] = useState('notify')
   const { user } = useContext(AuthContext)
+  const { setServerLoading } = useContext(LoadingContext)
 
   useEffect(()=>{
     if(!user?.notify){
@@ -17,6 +19,7 @@ export default function Notify () {
   async function changeToNotify () {
     if(checked === 'notify') return
     try {
+      setServerLoading(true)
       const axiosClient = await createAxiosClient()
       const response = await axiosClient?.get(`/api/user/${user?._id}/notifyTrue`)
       if(response?.data.success){
@@ -26,11 +29,13 @@ export default function Notify () {
     } catch {
       Alert.alert('エラーが発生しました')
     }
+    setServerLoading(false)
   }
 
   async function changeToNotNotify () {
     if(checked === 'not-notify') return
     try {
+      setServerLoading(true)
       const axiosClient = await createAxiosClient()
       const response = await axiosClient?.get(`/api/user/${user?._id}/notifyFalse`)
       if(response?.data.success){
@@ -40,6 +45,7 @@ export default function Notify () {
     } catch {
       Alert.alert('エラーが発生しました')
     }
+    setServerLoading(false)
   }
 
   return (

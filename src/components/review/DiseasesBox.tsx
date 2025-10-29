@@ -33,15 +33,15 @@ export default function DiseasesBox({diseases, setInputVal, func}:PropsType) {
 }
 const styles = StyleSheet.create({
   diseaseBox: {
-    width: '100%',
+    width: '98%',
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-evenly',
     gap: 1,
-    padding: 2,
-    marginHorizontal: 2,
-    marginBottom: 8,
-    borderWidth: 2,
+    padding: 4,
+    marginHorizontal: 'auto',
+    marginBottom: 24,
+    borderWidth: 4,
     borderColor: '#555555'
   },
   diseaseButton: {

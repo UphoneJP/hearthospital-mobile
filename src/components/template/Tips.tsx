@@ -99,11 +99,11 @@ export default function Tips({setShowTips}: {setShowTips: (value: boolean) => vo
             onPress={() => setTipsNum(prev => prev - 1)}
             disabled={tipsNum===0}
           >
-            <Text style={{color: tipsNum===0?'transparent':'gray'}}>戻る</Text>
+            <Text style={{color: tipsNum===0?'transparent':'gray', paddingHorizontal:32, paddingVertical:16}}>戻る</Text>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={handleNext}>
-            <Text style={{color: 'orange'}}>
+            <Text style={{color: 'orange', paddingHorizontal:32, paddingVertical:16}}>
               {tipsNum!==6?'次へ':'アプリをスタート'}
             </Text>
           </TouchableOpacity>
@@ -174,7 +174,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 16
   },
   text: {
-    padding: 32,
+    paddingHorizontal: 32,
+    paddingTop: 32,
+    paddingBottom: 8,
     overflow: 'visible'
   },
   bottom: {

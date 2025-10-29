@@ -3,19 +3,21 @@ import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import { AuthContext } from "@/src/context/loginContext"
 import { useContext, useEffect, useState } from "react"
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import { Card } from "@rneui/themed"
 import { ScrollView } from "react-native-gesture-handler"
-import RaisedButton from "@/src/components/parts/RaisedButton"
 import createAxiosClient from "@/utils/axiosClient"
 import { router } from "expo-router"
 import { useTab } from "@/src/context/tabContext"
 import { getToken, deleteToken } from "@/utils/secureStore"
+import { LoadingContext } from "@/src/context/loadingContext"
+import CustomCard from "@/src/components/parts/CustomCard"
+import CustomButton from "@/src/components/parts/CustomButton"
 
 
 export default function Form(){
   const { user } = useContext(AuthContext)
   const [formContent, setFormContent] = useState<string>('')
   const { onTabPress } = useTab()
+  const { setServerLoading } = useContext(LoadingContext)
 
   useEffect(()=>{
     (async () => {
@@ -26,6 +28,7 @@ export default function Form(){
 
   async function sendFun(){
     try {
+      setServerLoading(true)
       const axiosClient = await createAxiosClient()
       await axiosClient?.post('/api/others/form', {
         formContent,
@@ -34,9 +37,11 @@ export default function Form(){
       Alert.alert('問い合わせを送信いたしました。ご返答をお待ちください。')
       deleteToken('form')
       onTabPress('home')
+      setServerLoading(false)
       router.replace('/t-home')
     } catch {
       Alert.alert('エラーで送信できませんでした')
+      setServerLoading(false) 
     }
   }
 
@@ -48,9 +53,9 @@ export default function Form(){
           <Text style={styles.username}>
             {user.penName||user.username}さん: ログイン中
           </Text>
-          <Card containerStyle={styles.card}>
-            <Text style={styles.tips}>
-              アプリの未熟なところや運営において様々なお気づきの点が多数あるかと思います。一つ一つ改善していきますので、多くのご意見をお待ちしております。また、アプリの改良アイデアをいただけると嬉しいです。アプリ内のダイレクトメッセージにて返答いたします。数日お時間を頂きますのでご了承ください。
+          <CustomCard>
+            <Text>
+              アプリの未熟なところや運営において様々なお気づきの点が多数あるかと思います。一つ一つ改善していきますので、多くのご意見をお待ちしています。数日以内にアプリ内のダイレクトメッセージにて返答いたします。
             </Text>
             <CustomInput 
               label="お問い合わせ内容"
@@ -60,18 +65,17 @@ export default function Form(){
               multiline={true}
               sessionName="form"
             />
-          </Card>
-          <RaisedButton
+          </CustomCard>
+          <CustomButton
             title="送信"
-            color="green"
-            disabled={formContent?false:true}
-            styleChange={styles.button}
+            color={formContent?"orange":"#dddddd"}
+            disabledFun={formContent?false:true}
             fun={sendFun}
           />
         </ScrollView>
       ):(
         <>
-          <Text style={{marginBottom: 8}}>
+          <Text style={{marginBottom: 16}}>
             お問い合わせには
             <TouchableOpacity onPress={()=>{
               onTabPress('login')
@@ -81,15 +85,16 @@ export default function Form(){
             </TouchableOpacity>
             が必要です。
           </Text>
-          <Text style={{marginBottom: 8}}>
-            また、返答はいたしかねますが、お気付きの点があれば
+          <Text style={{marginHorizontal: 32, textAlign: 'center'}}>
+            また、ログイン不要の
             <TouchableOpacity onPress={()=>{
               onTabPress('feedback')
               router.push('/others/feedback')
             }}>
               <Text style={styles.link}>フィードバック</Text>
             </TouchableOpacity>
-            にてお知らせいただけると幸いです。
+            にて、お気付きの点をお知らせください。
+            （※フィードバックでは送信者を特定できないため返信はいたしません）
           </Text>
           <View style={{padding: 64}}/>
         </>

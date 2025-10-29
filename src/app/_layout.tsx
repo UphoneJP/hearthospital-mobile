@@ -6,25 +6,28 @@ import { AuthProvider } from "../context/loginContext"
 import { MessageProvider } from "../context/messageContext"
 import { MenuProvider } from "../context/menuContext"
 import CustomHeader from '../components/template/CustomHeader'
+import { LoadingProvider } from '../context/loadingContext'
 
 export default function Layout() {
   const deviceOS = Platform.OS
 
   return (
     <TabProvider>
-      <AuthProvider>
-        <MenuProvider>
-          <MessageProvider>
-            <Stack
-              screenOptions={{
-                headerShown: deviceOS === 'ios' ? true : false,
-                header: () => <CustomHeader />
-              }}
-            />
-            <StatusBar backgroundColor="orange" barStyle="light-content" />
-          </MessageProvider>
-        </MenuProvider>
-      </AuthProvider>
+      <LoadingProvider>
+        <AuthProvider>
+          <MenuProvider>
+            <MessageProvider>
+                <Stack
+                  screenOptions={{
+                    headerShown: deviceOS === 'ios' ? true : false,
+                    header: () => <CustomHeader />
+                  }}
+                />
+                <StatusBar backgroundColor="orange" barStyle="light-content" />
+            </MessageProvider>
+          </MenuProvider>
+        </AuthProvider>
+      </LoadingProvider>
     </TabProvider>
   )
 }

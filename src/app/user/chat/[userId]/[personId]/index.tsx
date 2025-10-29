@@ -6,44 +6,36 @@ import MessageHeader from "@/src/components/chatRoom/MessageHeader"
 import MessageForm from "@/src/components/chatRoom/MessageForm"
 import Messsages from "@/src/components/chatRoom/Messages"
 import { UnReadMessagesContext } from "@/src/context/messageContext"
-import { ActivityIndicator, Alert, Text } from "react-native"
+import { Alert, Text } from "react-native"
+import { LoadingContext } from "@/src/context/loadingContext"
 
 export default function ChatRoom(){
   const userId = useSearchParams().get('userId')
   const personId = useSearchParams().get('personId')
   const [recieverName, setRecieverName] = useState<string>('')
-  const [loading, setLoading] = useState<boolean>(true)
+  const { serverLoading, setServerLoading } = useContext(LoadingContext)
   const { setMessages } = useContext(UnReadMessagesContext)
 
-  async function getMessages(){
-    try {
-      const axiosClient = await createAxiosClient()
-      const response = await axiosClient?.get(`/api/others/chat/${userId}/${personId}`)
-      setMessages(response?.data.messages)
-    } catch {
-      Alert.alert('エラーが発生し。メッセージデータを取得できませんでした')
-    }
-    finally {
-      setLoading(false)
-    }
-  }
-
-  async function getRecieverName(){
-    try {
-      const axiosClient = await createAxiosClient()
-      const response = await axiosClient?.get(`/api/others/chat/recieverName/${personId}`)
-      setRecieverName(response?.data.penName)
-    } catch {
-      Alert.alert('エラーが発生し。送信相手のデータを取得できませんでした')
-    }
-  }
-
   useEffect(()=>{
+    async function getMessages(){
+      setServerLoading(true)
+      try {
+        const axiosClient = await createAxiosClient()
+        const response = await axiosClient?.get(`/api/others/chat/${userId}/${personId}`)
+        setMessages(response?.data.messages)
+        setRecieverName(response?.data.penName)
+      } catch {
+        Alert.alert('エラーが発生し。メッセージデータを取得できませんでした')
+      }
+      finally {
+        setServerLoading(false)
+      }
+    }
+
     getMessages()
-    getRecieverName()
   }, [])
 
-  if(!userId&&!personId){
+  if(!userId || !personId ){
     return(
       <BackgroundTemplate>
         <Text>エラーが発生しました</Text>
@@ -51,32 +43,29 @@ export default function ChatRoom(){
     )
   }
 
-  if(loading){
-    return(
-      <BackgroundTemplate>
-        <ActivityIndicator size="large" color="orange" />
-        <Text>サーバーから読み込み中...</Text>
-      </BackgroundTemplate>
-    )
-  }
-
   return (
     <BackgroundTemplate>
 
-      <MessageHeader 
-        recieverName={recieverName}
-        personId={personId}
-      />
+      { !serverLoading && (
+        <>
+          <MessageHeader 
+            recieverName={recieverName}
+            personId={personId}
+          />
+    
+          <Messsages 
+            userId={userId}
+            personId={personId}
+          />
+    
+          <MessageForm
+            userId={userId}
+            personId={personId}
+          />
 
-      <Messsages 
-        userId={userId}
-        personId={personId}
-      />
+        </>
+      )}
 
-      <MessageForm
-        userId={userId}
-        personId={personId}
-      />
 
     </BackgroundTemplate>
   )

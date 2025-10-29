@@ -9,11 +9,10 @@ interface PropsType {
   multiline?: boolean
   id?: string
   sessionName: string
-  placeholder?: string
 }
 
 export default function CustomInput(prop:PropsType){
-  const { label, val, setVal, style, multiline=false, id, sessionName, placeholder } = prop
+  const { label, val, setVal, style, multiline=false, id, sessionName } = prop
 
   return (
     <TextInput
@@ -29,14 +28,14 @@ export default function CustomInput(prop:PropsType){
         }
       }}
       autoCapitalize="none"
-      activeOutlineColor="green"
-      outlineColor={val?"green":"gray"}
+      activeOutlineColor="orange"
+      outlineColor="orange"
       style={style}
       right={<TextInput.Icon icon="check" 
-        color={val.trim()===''?'transparent':'green'}        
+        color={val.trim()===''?'transparent':'orange'}        
       />}
       multiline={multiline}
-      placeholder={placeholder ? placeholder : ""}
+      theme={{ colors: { primary: 'orange', onSurfaceVariant: 'orange' } }}
     />
   )
 }

@@ -3,6 +3,7 @@ import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "rea
 import { AuthContext } from "@/src/context/loginContext"
 import { talkThemeType } from "@/src/types/types"
 import createAxiosClient from "@/utils/axiosClient"
+import { LoadingContext } from "@/src/context/loadingContext"
 
 interface PropsType {
   talkTheme: talkThemeType | undefined
@@ -13,6 +14,7 @@ interface PropsType {
 export default function Talks ({talkTheme, id, setNum}:PropsType) {
   const { user } = useContext(AuthContext)
   const talksLength = talkTheme?.talks?.length || 0
+  const {setServerLoading} = useContext(LoadingContext)
 
   function confirmFun(talkId: string) {
     Alert.alert(
@@ -26,10 +28,12 @@ export default function Talks ({talkTheme, id, setNum}:PropsType) {
   }
   async function deleteFun(talkId: string) {
     try {
+      setServerLoading(true)
       const axiosClient = await createAxiosClient()
       await axiosClient?.delete(`/api/talkingRoom/${id}/${talkId}/${user?._id}`)
       setNum(prev => prev + 1)
       Alert.alert('投稿を削除しました')
+      setServerLoading(false)
     } catch {
       Alert.alert('エラーにより削除できませんでした')
     }

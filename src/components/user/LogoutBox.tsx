@@ -1,9 +1,9 @@
 import { Alert, StyleSheet, View } from "react-native"
-import RaisedButton from "../parts/RaisedButton"
 import { router } from "expo-router"
 import { useContext } from "react"
 import { AuthContext } from "../../context/loginContext"
 import createAxiosClient from "@/utils/axiosClient"
+import CustomButton from "../parts/CustomButton"
 
 export default function LogoutBox ( ){
   const {logout, user} = useContext(AuthContext)
@@ -26,16 +26,16 @@ export default function LogoutBox ( ){
 
   return (
     <View style={styles.logoutBox}>
-      <RaisedButton 
+      <CustomButton 
         title='ログアウト' 
-        color='orange'
+        color='gray'
         fun={()=>{
           logout()
           router.replace('/user/login')
         }}
-        styleChange={styles.RaisedButton}
+        style={{width: '50vw', paddingVertical: 4}}
       />
-      <RaisedButton 
+      <CustomButton 
         title='アカウント削除' 
         color='red'
         fun={()=>{
@@ -48,7 +48,7 @@ export default function LogoutBox ( ){
             ]
           )
         }}
-        styleChange={styles.RaisedButton}
+        style={{width: '50vw', paddingVertical: 4}}
       />
     </View>
   )

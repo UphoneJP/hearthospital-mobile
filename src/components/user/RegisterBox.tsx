@@ -1,9 +1,10 @@
-import { Card, Input } from '@rneui/themed'
+import { TextInput, Divider, Button } from 'react-native-paper'
 import { useContext, useState } from 'react'
-import RaisedButton from '../parts/RaisedButton'
 import { AuthContext } from '@/src/context/loginContext'
-import { ActivityIndicator, StyleSheet } from 'react-native'
+import { Keyboard, StyleSheet, Text } from 'react-native'
 import EmailInputForm from './EmailInputForm'
+import { LoadingContext } from '@/src/context/loadingContext'
+import CustomCard from '../parts/CustomCard'
 
 export default function RegisterBox(){
   const [penName, setPenName] = useState<string>('')
@@ -12,23 +13,31 @@ export default function RegisterBox(){
   const [answer, setAnswer] = useState<string>('')
   const [expire, setExpire] = useState<number>(0)
   const [password, setPassword] = useState<string>('')
-  const [loading, setLoading] = useState<boolean>(false)
   const { register } = useContext(AuthContext)
+  const { serverLoading } = useContext(LoadingContext)
+  const buttonColor = email.length > 0 && password.length > 0 ? 'orange' : '#dddddd'
 
   return(
-    <Card containerStyle={styles.card}>
-
-      <Card.Title style={{fontSize: 16}}>
-        新規HeartHospitalアカウント登録
-      </Card.Title>
+    <CustomCard>
+      <>
+        <Text style={styles.title}>
+          新規HeartHospitalアカウント登録
+        </Text>
+      </>
       
-      <Card.Divider />
+      <Divider />
 
-      <Input
-        placeholder='ペンネーム'
+      <TextInput
+        label={penName.length > 0 ? 'ペンネーム' : 'ペンネームを入力'}
+        mode="outlined"
         value={penName}
         onChangeText={(text:string)=>setPenName(text)}
         autoCapitalize="none"
+        outlineStyle={{borderColor: 'orange', backgroundColor: 'white'}}
+        contentStyle={{color: 'orange'}}
+        theme={{ colors: { primary: 'orange', onSurfaceVariant: 'orange' } }}
+        style={{marginTop: 8}}
+        right={penName.length > 0 ? <TextInput.Icon icon="check" color="orange" /> : null}
       />
       
       <EmailInputForm
@@ -39,47 +48,56 @@ export default function RegisterBox(){
         setAnswer={setAnswer}
         setExpire={setExpire}
       />
-      
-      <Input 
-        placeholder="パスワード" 
+
+      <TextInput
+        label={password.length > 0 ? 'パスワード' : 'パスワードを入力'}
+        mode="outlined"
         value={password}
-        onChangeText={(text)=>setPassword(text)}
+        onChangeText={(text:string)=>setPassword(text)}
         autoCapitalize="none"
-        secureTextEntry={true}
+        keyboardType="email-address"
         textContentType="password"
+        outlineStyle={{borderColor: 'orange', backgroundColor: 'white'}}
+        contentStyle={{color: 'orange'}}
+        theme={{ colors: { primary: 'orange', onSurfaceVariant: 'orange' } }}
+        style={{marginBottom: 16}}
+        secureTextEntry={true}
+        right={password.length > 0 ? <TextInput.Icon icon="check" color="orange" /> : null}
       />
 
-      <RaisedButton 
-        title={loading? <ActivityIndicator size='small' color='orange'/> : '新規ユーザー登録' }
-        color='orange'
-        fun={()=>{
-          if(!penName || !email || !password) return
-          setLoading(true)
-          register(penName, email, password, setLoading)
+      <Button
+        style={{
+          borderColor: 'white',
+          marginHorizontal: 40, 
+          marginTop: 8
         }}
-        styleChange={styles.button}
+        mode="outlined"
+        labelStyle={{ color: 'white' }}
+        onPress={()=>{
+          Keyboard.dismiss()
+          register(penName, email, password)
+        }}
         disabled={
           penName
           &&email
           &&authNum===answer
           &&Date.now() < expire
           &&password
-          &&!loading
-          ? false : true }
-      />
+          &&!serverLoading
+          ? false : true 
+        }
+        contentStyle={{backgroundColor: buttonColor}}
+      >
+        新規ユーザー登録
+      </Button>
 
-    </Card>
+    </CustomCard>
   )
 }
 const styles = StyleSheet.create({
-  card: {
-    width: '90%',
-    padding: 24,
-    borderWidth: 0,
-    borderColor: 'transparent',
-    borderRadius: 30
-  },
-  button: {
-    marginHorizontal: 40
-  }  
+  title: { 
+    fontSize: 16, 
+    textAlign: 'center', 
+    marginBottom: 16 
+  }
 })

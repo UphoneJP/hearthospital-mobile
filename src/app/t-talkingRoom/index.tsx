@@ -1,60 +1,67 @@
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { StyleSheet, TouchableOpacity, View } from "react-native"
-import { ActivityIndicator, Alert, ScrollView } from "react-native"
-import { PaperProvider, Text } from 'react-native-paper'
+import { ScrollView } from "react-native"
+import { Text } from 'react-native-paper'
 
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import { talkThemeType } from "@/src/types/types"
 import createAxiosClient from "@/utils/axiosClient"
-import NewTalkThemeBox from "@/src/components/review/NewTalkThemeBox"
 import TalkThemes from "@/src/components/review/TalkThemes"
 import BannerAds from "@/src/components/template/BannerAds"
+import { router } from "expo-router"
+import { AuthContext } from "@/src/context/loginContext"
+import CustomDialog from "@/src/components/parts/CustomDialog"
+import { LoadingContext } from "@/src/context/loadingContext"
 
 export default function TalkingRoom () {
-  const [loading, setLoading]= useState<boolean>(true)
   const [talkThemes, setTalkThemes] = useState<talkThemeType[]>([])
-  const [dialogVisible, setDialogVisible] = useState<boolean>(false)  
   const [num, setNum] = useState<number>(0)
-  function showDialog() { setDialogVisible(true) }
+  const [dialogVisible, setDialogVisible] = useState<boolean>(false)
+  const { user } = useContext(AuthContext)
+  const {serverLoading, setServerLoading} = useContext(LoadingContext)
+  const {backToHome} = useContext(AuthContext)
+
   
   useEffect(()=>{
     async function fetchTalkThemes(){
+      setServerLoading(true)
       try {
         const axiosClient = await createAxiosClient()
         const response = await axiosClient?.get('/api/talkingRoom')
         setTalkThemes(response?.data.talkThemes)
       } catch {
-        Alert.alert('データを取得できませんでした。')
+        await backToHome()
       }
     }
     fetchTalkThemes()
   }, [num])
 
   useEffect(() => {
-    if(talkThemes && talkThemes.length !== 0) { setLoading(false) }
+    if(talkThemes && talkThemes.length !== 0) { setServerLoading(false) }
   }, [talkThemes])
 
   return (
-    <PaperProvider>
-      <BackgroundTemplate>
-        <Text style={styles.headerTitle}>おしゃべり場</Text>
-        <TouchableOpacity onPress={showDialog}>
-          <Text style={styles.create}>新しいトークテーマを作る</Text>
-        </TouchableOpacity>
+    <BackgroundTemplate>
+      
+      {!serverLoading && (
+        <>
+          <Text style={styles.headerTitle}>おしゃべり場</Text>
+          <TouchableOpacity 
+            onPress={() => {
+              if(!user) { 
+                setDialogVisible(true)
+              } else {
+                router.push('/t-talkingRoom/createNewTheme')
+              }
+            }}
+          >
+            <Text style={styles.create}>新しいトークテーマを作る</Text>
+          </TouchableOpacity>
+          <CustomDialog
+            dialogVisible={dialogVisible}
+            setDialogVisible={setDialogVisible}
+          />
 
-        <NewTalkThemeBox
-          dialogVisible={dialogVisible}
-          setDialogVisible={setDialogVisible}
-          setNum={setNum}
-        />
-
-        {loading ? (
-          <View style={{flex: 1, justifyContent: 'center'}}>
-            <ActivityIndicator size="large" color="orange" />
-            <Text style={{textAlign: 'center'}}>サーバーから読み込み中...</Text>
-            <View style={{padding: 64}} />
-          </View>
-        ) : (
           <ScrollView 
             style={styles.scrollBox} 
             contentContainerStyle={styles.scrollContent}
@@ -65,14 +72,13 @@ export default function TalkingRoom () {
             />
             <View style={{padding: 64}} />
           </ScrollView>
-        )}
-
-        
-        <View style={{position: 'absolute', bottom: 0}}>
-          <BannerAds />
-        </View>
-      </BackgroundTemplate>
-    </PaperProvider>
+        </>
+      )}
+      
+      <View style={{position: 'absolute', bottom: 0}}>
+        <BannerAds />
+      </View>
+    </BackgroundTemplate>
   )
 }
 const styles = StyleSheet.create({

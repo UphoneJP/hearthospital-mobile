@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import { Card, Divider } from "@rneui/themed"
+import { Divider } from "react-native-paper"
 import { useState } from "react"
 import { Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { Entypo } from '@expo/vector-icons'
@@ -29,7 +29,7 @@ export default function Topic (prop: PropsType) {
             {date}
           </Text>
 
-          <Divider inset={true} insetType="middle" />
+          <Divider />
           
           <View style={styles.titleBox}>
             <Text style={[styles.title, {color: textColor}]}>{title}</Text>
@@ -62,7 +62,7 @@ export default function Topic (prop: PropsType) {
                 <Image source={heartonAssets[backImageNum]} style={styles.hearton}/>
               </View>
               
-              <Card.Divider/>
+              <Divider/>
               
               <View style={{flex: 1}}>
                 <Text style={{marginHorizontal: 16}}>

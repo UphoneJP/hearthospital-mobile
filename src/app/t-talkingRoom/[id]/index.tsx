@@ -1,6 +1,6 @@
 import { useSearchParams } from "expo-router/build/hooks"
-import { useEffect, useState } from "react"
-import { ActivityIndicator, Alert, StyleSheet, Text } from "react-native"
+import { useContext, useEffect, useState } from "react"
+import { StyleSheet, Text } from "react-native"
 
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import AddButton from "@/src/components/parts/AddButton"
@@ -9,39 +9,35 @@ import createAxiosClient from "@/utils/axiosClient"
 import TalkForm from "@/src/components/review/TalkForm"
 import Talks from "@/src/components/review/Talks"
 import BannerAds from "@/src/components/template/BannerAds"
+import { LoadingContext } from "@/src/context/loadingContext"
+import { AuthContext } from "@/src/context/loginContext"
 
 export default function eachTheme() {
   const [talkTheme, setTalkTheme] = useState<talkThemeType|undefined>(undefined)
   const [inputVisible, setInputVisible] = useState<boolean>(false)
   const [addButtonVisible, setAddButtonVisible] = useState<boolean>(true)
-  const [loading, setLoading] = useState<boolean>(true)
   const [num, setNum] = useState<number>(0)
+  const {setServerLoading} = useContext(LoadingContext)
+  const {backToHome} = useContext(AuthContext)
 
   const params = useSearchParams()
   const id = params.get('id')
   
   useEffect(()=>{
     async function fetchTalkTheme(){
+      setServerLoading(true)
       try {
         const axiosClient = await createAxiosClient()
         const response = await axiosClient?.get(`/api/talkingRoom/${id}`)
         setTalkTheme(response?.data.talkTheme)
-        setLoading(false)
+        // setLoading(false)
       } catch {
-        Alert.alert('データが取得できませんでした。')
+        await backToHome('データが取得できませんでした。ホーム画面へ戻ります。')
       }
+      setServerLoading(false)
     }
     fetchTalkTheme()
   }, [num])
-
-  if(loading&&!talkTheme){
-    return (
-      <BackgroundTemplate>
-        <ActivityIndicator size="large" color="orange" />
-        <Text>サーバーから読み込み中...</Text>
-      </BackgroundTemplate>
-    )
-  }
 
   return (
     <BackgroundTemplate>

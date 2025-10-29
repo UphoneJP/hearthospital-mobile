@@ -8,8 +8,8 @@ import PenName from "@/src/components/user/PenName"
 import Promotion from "@/src/components/user/Promotion"
 import MyPageBox from "@/src/components/user/MyPageBox"
 import LogoutBox from "@/src/components/user/LogoutBox"
-import Password from "@/src/components/user/Password"
-import Notify from "@/src/components/user/Notify"
+// import Password from "@/src/components/user/Password"
+// import Notify from "@/src/components/user/Notify"
 import BannerAds from "@/src/components/template/BannerAds"
 import { pointType } from "@/src/types/types"
 
@@ -53,8 +53,8 @@ export default function MyPage () {
                   <Text selectable={true} style={{flex:1}}> {user?.email}</Text>
                 </View>
               
-                <Password />
-                <Notify />
+                {/* <Password /> */}
+                {/* <Notify /> */}
               
               </>
             </MyPageBox>

@@ -1,7 +1,7 @@
 import createAxiosClient from '@/utils/axiosClient'
-import { Input } from '@rneui/themed'
+import { TextInput } from 'react-native-paper'
 import { useState } from 'react'
-import { ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity } from 'react-native'
 
 interface PropsType {
   email: string
@@ -33,62 +33,62 @@ export default function EmailInputForm (prop: PropsType) {
 
   return (
     <>
-      <Input
-        placeholder='Emailアドレス'
+      <TextInput
+        label={email.length > 0 ? 'Emailアドレス' : 'Emailアドレスを入力'}
+        mode="outlined"
         value={email}
-        onChangeText={(text)=>setEmail(text)}
+        onChangeText={(text:string)=>setEmail(text)}
         autoCapitalize="none"
         keyboardType="email-address"
         textContentType="emailAddress"
-        style={{flex: 1}}
+        outlineStyle={{borderColor: sending? 'gray' : 'orange', backgroundColor: 'white'}}
+        contentStyle={{color: sending? 'gray' : 'orange'}}
+        theme={{ colors: { primary: 'orange', onSurfaceVariant: 'orange' } }}
+        style={{marginVertical: 16}}
+        right={email.length > 0 ? <TextInput.Icon icon="check" color="orange" /> : null}
         disabled={sending}
       />
 
-      <View style={styles.authNumBox}>
-        {/* 左側 */}
-        {sent?(
-          <Text style={styles.mailSent}>送信しました</Text>
-        ):(
-          <>
-            {sending? (
-              <ActivityIndicator color="white" style={styles.mailSendButton}/>
-            ) : (
-              <>
-                {/* ＠を入力したら送信ボタン出現 */}
-                {email.includes('@')&&
-                  <TouchableOpacity 
-                    disabled={!email.includes('@')} 
-                    onPress={sendEmailFun}
-                  >
-                    <Text style={styles.mailSendButton}>
-                      上記Eメールアドレスへ認証メールを送信
-                    </Text>
-                  </TouchableOpacity>
-                }
-              </>
-            )}
-          </>
-        )}
 
-        {/* 右側 */}
-        {sent &&
-          <TextInput 
-            placeholder='メールに記載された認証番号'
-            style={styles.authNumInput}
-            value={authNum}
-            onChangeText={(text)=>setAuthNum(text)}
-          />
-        }
-      </View>
+      {sent?(
+        <Text style={styles.mailSent}>認証メールを送信しました。</Text>
+      ):(
+        <>
+          {sending? (
+            <ActivityIndicator color="white" style={styles.mailSendButton}/>
+          ) : (
+            <>
+              {/* ＠を入力したら送信ボタン出現 */}
+              {email.includes('@')&&
+                <TouchableOpacity onPress={sendEmailFun}>
+                  <Text style={styles.mailSendButton}>
+                    上記Eメールアドレスへ認証メールを送信
+                  </Text>
+                </TouchableOpacity>
+              }
+            </>
+          )}
+        </>
+      )}
+
+      {sent &&
+        <TextInput 
+          label='メールに記載された認証番号'
+          mode="outlined"
+          style={{marginBottom: 16}}
+          value={authNum}
+          onChangeText={(text)=>setAuthNum(text)}
+          autoCapitalize="none"
+          contentStyle={{color: 'orange'}}
+          outlineStyle={{borderColor: 'orange', backgroundColor: 'white'}}
+          theme={{ colors: { primary: 'orange', onSurfaceVariant: 'orange' } }}
+          right={authNum.length > 0 ? <TextInput.Icon icon="check" color="orange" /> : null}
+        />
+      }
     </>
   )
 }
 const styles = StyleSheet.create({
-  authNumBox: {
-    marginBottom: 32, 
-    flexDirection: 'row', 
-    justifyContent: 'center'
-  },
   mailSendButton: {
     color: 'white',
     backgroundColor: 'orange',
@@ -97,29 +97,23 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     textAlign: 'center',
     borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'orange'
+    marginBottom: 16
   },
   mailSent: {
-    color: 'orange',
-    backgroundColor: 'white',
-    paddingVertical: 8,
-    width: 120,
+    color: 'red',
     textAlign: 'center',
-    borderTopLeftRadius: 8,
-    borderBottomLeftRadius: 8,
-    borderColor: 'orange',
-    borderWidth: 1
+    marginBottom: 8
   },
   authNumInput: {
     borderWidth: 4,
     flex: 1,
     padding: 0,
-    height: 38,
-    borderTopRightRadius: 8,
-    borderBottomRightRadius: 8,
+    borderRadius: 32,
     borderColor: 'orange',
-    textAlign: 'center'
+    textAlign: 'center',
+    marginBottom: 16,
+    marginTop: 16,
+    height: 48
   }
   
 })

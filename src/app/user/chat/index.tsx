@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react"
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from "react-native"
+import { Alert, ScrollView, StyleSheet, Text, View } from "react-native"
 import { router } from "expo-router"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import { AuthContext } from "@/src/context/loginContext"
@@ -9,19 +9,21 @@ import SearchFriend from "@/src/components/chatRoom/SearchFriend"
 import FriendsList from "@/src/components/chatRoom/FriendsList"
 import { UnReadMessagesContext } from "@/src/context/messageContext"
 import BannerAds from "@/src/components/template/BannerAds"
+import { LoadingContext } from "@/src/context/loadingContext"
 
 export default function Chat() {
   const { user } = useContext(AuthContext)
   const { setMessages } = useContext(UnReadMessagesContext)
-  const [loading, setLoading] = useState<boolean>(true)
   const [contactPersons, setContactPersons] = useState<contactPersonType[]|undefined>(undefined)
   const [usersExceptContactPersons, setUsersExceptContactPersons] = useState<usersExceptContactPersonsType[]>([])
+  const { serverLoading, setServerLoading } = useContext(LoadingContext)
 
   function handlePress(personId: string){
     router.push(`/user/chat/${user?._id}/${personId}`)
   }
 
   useEffect(()=>{
+    setServerLoading(true)
     setMessages([])
     async function fetchData(){
       if(!user)return
@@ -38,7 +40,7 @@ export default function Chat() {
   }, [])
 
   useEffect(()=>{
-    if(contactPersons)setLoading(false)
+    if(contactPersons)setServerLoading(false)
   }, [contactPersons])
 
   if(!user) return (
@@ -49,33 +51,28 @@ export default function Chat() {
 
   return(
     <BackgroundTemplate>
-      <Text style={styles.title}>メッセージBOX</Text>
 
-      {loading&&
+      {!serverLoading&&(
         <>
-          <ActivityIndicator size="large" color="orange" />
-          <Text>サーバーから読み込み中...</Text>
-        </>
-      }
+          <Text style={styles.title}>メッセージBOX</Text>
+          <ScrollView style={{width: '100%', padding: 32}}>
 
-      {!loading&&(
-        <ScrollView style={{width: '100%', padding: 32}}>
+            <SearchFriend
+              usersExceptContactPersons={usersExceptContactPersons}
+              handlePress={handlePress}
+              />
+            
+            <View style={{padding:16}} />
 
-          <SearchFriend
-            usersExceptContactPersons={usersExceptContactPersons}
-            handlePress={handlePress}
-          />
+            <FriendsList 
+              contactPersons={contactPersons}
+              handlePress={handlePress}
+              />
+
+            <View style={{padding: 64}} />
           
-          <View style={{padding:16}} />
-
-          <FriendsList 
-            contactPersons={contactPersons}
-            handlePress={handlePress}
-          />
-
-          <View style={{padding: 64}} />
-        
-        </ScrollView>
+          </ScrollView>
+        </>
       )}
 
       <View style={{position: 'absolute', bottom: 0}}>

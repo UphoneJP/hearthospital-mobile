@@ -1,13 +1,15 @@
 import { useSearchParams } from "expo-router/build/hooks"
-import { useEffect, useState } from "react"
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from "react-native"
-import { Input, Icon } from '@rneui/themed'
+import { useContext, useEffect, useState } from "react"
+import { ScrollView, StyleSheet, View } from "react-native"
+import { TextInput } from 'react-native-paper'
 
 import { type reviewType } from "@/src/types/types"
 import createAxiosClient from "@/utils/axiosClient"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import DiseasesBox from "@/src/components/review/DiseasesBox"
 import ReviewsBox from "@/src/components/review/ReviewsBox"
+import { LoadingContext } from "@/src/context/loadingContext"
+import { AuthContext } from "@/src/context/loginContext"
 
 export default function DiseaseName () {
   const [inputVal, setInputVal] = useState<string>('')
@@ -15,24 +17,26 @@ export default function DiseaseName () {
   const [reviewsCopy, setReviewsCopy] = useState<reviewType[]>([])
   const [diseases, setDiseases] = useState<string[]>([])
   const [diseasesCopy, setDiseasesCopy] = useState<string[]>([])
-  const [loading, setLoading] = useState<boolean>(true)
   const params = useSearchParams()
   const disease = decodeURIComponent(params.get('disease') || '')
+  const { setServerLoading } = useContext(LoadingContext)
+  const {backToHome} = useContext(AuthContext)
 
   useEffect(()=>{
     async function getAxiosClient(){
       try {
+        setServerLoading(true)
         const axiosClient = await createAxiosClient()
         const response = await axiosClient?.get('/api/hospital/reviews')
         setReviews(response?.data.reviews)
         setReviewsCopy(response?.data.reviews)
-        setLoading(false)
+        setServerLoading(false)
         const allDiseases = response?.data.reviews.map((review: { diseaseNames: string[] }) => review.diseaseNames).flat()
         setDiseases([...new Set<string>(allDiseases)])
         setDiseasesCopy([...new Set<string>(allDiseases)])
         setInputVal(disease)
       } catch {
-        Alert.alert("病院情報の取得に失敗しました。")
+        await backToHome("データベースの取得に失敗しました。ホーム画面へ戻ります。")
       }
     }
     getAxiosClient()
@@ -48,32 +52,24 @@ export default function DiseaseName () {
     }
   }, [inputVal, diseasesCopy, reviewsCopy])
 
-  if(loading){
-    return (
-      <BackgroundTemplate>
-        <ActivityIndicator size="large" color="orange" />
-        <Text>サーバーから読み込み中...</Text>
-      </BackgroundTemplate>
-    )
-  }
-
   return (
     <BackgroundTemplate>
-      <Input
-        placeholder='検索したい病名を入力'
-        leftIcon={{ type: 'Ionicon', name: 'search' }}
-        value={inputVal}
-        onChangeText={(text)=>setInputVal(text)}
-        containerStyle={{height:52,marginTop: 16}}
-        rightIcon={
-          <Icon
-            type="MaterialIcons"
-            name="clear"
-            onPress={() => setInputVal('')}
-            color={inputVal ? 'gray' : 'transparent'}
-          />
-        }
-      />
+      <View style={{paddingHorizontal: 36, paddingTop: 24, height: 100, width: '100%'}}>
+        <TextInput
+          placeholder='検索したい病名を入力'
+          value={inputVal}
+          onChangeText={(text)=>setInputVal(text)}
+          left={<TextInput.Icon icon="magnify" />}
+          right={
+            inputVal &&
+              <TextInput.Icon
+                icon="close"
+                onPress={() => setInputVal('')}
+              />
+          }
+        />
+      </View>
+
       <DiseasesBox diseases={diseases} setInputVal={setInputVal}/>
       
       <ScrollView style={styles.scrollBox}>

@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from "react"
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from "react-native"
+import { Alert, ScrollView, StyleSheet, Text, View } from "react-native"
 import { useSearchParams } from "expo-router/build/hooks"
 import { router } from "expo-router"
 import { Picker } from "@react-native-picker/picker"
-import { Card } from "@rneui/themed"
+import { Divider } from "react-native-paper"
 
 import { hospitalType } from "@/src/types/types"
 import createAxiosClient from "@/utils/axiosClient"
@@ -13,6 +13,7 @@ import DiseasesBox from "@/src/components/review/DiseasesBox"
 import RaisedButton from "@/src/components/parts/RaisedButton"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import { saveToken, getToken, deleteToken } from "@/utils/secureStore"
+import { LoadingContext } from "@/src/context/loadingContext"
 
 export default function New(){
   const [hospital, setHospital] = useState<hospitalType|undefined>(undefined)
@@ -28,13 +29,42 @@ export default function New(){
   const [diseases, setDiseases] = useState<string[]>([])
   const id = useSearchParams().get('id')
   const {user} = useContext(AuthContext)
+  const {backToHome} = useContext(AuthContext)
+  const {setServerLoading} = useContext(LoadingContext)
 
   if(!id)return
 
   useEffect(()=>{
 
-    // 途中入力の読み込み
+    // 病院の読み込み関数
+    async function fetchHospital(){
+      try {
+        setServerLoading(true)
+        const axiosClient = await createAxiosClient()
+        const response = await axiosClient?.get(`/api/hospital/${id}`)
+        setHospital(response?.data.hospital)
+      } catch {
+        await backToHome('病院情報の取得に失敗しました。ホーム画面へ戻ります。')
+      }
+    }
+    
+    // 病名一覧の読み込み関数
+    async function fetchDiseases(){
+      try {
+        setServerLoading(true)
+        const axiosClient = await createAxiosClient()
+        const response = await axiosClient?.get('/api/hospital/reviews')
+        const allDiseases = response?.data.reviews.map((review: { diseaseNames: string[] }) => review.diseaseNames).flat()
+        setDiseases([...new Set<string>(allDiseases)])
+      } catch {
+        Alert.alert("病名の取得に失敗しました")
+      }
+    }
+
     (async () => {
+      setServerLoading(true)
+
+      // 途中入力の読み込み
       const leftTitle = await getToken(`${id}-title`)
       const leftDiseases = await getToken(`${id}-diseases`)
       const leftYear = await getToken(`${id}-year`)
@@ -47,32 +77,13 @@ export default function New(){
       setMonth(Number(leftMonth) || currentMonth)
       setUrl(leftUrl || '')
       setComment(leftComment || '')
+
+      await fetchHospital()
+      await fetchDiseases()
+
+      setServerLoading(false)
     })()
 
-    // 病院の読み込み
-    async function fetchHospital(){
-      try {
-        const axiosClient = await createAxiosClient()
-        const response = await axiosClient?.get(`/api/hospital/${id}`)
-        setHospital(response?.data.hospital)
-      } catch {
-        Alert.alert("病院情報が取得できませんでした")
-      }
-    }
-    fetchHospital()
-
-    // 病名一覧の読み込み
-    async function fetchDiseases(){
-      try {
-        const axiosClient = await createAxiosClient()
-        const response = await axiosClient?.get('/api/hospital/reviews')
-        const allDiseases = response?.data.reviews.map((review: { diseaseNames: string[] }) => review.diseaseNames).flat()
-        setDiseases([...new Set<string>(allDiseases)])
-      } catch {
-        Alert.alert("病名の取得に失敗しました")
-      }
-    }
-    fetchDiseases()
   }, [])
 
   async function sendFun () {
@@ -109,12 +120,12 @@ export default function New(){
   return (
     <BackgroundTemplate>
       <ScrollView>
-        <Card containerStyle={styles.card}>
-          <Card.Title style={styles.title}>
+        <View style={styles.card}>
+          <Text style={styles.title}>
             【{hospital?.hospitalname}】での経験を投稿
-          </Card.Title>
+          </Text>
 
-          <Card.Divider />
+          <Divider />
 
           <CustomInput 
             label="タイトル"
@@ -183,7 +194,6 @@ export default function New(){
 
           <CustomInput 
             label="外部サイト(任意)"
-            placeholder="https://example.com"
             val={url}
             setVal={setUrl}
             style={{marginTop: 16}}
@@ -201,14 +211,14 @@ export default function New(){
           />
 
           <RaisedButton
-            title={loading ? <ActivityIndicator size="small" color="green" /> : "口コミを投稿する"}
+            title="口コミを投稿する"
             color="green"
             disabled={!titleName || !diseaseNames || !comment || loading ? true : false}
             fun={sendFun}
             styleChange={{margin: 32}}
           />
 
-        </Card>
+        </View>
         <View style={{padding: 64}} />
               
       </ScrollView>

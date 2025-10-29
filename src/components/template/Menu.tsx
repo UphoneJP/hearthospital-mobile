@@ -9,12 +9,13 @@ import MenuOthers from './MenuOthers'
 import { router } from 'expo-router'
 import { MenuContext } from '@/src/context/menuContext'
 import { useTab } from '@/src/context/tabContext'
+import { getToken } from '@/utils/secureStore'
 
 
 export default function Menu(){
   const {menuVisible, toggleMenu} = useContext(MenuContext)
   const [isMounted, setIsMounted] = useState(menuVisible)
-  const { isLoggedIn, user } = useContext(AuthContext)
+  const { isLoggedIn, user, backToHome} = useContext(AuthContext)
   const { onTabPress } = useTab()
 
   const translateX = useRef(new Animated.Value(-300)).current
@@ -75,14 +76,20 @@ export default function Menu(){
         <Pressable onPress={()=>setIsMounted(!isMounted)} style={{ flex: 1 }} />
       </Animated.View>
 
+      {/* hearton */}
       <Animated.View 
         style={[styles.hertonBack, { opacity: heartonOpacity }]} 
       >
-        <TouchableOpacity onPress={()=>{
+        <TouchableOpacity onPress={async ()=>{
           toggleMenu()
-          if(user){
-            onTabPress('newReview')
-            router.push('/t-hospital/newReviewWithSelectableHospital')
+          const lastContactTime = await getToken('lastContactTime')
+          if(user) {
+            if(lastContactTime && parseInt(lastContactTime) + 1000 * 60 * 5 > Date.now()){
+              onTabPress('newReview')
+              router.push('/t-hospital/newReviewWithSelectableHospital')
+            } else {
+              await backToHome()
+            }
           } else {
             Alert.alert(
               "口コミ投稿にはログインが必要です。",

@@ -1,40 +1,36 @@
-import { useEffect, useState } from "react"
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { useContext, useEffect, useState } from "react"
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { router } from "expo-router"
 
 import { type hospitalType } from "@/src/types/types"
 import createAxiosClient from "@/utils/axiosClient"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import CustomButton from "@/src/components/parts/CustomButton"
+import { LoadingContext } from "@/src/context/loadingContext"
+
+import { AuthContext } from "@/src/context/loginContext"
 
 export default function Area () {
   const [areas, setAreas] = useState<string[]>([])
   const [hospitals, setHospitals] = useState<hospitalType[]>([])
-  const [loading, setLoading] = useState<boolean>(true)
+  const {setServerLoading} = useContext(LoadingContext)
+  const {backToHome} = useContext(AuthContext)
 
   useEffect(()=>{
     async function getAxiosClient(){
       try {
+        setServerLoading(true)
         const axiosClient = await createAxiosClient()
         const response = await axiosClient?.get('/api/hospital')
         setAreas(response?.data.areas)
         setHospitals(response?.data.hospitals)
-        setLoading(false)
+        setServerLoading(false)
       } catch {
-        Alert.alert("病院情報の取得に失敗しました。")
+        await backToHome("病院情報の取得に失敗しました。ホーム画面へ戻ります。")
       }
     }
     getAxiosClient()
   }, [])
-
-  if(loading){
-    return (
-      <BackgroundTemplate>
-        <ActivityIndicator size="large" color="orange" />
-        <Text>サーバーから読み込み中...</Text>
-      </BackgroundTemplate>
-    )
-  }
 
   return (
     <BackgroundTemplate>

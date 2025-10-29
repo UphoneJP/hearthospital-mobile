@@ -1,30 +1,36 @@
 import { useContext, useEffect, useState } from "react"
-import { ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { Alert, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { AuthContext } from "../../context/loginContext"
 import createAxiosClient from "@/utils/axiosClient"
+import { LoadingContext } from "@/src/context/loadingContext"
 
 export default function PenName () {
   const { user, setUser } = useContext(AuthContext)
-  const [loading, setLoading] = useState<boolean>(false)
   const [penNameEdit, setPenNameEdit] = useState<boolean>(false)
   const [penNameInput, setPenNameInput] = useState<string|undefined>(user?.penName)
+  const { setServerLoading } = useContext(LoadingContext)
 
   useEffect(()=>{
     setPenNameInput(user?.penName)
   }, [user])
 
   async function changePenName () {
-    setLoading(true)
+    Keyboard.dismiss()
+    if (!penNameInput || penNameInput.length < 1) {
+      Alert.alert('ペンネームを入力してください。')
+      return
+    }
+    setServerLoading(true)
     setPenNameEdit(false)
     try {
       const axiosClient = await createAxiosClient()
       const response = await axiosClient?.patch(`/api/user/penName/${user?._id}`, {penNameInput})
       setUser(response?.data.user)
       Alert.alert('ペンネームを変更しました。')
-      setLoading(false)
+      setServerLoading(false)
     } catch {
       Alert.alert('エラーが発生しました。')
-      setLoading(false)
+      setServerLoading(false)
     }
   }
 
@@ -44,7 +50,7 @@ export default function PenName () {
             style={[styles.editButton, {backgroundColor: 'orange'}]}
             onPress={changePenName}  
           >
-            <Text>変更する</Text>
+            <Text style={{color: 'white'}}>変更する</Text>
           </TouchableOpacity>
         </View>
       ):(
@@ -56,11 +62,7 @@ export default function PenName () {
               style={styles.editButton}
               onPress={()=>setPenNameEdit(true)}  
             >
-              {loading?(
-                <ActivityIndicator size='small' color='white' />
-              ):(
-                <Text>編集</Text>
-              )}
+              <Text>編集</Text>
             </TouchableOpacity>
           </View>
           {!user?.penName&&

@@ -1,6 +1,6 @@
 import { useSearchParams } from "expo-router/build/hooks"
-import { SetStateAction, useEffect, useState } from "react"
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { SetStateAction, useContext, useEffect, useState } from "react"
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { router } from "expo-router"
 import { Linking } from "react-native"
 
@@ -8,24 +8,29 @@ import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import { reviewType } from "@/src/types/types"
 import createAxiosClient from "@/utils/axiosClient"
 import BannerAds from "@/src/components/template/BannerAds"
+import { LoadingContext } from "@/src/context/loadingContext"
+import { AuthContext } from "@/src/context/loginContext"
 
 export default function ReveiwDetail () {
   const params = useSearchParams()
   const reviewId = params.get('reviewid')
   const [review, setReview] = useState<reviewType|undefined>(undefined)
-  const [loading, setLoading] = useState<boolean>(true)
+  const {setServerLoading} = useContext(LoadingContext)
+  const {backToHome} = useContext(AuthContext)
+
 
   useEffect(()=> {
     async function fetchReview(){
+      setServerLoading(true)
       try {
         const axiosClient = await createAxiosClient()
         const response = await axiosClient?.get('/api/hospital/reviews')
         const rev = response?.data.reviews.filter((review: { _id: { toString: () => string | null } })=>review._id.toString()===reviewId)
         setReview(rev[0])
-        setLoading(false)
       } catch {
-        Alert.alert('病院情報を取得できませんでした。')
+        await backToHome('病院情報を取得できませんでした。ホーム画面へ戻ります。')
       }
+      setServerLoading(false)
     }
     fetchReview()
   }, [])
@@ -35,85 +40,90 @@ export default function ReveiwDetail () {
     router.push(`/t-hospital/diseaseName?disease=${d}`)
   }
 
-  if(loading || !review){
-    return (
-      <BackgroundTemplate>
-        <ActivityIndicator size="large" color="orange" />
-        <Text>サーバーから読み込み中...</Text>
-      </BackgroundTemplate>
-    )
-  }
+  // if(loading || !review){
+  //   return (
+  //     <BackgroundTemplate>
+  //       <ActivityIndicator size="large" color="orange" />
+  //       <Text>サーバーから読み込み中...</Text>
+  //     </BackgroundTemplate>
+  //   )
+  // }
 
   return (
     <BackgroundTemplate>
-      <ScrollView style={{width: '100%'}}>
 
-        {/* 病院名 */}
-        <TouchableOpacity onPress={()=>router.push(`/t-hospital/${review.hospital?._id}`)}>
-          <Text selectable={true} style={[styles.hospitalname, styles.link]}>
-            {review.hospital?.hospitalname}
-          </Text>
-        </TouchableOpacity>
+      {review && (
+        <>
+          <ScrollView style={{width: '100%'}}>
 
-        {/* タイトル */}
-        <Text selectable={true} style={styles.title}>{review.title}</Text>
+            {/* 病院名 */}
+            <TouchableOpacity onPress={()=>router.push(`/t-hospital/${review.hospital?._id}`)}>
+              <Text selectable={true} style={[styles.hospitalname, styles.link]}>
+                {review.hospital?.hospitalname}
+              </Text>
+            </TouchableOpacity>
 
-        {/* 投稿者 */}
-        <Text selectable={true} style={styles.author}>
-          投稿者: 
-          <TouchableOpacity onPress={()=>router.push(`/others/${review.author?._id}`)}>
-            <Text style={styles.link}>
-              {review?.author?.penName||review?.author?.username}
-            </Text>
-          </TouchableOpacity>
-        </Text>
+            {/* タイトル */}
+            <Text selectable={true} style={styles.title}>{review.title}</Text>
 
-        {/* SNSリンク */}
-        {review.url&&
-          <TouchableOpacity 
-            onPress={()=>{Linking.openURL(review.url)}}
-          >
-            <Text style={styles.url}>SNSへのリンク</Text>
-          </TouchableOpacity>
-        }
-
-        {/* 投稿日・治療時期・詳細画面 */}
-        <Text style={styles.tweetDate}>
-          投稿日:  {review.tweetDate}
-        </Text>
-        <Text style={styles.treatmentTiming}>
-          治療時期:  {review.treatmentTiming}
-        </Text>
-
-        {/* 病名 */}
-        <View style={styles.dBox}>
-          {review.diseaseNames.map(d => {
-            return (
-              <TouchableOpacity 
-                key={d} 
-                style={styles.dButton}
-                onPress={()=>jumpFun(d)}
-              >
-                <Text style={styles.d}>{d}</Text>
+            {/* 投稿者 */}
+            <Text selectable={true} style={styles.author}>
+              投稿者: 
+              <TouchableOpacity onPress={()=>router.push(`/others/${review.author?._id}`)}>
+                <Text style={styles.link}>
+                  {review?.author?.penName||review?.author?.username}
+                </Text>
               </TouchableOpacity>
-            )
-          })}
-        </View>
-
-        {/* コメント */}
-        <View style={styles.commentBox}>
-          <ScrollView>
-            <Text selectable={true}>
-              {review.comment}
             </Text>
+
+            {/* SNSリンク */}
+            {review.url&&
+              <TouchableOpacity 
+                onPress={()=>{Linking.openURL(review.url)}}
+              >
+                <Text style={styles.url}>SNSへのリンク</Text>
+              </TouchableOpacity>
+            }
+
+            {/* 投稿日・治療時期・詳細画面 */}
+            <Text style={styles.tweetDate}>
+              投稿日:  {review.tweetDate}
+            </Text>
+            <Text style={styles.treatmentTiming}>
+              治療時期:  {review.treatmentTiming}
+            </Text>
+
+            {/* 病名 */}
+            <View style={styles.dBox}>
+              {review.diseaseNames.map(d => {
+                return (
+                  <TouchableOpacity 
+                    key={d} 
+                    style={styles.dButton}
+                    onPress={()=>jumpFun(d)}
+                  >
+                    <Text style={styles.d}>{d}</Text>
+                  </TouchableOpacity>
+                )
+              })}
+            </View>
+
+            {/* コメント */}
+            <View style={styles.commentBox}>
+              <ScrollView>
+                <Text selectable={true}>
+                  {review.comment}
+                </Text>
+              </ScrollView>
+            </View>
+
+            <View style={{padding:64}} />
+
           </ScrollView>
-        </View>
 
-        <View style={{padding:64}} />
-
-      </ScrollView>
-
-      <BannerAds />
+          <BannerAds />
+        </>
+      )}
 
     </BackgroundTemplate>
   )

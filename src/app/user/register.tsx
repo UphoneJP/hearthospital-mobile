@@ -38,6 +38,8 @@ export default function Register () {
         <Text style={styles.link}>ログインはこちら</Text>
       </TouchableOpacity>
 
+      <View style={{padding: 32}}/>
+
       <View style={{position: 'absolute', bottom: 0}}>
         <BannerAds />
       </View>

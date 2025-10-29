@@ -2,8 +2,8 @@ import { StyleSheet, Text, TouchableOpacity } from "react-native"
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { router } from "expo-router"
 import { useContext, useState } from "react"
-import { Dialog } from "@rneui/themed"
 import { AuthContext } from "../../context/loginContext"
+import CustomDialog from "./CustomDialog"
 
 interface PropsType {
   color?: string
@@ -43,48 +43,11 @@ export default function AddButton(prop: PropsType) {
       )}
 
       {/* ログインしていない場合のダイアログボックス */}
-      <Dialog
-        isVisible={dialogVisible}
-        onBackdropPress={()=>{
-          setDialogVisible(false)
-          setAddButtonVisible(true)
-        }}
-      >
-        <Dialog.Title title="口コミ投稿にはログインが必要です"/>
-        <Dialog.Actions>
-          
-          <TouchableOpacity 
-            onPress={() => {
-              setDialogVisible(false)
-              setAddButtonVisible(true)
-            }}
-            style={{ padding: 10 }}
-          >
-            <Text style={{ color: "blue", fontSize: 16 }}>キャンセル</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            onPress={() => {
-              setDialogVisible(false)
-              setAddButtonVisible(true)
-              router.push('/user/register')
-            }}
-            style={{ padding: 10 }}
-          >
-            <Text style={{ color: "blue", fontSize: 16 }}>新規アカウント登録画面へ</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            onPress={() => {
-              setDialogVisible(false)
-              setAddButtonVisible(true)
-              router.push('/user/login')
-            }}
-            style={{ padding: 10 }}
-          >
-            <Text style={{ color: "blue", fontSize: 16 }}>ログイン画面へ</Text>
-          </TouchableOpacity>
-
-        </Dialog.Actions>
-      </Dialog>
+      <CustomDialog
+        dialogVisible={dialogVisible}
+        setDialogVisible={setDialogVisible}
+        setAddButtonVisible={setAddButtonVisible}
+      />
     </>
   )
 }

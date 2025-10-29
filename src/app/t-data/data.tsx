@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from "react-native"
+import { useContext, useEffect, useState } from "react"
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native"
 
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
 import { type hospitalType } from "@/src/types/types"
@@ -9,12 +9,14 @@ import DPCcodeSummary from "@/src/components/chart/DPCcodeSummary"
 import KcodeSummary from "@/src/components/chart/KcodeSummary"
 import HospitalData from "@/src/components/chart/HospitalData"
 import BannerAds from "@/src/components/template/BannerAds"
+import { AuthContext } from "@/src/context/loginContext"
 
 export default function Data() {
   const [areas, setAreas] = useState<string[]>([])
   const [hospitals, setHospitals] = useState<hospitalType[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [selectedValue, setSelectedValue] = useState("R5")
+  const {backToHome} = useContext(AuthContext)
   
   useEffect(()=>{
     async function getAxiosClient(){
@@ -25,7 +27,7 @@ export default function Data() {
         setHospitals(response?.data.hospitals)
         setLoading(false)
       } catch {
-        Alert.alert('データを取得できませんでした。')
+        await backToHome('病院データの取得に失敗しました。ホーム画面へ戻ります。')
       }
     }
     getAxiosClient()

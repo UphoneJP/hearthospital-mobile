@@ -4,6 +4,7 @@ import Constants from "expo-constants"
 import { AuthContext } from "./loginContext"
 import { type messageType } from "../types/types"
 import { Alert } from "react-native"
+import { LoadingContext } from "./loadingContext"
 
 const socket = io(Constants.expoConfig?.extra?.API_BASE_URL)
 
@@ -16,8 +17,7 @@ interface MessageContextType {
     userId: string,
     personId: string,
     messageInput: string,
-    setMessageInput: React.Dispatch<React.SetStateAction<string>>,
-    setSending: React.Dispatch<React.SetStateAction<boolean>>
+    setMessageInput: React.Dispatch<React.SetStateAction<string>>
   ) => Promise<void>
 }
 const defaultMessageContext = {
@@ -33,6 +33,7 @@ const MessageProvider = ({children}:{children: React.ReactNode}) => {
   const { user } = useContext(AuthContext)
   const [unReadMessages, setUnReadMessages] = useState<messageType[]>([])
   const [messages, setMessages] = useState<messageType[]>([])
+  const { setServerLoading } = useContext(LoadingContext)
 
   // ■EMIT
   function markAsReadIO( // ④自分が既読した
@@ -47,10 +48,9 @@ const MessageProvider = ({children}:{children: React.ReactNode}) => {
     userId: string,
     personId: string,
     content: string,
-    setMessageInput: React.Dispatch<React.SetStateAction<string>>,
-    setSending: React.Dispatch<React.SetStateAction<boolean>>
+    setMessageInput: React.Dispatch<React.SetStateAction<string>>
   ){
-    setSending(true)
+    setServerLoading(true)
     try {
       socket.emit("sendMessage", {userId, personId, content}, (response: { status: number })=>{
         if (response.status === 200) {
@@ -62,7 +62,7 @@ const MessageProvider = ({children}:{children: React.ReactNode}) => {
     } catch {
       Alert.alert('エラーでメッセージを送信できませんでした')
     }
-    setSending(false)
+    setServerLoading(false)
     setMessageInput('')
   }
     

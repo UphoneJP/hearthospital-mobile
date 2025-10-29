@@ -1,10 +1,11 @@
-import { Card, CheckBox } from "@rneui/themed"
+import { Checkbox } from "react-native-paper"
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { Alert, StyleSheet, Text, TouchableOpacity } from "react-native"
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { pointType } from "@/src/types/types"
 import { useContext, useState } from "react"
 import { AuthContext } from "@/src/context/loginContext"
 import createAxiosClient from "@/utils/axiosClient"
+import CustomCard from "../parts/CustomCard"
 
 export default function PointsUse () {
   const { user, setUser } = useContext(AuthContext)
@@ -47,26 +48,44 @@ export default function PointsUse () {
   }
 
   return (
-    <Card containerStyle={{borderRadius: 16}}>
-      <Card.Title style={{color: 'orange', marginBottom: 0}}>
-        <MaterialCommunityIcons name="numeric-2-box" size={20} />
-        ハートポイントを使う
-      </Card.Title>
-      <CheckBox
-        checked={check}
+    <CustomCard>
+      <View style={{flexDirection: 'row'}}>
+        <MaterialCommunityIcons name="numeric-2-box" size={20} color='orange' />
+        <Text style={{ color: 'orange' }}>ハートポイントを使う</Text>
+      </View>
+      <TouchableOpacity
+        style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}
         onPress={() => setCheck(!check)}
-        checkedColor="orange"
-        title="Amazonギフトカード(Eメールタイプ)　200円分　（200ポイント使用）"
         disabled={(user?.points.map((point: pointType) => point.reward).reduce((sum, num) => sum + num, 0) || 0) < 200 }
-      />
-      {check && (
-        <CheckBox
-          checked={checkPolicy}
-          onPress={() => setCheckPolicy(!checkPolicy)}
-          checkedColor="orange"
-          title="ギフトカードの発行のため、登録されたEmailアドレスをAmazonに提供することに同意する"
+        activeOpacity={0.7}
+      >
+        <Checkbox
+          status={check ? 'checked' : 'unchecked'}
+          onPress={() => setCheck(!check)}
+          color="orange"
           disabled={(user?.points.map((point: pointType) => point.reward).reduce((sum, num) => sum + num, 0) || 0) < 200 }
         />
+        <Text style={{ flex: 1 }}>
+          Amazonギフトカード(Eメールタイプ) 200円分 （200ポイント使用）
+        </Text>
+      </TouchableOpacity>
+      {check && (
+        <TouchableOpacity
+          style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}
+          onPress={() => setCheckPolicy(!checkPolicy)}
+          disabled={(user?.points.map((point: pointType) => point.reward).reduce((sum, num) => sum + num, 0) || 0) < 200 }
+          activeOpacity={0.7}
+        >
+          <Checkbox
+            status={checkPolicy ? 'checked' : 'unchecked'}
+            onPress={() => setCheckPolicy(!checkPolicy)}
+            color="orange"
+            disabled={(user?.points.map((point: pointType) => point.reward).reduce((sum, num) => sum + num, 0) || 0) < 200 }
+          />
+          <Text style={{ flex: 1 }}>
+            ギフトカードの発行のため、登録されたEmailアドレスをAmazonに提供することに同意する。(※Amazonギフトカードの受取人に指定されます)
+          </Text>
+        </TouchableOpacity>
       )}
 
       {(user?.points.map((point: pointType) => point.reward).reduce((sum, num) => sum + num, 0) || 0) < 200 ? (
@@ -80,7 +99,7 @@ export default function PointsUse () {
           </Text>
         </TouchableOpacity>
       )}
-    </Card>
+    </CustomCard>
   )
 }
 const styles = StyleSheet.create({

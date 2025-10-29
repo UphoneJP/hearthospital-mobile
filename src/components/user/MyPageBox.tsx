@@ -4,7 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons'
 interface PropsType {
   title: string
   icon: "visibility" | "visibility-off"
-  children: JSX.Element
+  children: React.ReactNode
 }
 
 export default function MyPageBox({title, icon, children}:PropsType){
@@ -31,8 +31,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderColor: '#666666',
     width: '100%',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     marginBottom: 16
   }
 })

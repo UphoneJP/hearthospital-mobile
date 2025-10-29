@@ -7,10 +7,10 @@ import { AuthContext } from "@/src/context/loginContext"
 import { hospitalType } from "@/src/types/types"
 import createAxiosClient from "@/utils/axiosClient"
 import { Picker } from "@react-native-picker/picker"
-import { Card } from "@rneui/themed"
+import { Divider } from "react-native-paper"
 import { router } from "expo-router"
 import { useContext, useEffect, useState } from "react"
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from "react-native"
+import { Alert, ScrollView, StyleSheet, Text, View } from "react-native"
 import { saveToken, getToken, deleteToken } from "@/utils/secureStore"
 
 export default function newReviewWithSelectableHospital (){
@@ -89,7 +89,7 @@ export default function newReviewWithSelectableHospital (){
       router.replace(`/t-hospital/${selectedHospital?._id}`)
     } catch(e){
       console.log(e)
-      Alert.alert('投稿エラーが発生しました')
+      Alert.alert('投稿エラーが発生しました。ご投稿内容をコピーし、ホーム画面へ一度戻ってから再度お試しください。')
       setLoading(false)
     }
   }
@@ -102,12 +102,12 @@ export default function newReviewWithSelectableHospital (){
   return (
     <BackgroundTemplate>
       <ScrollView>
-        <Card containerStyle={styles.card}>
-          <Card.Title style={styles.title}>
+        <View style={styles.card}>
+          <Text style={styles.title}>
             {user?.penName|| user?.username}さんの経験を投稿
-          </Card.Title>
+          </Text>
 
-          <Card.Divider />
+          <Divider />
 
           {/* タイトル入力 */}
           <CustomInput 
@@ -185,7 +185,6 @@ export default function newReviewWithSelectableHospital (){
           {/* URL入力 */}
           <CustomInput 
             label="外部サイトURL(任意)"
-            placeholder="https://example.com"
             val={url}
             setVal={setUrl}
             style={{marginTop: 16}}
@@ -197,20 +196,20 @@ export default function newReviewWithSelectableHospital (){
             label="治療経験や医療従事者への謝意"
             val={comment}
             setVal={setComment}
-            style={{height:400, marginTop: 16}}
+            style={{height:400, marginVertical: 16}}
             multiline={true}
             sessionName="reveiwNoID-comment"
           />
 
           <RaisedButton
-            title={loading ? <ActivityIndicator size="small" color="green" /> : "口コミを投稿する"}
+            title="口コミを投稿する"
             color="green"
             disabled={!titleName || !diseaseNames || !comment || loading ? true : false}
             fun={sendFun}
-            styleChange={{margin: 32}}
+            styleChange={{margin: 0}}
           />
 
-        </Card>
+        </View>
         <View style={{padding: 64}} />
               
       </ScrollView>
@@ -235,6 +234,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 40
   },
   tips: {
-    fontSize: 12
+    fontSize: 12,
+    marginBottom: 8
   }
 })

@@ -1,6 +1,6 @@
 import { UnReadMessagesContext } from "@/src/context/messageContext"
 import { useContext, useState } from "react"
-import { ActivityIndicator, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 
 interface PropsType {
   userId: string | null
@@ -16,19 +16,20 @@ export default function MessageForm (prop:PropsType){
   function handleTextChange(text: string) {
     if (text.length <= 300) {setMessageInput(text)}
   }
-  function handlePress () {
+  async function handlePress () {
     const content = messageInput.trim()
     if(content.length === 0){
       return
     }
     if(userId&&personId){
-      sendForm(
+      setSending(true)
+      await sendForm(
         userId,
         personId,
         content,
-        setMessageInput,
-        setSending
+        setMessageInput
       )
+      setSending(false)
     }
   }
 
@@ -36,7 +37,7 @@ export default function MessageForm (prop:PropsType){
     <>
       {focused&&
         <Text style={styles.charCount}>
-          入力上限{messageInput.length}/300
+          入力上限 {messageInput.length}/300
         </Text> 
       }
 
@@ -47,19 +48,16 @@ export default function MessageForm (prop:PropsType){
           value={messageInput}
           placeholder="メッセージ入力"
           onChangeText={handleTextChange}
-          style={styles.textInput}
+          style={[styles.textInput, {height: focused ? 96 : 32}]}
           onFocus={()=>setFocused(true)}
           onBlur={()=>setFocused(false)}
         />
         <TouchableOpacity
           style={styles.sendButton}
-          onPress={handlePress}  
+          onPress={handlePress}
+          disabled={sending}
         >
-          {sending?(
-            <ActivityIndicator color='white'/>
-          ):(
-            <Text style={{color: 'white'}}>送信</Text>
-          )}
+          <Text style={{color: 'white'}}>送信</Text>
         </TouchableOpacity>
       </View>
     </>

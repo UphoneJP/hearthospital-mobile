@@ -13,6 +13,7 @@ import Constants from "expo-constants"
 import axios from "axios"
 import CryptoJS from 'crypto-js'
 import {jwtDecode} from "jwt-decode"
+import { LoadingContext } from "@/src/context/loadingContext"
 
 interface DecodedToken {
   apiKey: string
@@ -27,6 +28,7 @@ const axiosClient = axios.create({
 
 export default function Home() {
   const [showTips, setShowTips] = useState(false)
+  const [startOK, setStartOK] = useState(false)
   const { menuVisible } = useContext(MenuContext)
   const { user } = useContext(AuthContext)
   const { onTabPress } = useTab()
@@ -37,169 +39,197 @@ export default function Home() {
   const heartonMoveX = useRef(new Animated.Value(0)).current
   const heartonMoveY = useRef(new Animated.Value(0)).current
   const heartonRotate = useRef(new Animated.Value(0)).current
+  const { setServerLoading } = useContext(LoadingContext)
 
   useEffect(() => {
-    // 初回起動時の処理
-    async function checkFirstLaunch () {
-      // const isFirstLaunchDone = await getToken('dammy') // ダミーコード
-      const isFirstLaunchDone = await getToken('isFirstLaunchDone')
-
-      if (!isFirstLaunchDone) {
-        // 6秒後にTipsを表示
-        setTimeout(async()=>{
-          setShowTips(true)
-        }, 6000)
-
-        try {
-          // デバイスIDを取得してHmacを生成してサーバーに送信
-          let deviceId: string
-          if (Platform.OS === "android") {
-            deviceId = Application.getAndroidId() || "testDeviceId"
-          } else if (Platform.OS === "ios") {
-            deviceId = await Application.getIosIdForVendorAsync() || "testDeviceId"
-          } else {
-            deviceId = "testDeviceId"
-          }
-          const timestamp = new Date().getTime()
-
-          // 署名生成
-          const payload = `${deviceId}:${timestamp}`
-          const apiKeyIni = Constants.expoConfig?.extra?.API_KEY_INI
-          const signature = CryptoJS.HmacSHA256(
-            CryptoJS.enc.Utf8.parse(payload),  // UTF-8 を明示
-            CryptoJS.enc.Utf8.parse(apiKeyIni) // UTF-8 を明示
-          ).toString(CryptoJS.enc.Hex)
-
-          const response = await axiosClient.post("/firstLaunch", {
-            deviceId,
-            timestamp,
-            signature
-          })
-          // サーバーから返ってきたtokenをデコードしてデバイスIDが一致するか確認
-          const token = response.data.token
-          const decoded = jwtDecode<DecodedToken>(token)
-          if(!decoded || !decoded.iat || decoded.iat + 300 < Math.floor(new Date().getTime() / 1000) || deviceId !== decoded.deviceId){
-            Alert.alert('データベースとの通信初期設定に失敗しました。')
-            return
-          }
-          await saveToken('apiKey', decoded.apiKey)
-          await saveToken('JWTSecret', decoded.JWTSecret)
+    (async () => {
+      try {
+        // インストール後初めて Tips表示
+        const isFirstLaunchDone = await getToken('isFirstLaunchDone')
+        if (!isFirstLaunchDone) {
+          setTimeout(() => setShowTips(true), 6000)
           await saveToken('isFirstLaunchDone', 'true')
-        } catch(err) {
-          console.log('初期通信エラー: ', err)
-          Alert.alert('エラーが発生しました。データベースへアクセスできません。')
         }
+
+        // APIキーを取得する関数
+        async function getApiKey () {
+          try {
+            // 前回APIキー取得から5分以内なら再取得しない
+            const lastContactTime = await getToken('lastContactTime')
+            if (lastContactTime && Date.now() < parseInt(lastContactTime) + 1000 * 60 * 5) return setStartOK(true)
+            
+            // ①デバイスIDの取得
+            let deviceId: string
+            if (Platform.OS === "android") {
+              deviceId = Application.getAndroidId() || "testDeviceId"
+            } else if (Platform.OS === "ios") {
+              deviceId = await Application.getIosIdForVendorAsync() || "testDeviceId"
+            } else {
+              deviceId = "testDeviceId"
+            }
+
+            // ②timestampの作成
+            const timestamp = Date.now()
+
+            // ③HMAC署名の生成
+            const payload = `${deviceId}:${timestamp}`
+            const apiKeyIni = Constants.expoConfig?.extra?.API_KEY_INI
+            const signature = CryptoJS.HmacSHA256(
+              CryptoJS.enc.Utf8.parse(payload),
+              CryptoJS.enc.Utf8.parse(apiKeyIni)
+            ).toString(CryptoJS.enc.Hex)
+
+            // サーバーへ①②③と共にリクエスト
+            const response = await axiosClient.post("/firstLaunch", {
+              deviceId,
+              timestamp,
+              signature
+            })
+
+            // 返ってきたトークンをデコードして検証
+            const token = response.data.token
+            const decoded = jwtDecode<DecodedToken>(token)
+            if (
+              !decoded ||
+              !decoded.iat ||
+              decoded.iat + 300 < Math.floor(Date.now() / 1000) ||
+              deviceId !== decoded.deviceId
+            ) {
+              Alert.alert('データベースとの通信初期設定に失敗しました。')
+              return
+            }
+
+            // 検証が問題無ければapiKeyとJWTSecretを保存
+            await saveToken('apiKey', decoded.apiKey)
+            await saveToken('JWTSecret', decoded.JWTSecret)
+            await saveToken('lastContactTime', Date.now().toString())
+            setStartOK(true)
+            // Alert.alert('データベースとの通信初期設定が完了しました。')
+
+          } catch (err) {
+            console.log('初期通信エラー:', err)
+            Alert.alert('エラーが発生しました。データベースへアクセスできません。')
+          }
+        }
+        
+        setServerLoading(true)
+        await getApiKey()
+        setServerLoading(false)
+
+      } catch (err) {
+        console.log('useEffectエラー:', err)
       }
-    }
-    checkFirstLaunch()
+    })()
   }, [])
 
   useEffect(() => {
-    Animated.sequence([
-      // ロゴのフェードイン
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 2000,
-        useNativeDriver: true
-      }),
-      // ロゴの上方向への移動
-      Animated.timing(translateAnim, {
-        toValue: -50,
-        duration: 1000,
-        useNativeDriver: true
-      }),
-      // テキストのフェードイン
-      Animated.timing(textFadeAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true
-      }),
-      // ハートン出現
-      Animated.timing(heartonOpacity, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true
-      }),
-      Animated.parallel([
-        Animated.timing(heartonMoveX, {
-          toValue: 4,
-          duration: 0,
+    if(startOK){
+      Animated.sequence([
+        // ロゴのフェードイン
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 2000,
           useNativeDriver: true
         }),
-        Animated.timing(heartonMoveY, {
-          toValue: -4,
-          duration: 0,
+        // ロゴの上方向への移動
+        Animated.timing(translateAnim, {
+          toValue: -50,
+          duration: 1000,
           useNativeDriver: true
         }),
-        Animated.timing(heartonRotate, {
-          toValue: 3,
-          duration: 0,
-          delay: 0,
-          useNativeDriver: true
-        })
-      ]),
-      Animated.parallel([
-        Animated.timing(heartonMoveX, {
-          toValue: 0,
-          duration: 0,
-          delay: 300,
+        // テキストのフェードイン
+        Animated.timing(textFadeAnim, {
+          toValue: 1,
+          duration: 500,
           useNativeDriver: true
         }),
-        Animated.timing(heartonMoveY, {
-          toValue: 0,
-          duration: 0,
-          delay: 300,
-          useNativeDriver: true
-        }),
-        Animated.timing(heartonRotate, {
-          toValue: 0,
-          duration: 0,
-          delay: 300,
-          useNativeDriver: true
-        })
-      ]),
-      Animated.parallel([
-        Animated.timing(heartonMoveX, {
-          toValue: 4,
-          duration: 0,
-          delay: 300,
-          useNativeDriver: true
-        }),
-        Animated.timing(heartonMoveY, {
-          toValue: -4,
-          duration: 0,
-          delay: 300,
-          useNativeDriver: true
-        }),
-        Animated.timing(heartonRotate, {
-          toValue: 3,
-          duration: 0,
-          delay: 300,
-          useNativeDriver: true
-        })
-      ]),
-      Animated.parallel([
-        Animated.timing(heartonMoveX, {
-          toValue: 0,
-          duration: 0,
-          delay: 300,
-          useNativeDriver: true
-        }),
-        Animated.timing(heartonMoveY, {
-          toValue: 0,
-          duration: 0,
-          delay: 300,
-          useNativeDriver: true
-        }),
-        Animated.timing(heartonRotate, {
-          toValue: 0,
-          duration: 0,
-          delay: 300,
-          useNativeDriver: true
-        })
-      ])
-    ]).start()
-  }, [fadeAnim, translateAnim, textFadeAnim])
+        Animated.sequence([
+          Animated.timing(heartonOpacity, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true
+          }),
+          Animated.parallel([
+            Animated.timing(heartonMoveX, {
+              toValue: 4,
+              duration: 0,
+              useNativeDriver: true
+            }),
+            Animated.timing(heartonMoveY, {
+              toValue: -4,
+              duration: 0,
+              useNativeDriver: true
+            }),
+            Animated.timing(heartonRotate, {
+              toValue: 3,
+              duration: 0,
+              useNativeDriver: true
+            })
+          ]),
+          Animated.parallel([
+            Animated.timing(heartonMoveX, {
+              toValue: 0,
+              duration: 0,
+              delay: 300,
+              useNativeDriver: true
+            }),
+            Animated.timing(heartonMoveY, {
+              toValue: 0,
+              duration: 0,
+              delay: 300,
+              useNativeDriver: true
+            }),
+            Animated.timing(heartonRotate, {
+              toValue: 0,
+              duration: 0,
+              delay: 300,
+              useNativeDriver: true
+            })
+          ]),
+          Animated.parallel([
+            Animated.timing(heartonMoveX, {
+              toValue: 4,
+              duration: 0,
+              delay: 300,
+              useNativeDriver: true
+            }),
+            Animated.timing(heartonMoveY, {
+              toValue: -4,
+              duration: 0,
+              delay: 300,
+              useNativeDriver: true
+            }),
+            Animated.timing(heartonRotate, {
+              toValue: 3,
+              duration: 0,
+              delay: 300,
+              useNativeDriver: true
+            })
+          ]),
+          Animated.parallel([
+            Animated.timing(heartonMoveX, {
+              toValue: 0,
+              duration: 0,
+              delay: 300,
+              useNativeDriver: true
+            }),
+            Animated.timing(heartonMoveY, {
+              toValue: 0,
+              duration: 0,
+              delay: 300,
+              useNativeDriver: true
+            }),
+            Animated.timing(heartonRotate, {
+              toValue: 0,
+              duration: 0,
+              delay: 300,
+              useNativeDriver: true
+            })
+          ])
+        ])
+      ]).start()
+    }
+  }, [fadeAnim, translateAnim, textFadeAnim, startOK])
 
   return (
     <BackgroundTemplate>

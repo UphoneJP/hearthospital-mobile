@@ -2,6 +2,9 @@ import { TouchableOpacity, StyleSheet, Text, Platform } from 'react-native'
 import { router } from 'expo-router'
 import { Entypo, FontAwesome6, Foundation, Fontisto } from '@expo/vector-icons'
 import { useTab } from '../../context/tabContext'
+import { useContext } from 'react'
+import { LoadingContext } from '@/src/context/loadingContext'
+import { MenuContext } from '@/src/context/menuContext'
 
 interface Props {
     name: string,
@@ -14,6 +17,8 @@ interface Props {
 export default function Tab(prop:Props) {
     const {name, title, select, onTabPress, children} = prop
     const { selectedTab } = useTab()
+    const {setServerLoading} = useContext(LoadingContext)
+    const {setMenuVisible} = useContext(MenuContext)
     const deviceOS = Platform.OS
     const styles = StyleSheet.create({
         tabBox: {
@@ -33,6 +38,8 @@ export default function Tab(prop:Props) {
 
     const linkFun = (n: string) => {
         onTabPress(n)
+        setServerLoading(false)
+        setMenuVisible(false)
         router.replace(`/t-${name}`)
     }
 

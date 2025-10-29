@@ -1,7 +1,7 @@
-import { Button } from "@rneui/themed"
+import { Button } from "react-native-paper"
 
 interface PropsType {
-  title: string | JSX.Element
+  title: string
   color: string
   fun?: ()=>void
   styleChange?: object
@@ -11,16 +11,16 @@ interface PropsType {
 export default function RaisedButton ({title, color, fun, styleChange, disabled=false}: PropsType) {
   return (
     <Button
-      title={title}
-      buttonStyle={{
+      style={{
         borderColor: color
       }}
-      type="outline"
-      raised
-      titleStyle={{ color: color }}
-      containerStyle={styleChange}
+      mode="outlined"
+      labelStyle={{ color: color }}
+      contentStyle={styleChange}
       onPress={fun}
       disabled={disabled}
-    />
+    >
+      {title}
+    </Button>
   )
 }

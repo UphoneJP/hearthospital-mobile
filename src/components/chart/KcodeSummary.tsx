@@ -1,9 +1,9 @@
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Dimensions, Modal, Pressable, StyleSheet, Text, View } from "react-native"
 import { BarChart } from "react-native-gifted-charts"
 import { type hospitalType } from "../../types/types"
 import { useState } from "react"
-import { Button, Dialog } from "@rneui/themed"
-import { AntDesign } from "@expo/vector-icons"
+import { MaterialIcons } from "@expo/vector-icons"
+import CustomButton from "../parts/CustomButton"
 
 type KcodeType = {
   K5541: string,
@@ -71,81 +71,115 @@ export default function KcodeSummary(prop:PropsType){
   })
 
   return (
-    <View>
-      <Button
+    <>
+      <CustomButton
         title="主要手術別患者数 まとめ"
-        onPress={() => {setVisible(!visible)}}
-        buttonStyle={styles.button}
         color='orange'
+        fun={()=>setVisible(true)}
       />
-      <Dialog
-        isVisible={visible}
-        onBackdropPress={() => {setVisible(!visible)}}
-        overlayStyle={styles.dialogBox}
-      >
-        <Dialog.Title 
-          title="主要手術別患者数 まとめ" 
-          titleStyle={{textAlign:'center'}}
-        />
 
-        <TouchableOpacity 
-          style={styles.closeButton}
-          onPress={() => {setVisible(!visible)}}
-        >
-          <AntDesign name="close" size={24} color="gray" />
-        </TouchableOpacity>
-        
-        <BarChart 
-          xAxisLabelTextStyle={{fontSize: 8}}
-          labelWidth={160}
-          xAxisLabelsHeight={64}
-          width={screenWidth}
-          height={screenHeight}
-          rotateLabel
-          barWidth={60}
-          initialSpacing={16}
-          spacing={32}
-          noOfSections={4}
-          autoCenterTooltip={true}
-          leftShiftForLastIndexTooltip={160}
-          renderTooltip={(e)=>{
-            return (
-              <View style={styles.tipsBox}>
-                <Text style={{fontWeight: 'bold'}}>{e.label}</Text>
-                {e.stacks.map((stack:{value: number, color: string}, index: number) => (
-                  stack.value > 0 && (
-                    <View 
-                      key={index} 
-                      style={{ flexDirection: "row", alignItems: "center" }}
-                    >
-                      <View
-                        style={{
-                          width: 12,
-                          height: 12,
-                          backgroundColor: stack.color,
-                          borderRadius: 6,
-                          marginTop: 2
-                        }}
-                      />
-                      <Text>{`${Object.values(KcodeName)[index]}: ${stack.value}`}件</Text>
-                    </View>
-                  )
-                ))}
-              </View>
-            )
-          }}
-          stackData={stackData}
-        />
-      </Dialog>
-      
-    </View>
+      <Modal
+        visible={visible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setVisible(false)}
+      >
+        <Pressable style={styles.mask} onPress={()=>setVisible(false)}>
+          <View style={styles.container}>
+            <MaterialIcons 
+              name="clear" 
+              size={24} 
+              color="#333333"
+              style={styles.clear} 
+              onPress={()=>setVisible(false)}  
+            />
+            <Text style={{ fontSize: 24, fontWeight: 'bold' }}>
+              令和{year==='R5' ? 5 : year==='R4' ? 4 : year==='R3' ? 3 : '?'}年度
+            </Text>
+            <Text style={{ fontSize: 16 }}>主要手術別患者数 まとめ</Text>
+
+            <BarChart 
+              xAxisLabelTextStyle={{fontSize: 10}}
+              labelWidth={120}
+              xAxisLabelsHeight={64}
+              width={screenWidth}
+              height={screenHeight}
+              rotateLabel
+              barWidth={54}
+              initialSpacing={16}
+              spacing={8}
+              endSpacing={32}
+              noOfSections={4}
+              autoCenterTooltip={true}
+              leftShiftForLastIndexTooltip={160}
+              renderTooltip={(e)=>{
+                return (
+                  <View style={styles.tipsBox}>
+                    <Text style={{fontWeight: 'bold'}}>{e.label}</Text>
+                    {e.stacks.map((stack:{value: number, color: string}, index: number) => (
+                      stack.value > 0 && (
+                        <View 
+                          key={index} 
+                          style={{ flexDirection: "row", alignItems: "center" }}
+                        >
+                          <View
+                            style={{
+                              width: 12,
+                              height: 12,
+                              backgroundColor: stack.color,
+                              borderRadius: 6,
+                              marginTop: 2
+                            }}
+                          />
+                          <Text>{`${Object.values(KcodeName)[index]}: ${stack.value}`}件</Text>
+                        </View>
+                      )
+                    ))}
+                  </View>
+                )
+              }}
+              stackData={stackData}
+            />
+          </View>
+        </Pressable>
+      </Modal>
+
+    </>
   )
 }
 
-const screenWidth = Dimensions.get("window").width
-const screenHeight = Dimensions.get("window").height - 400
+const screenWidth = Dimensions.get("window").width - 60
+const screenHeight = Dimensions.get("window").height * 0.6
 
 const styles = StyleSheet.create({
+  mask: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 40
+  },
+  container: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 16,
+    paddingTop: 40,
+    borderColor: 'orange',
+    borderWidth: 1
+  },
+  clear: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    zIndex: 50,
+    padding: 8
+  },
   tipsBox: {
     borderWidth: 2,
     borderColor: 'gray',
@@ -156,20 +190,5 @@ const styles = StyleSheet.create({
     top: -20,
     left: -40,
     backgroundColor: "white"
-  },
-  button: {
-    borderRadius: 6,
-    width: 220,
-    margin: 'auto',
-    marginTop: 16
-  },
-  dialogBox: {
-    width: screenWidth,
-    paddingHorizontal: 0
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 8,
-    right: 8
   }
 })

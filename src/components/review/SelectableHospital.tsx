@@ -1,10 +1,11 @@
 /* eslint-disable no-unsafe-optional-chaining */
-import { ActivityIndicator, Alert, Text, View } from "react-native"
+import { ActivityIndicator, Text, View } from "react-native"
 import { Picker } from "@react-native-picker/picker"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import createAxiosClient from "@/utils/axiosClient"
 import { hospitalType } from "@/src/types/types"
 import { saveToken } from "@/utils/secureStore"
+import { AuthContext } from "@/src/context/loginContext"
 
 
 interface PropsType {
@@ -22,6 +23,7 @@ export default function SelectableHospital(prop: PropsType){
   } = prop
   const [areas, setAreas] = useState<string[]>([])
   const [loading, setLoading] = useState<boolean>(true)
+  const {backToHome} = useContext(AuthContext)
 
   useEffect(()=>{
     async function getHospitals(){
@@ -31,7 +33,7 @@ export default function SelectableHospital(prop: PropsType){
         setHospitals(response?.data.hospitals)
         setAreas(response?.data.areas)
       } catch {
-        Alert.alert('エラーで病院情報を取得できませんでした')
+        await backToHome('エラーで病院情報を取得できませんでした。ホーム画面へ戻ります。')
       }
     }
     getHospitals()
