@@ -9,9 +9,9 @@ import CustomCard from '../parts/CustomCard'
 export default function RegisterBox(){
   const [penName, setPenName] = useState<string>('')
   const [email, setEmail] = useState<string>('')
-  const [authNum, setAuthNum] = useState<string>('')
-  const [answer, setAnswer] = useState<string>('')
-  const [expire, setExpire] = useState<number>(0)
+  // const [authNum, setAuthNum] = useState<string>('')
+  // const [answer, setAnswer] = useState<string>('')
+  // const [expire, setExpire] = useState<number>(0)
   const [password, setPassword] = useState<string>('')
   const { register } = useContext(AuthContext)
   const { serverLoading } = useContext(LoadingContext)
@@ -43,10 +43,10 @@ export default function RegisterBox(){
       <EmailInputForm
         email={email}
         setEmail={setEmail}
-        authNum={authNum}
-        setAuthNum={setAuthNum}
-        setAnswer={setAnswer}
-        setExpire={setExpire}
+        // authNum={authNum}
+        // setAuthNum={setAuthNum}
+        // setAnswer={setAnswer}
+        // setExpire={setExpire}
       />
 
       <TextInput
@@ -80,8 +80,8 @@ export default function RegisterBox(){
         disabled={
           penName
           &&email
-          &&authNum===answer
-          &&Date.now() < expire
+          // &&authNum===answer
+          // &&Date.now() < expire
           &&password
           &&!serverLoading
           ? false : true 

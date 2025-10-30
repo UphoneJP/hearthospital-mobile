@@ -15,8 +15,8 @@ import DeleteButton from "../parts/DeleteButton"
 const androidAdmobInterstitial = Constants.expoConfig?.extra?.INTERSTITIAL_ANDROID_UNIT_ID
 const iosAdmobInterstitial = Constants.expoConfig?.extra?.INTERSTITIAL_IOS_UNIT_ID
 const productionID = Device.osName === "Android" ? androidAdmobInterstitial : iosAdmobInterstitial
-const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : productionID
-// const adUnitId = TestIds.INTERSTITIAL
+// const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : productionID
+const adUnitId = TestIds.INTERSTITIAL
 const interstitial = InterstitialAd.createForAdRequest(adUnitId, {
   requestNonPersonalizedAdsOnly: true
 })
