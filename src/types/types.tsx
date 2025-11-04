@@ -41,6 +41,9 @@ interface hospitalType {
   R5DPC: string,
   R5Kcode: object,
   R5DPCcode: object,
+  R6DPC: string,
+  R6Kcode: object,
+  R6DPCcode: object,
   reviews? : reviewType[],
   [key: string]: any
 }
@@ -98,6 +101,7 @@ K566: string,
 K5702: string,
 K5741: string,
 K5761: string,
+K5762: string,
 K5801: string,
 K5812: string,
 K5861: string,

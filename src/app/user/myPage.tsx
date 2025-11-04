@@ -3,7 +3,7 @@ import { useContext } from "react"
 import { Text, View, StyleSheet, ScrollView } from "react-native"
 
 import { AuthContext } from "@/src/context/loginContext"
-import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
+import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import PenName from "@/src/components/user/PenName"
 import Promotion from "@/src/components/user/Promotion"
 import MyPageBox from "@/src/components/user/MyPageBox"

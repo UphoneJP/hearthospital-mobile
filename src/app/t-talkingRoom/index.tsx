@@ -3,7 +3,7 @@ import { StyleSheet, TouchableOpacity, View } from "react-native"
 import { ScrollView } from "react-native"
 import { Text } from 'react-native-paper'
 
-import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
+import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import { talkThemeType } from "@/src/types/types"
 import createAxiosClient from "@/utils/axiosClient"
 import TalkThemes from "@/src/components/review/TalkThemes"

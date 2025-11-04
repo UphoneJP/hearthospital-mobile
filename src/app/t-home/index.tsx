@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { Alert, Animated, StyleSheet, Text, TouchableOpacity, View, Platform } from "react-native"
 import { useContext, useEffect, useRef, useState } from "react"
-import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
+import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import { MenuContext } from "@/src/context/menuContext"
 import { useTab } from "@/src/context/tabContext"
 import { router } from "expo-router"

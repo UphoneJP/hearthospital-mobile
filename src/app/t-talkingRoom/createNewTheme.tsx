@@ -1,5 +1,5 @@
 import CustomButton from "@/src/components/parts/CustomButton"
-import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
+import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import { AuthContext } from "@/src/context/loginContext"
 import createAxiosClient from "@/utils/axiosClient"
 import { router } from "expo-router"

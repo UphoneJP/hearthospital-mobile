@@ -1,8 +1,7 @@
 import { TextInput, Divider, Button } from 'react-native-paper'
 import { useContext, useState } from 'react'
 import { AuthContext } from '@/src/context/loginContext'
-import { Keyboard, StyleSheet, Text, TouchableOpacity } from 'react-native'
-import { router } from 'expo-router'
+import { Keyboard, StyleSheet, Text } from 'react-native'
 import CustomCard from '../parts/CustomCard'
 import { LoadingContext } from '@/src/context/loadingContext'
 
@@ -70,9 +69,9 @@ export default function LoginBox(){
           ログイン
         </Button>
 
-        <TouchableOpacity onPress={()=>router.push('/user/resetPW')}>
+        {/* <TouchableOpacity onPress={()=>router.push('/user/resetPW')}>
           <Text style={styles.link}>パスワードの再設定・お忘れの方はこちら</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
       </>
     </CustomCard>

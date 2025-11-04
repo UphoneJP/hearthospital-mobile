@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { ActivityIndicator, Image, View } from "react-native"
-import BackgroundTemplate from "../components/template/BackgroundTemplete"
+import BackgroundTemplate from "../components/template/BackgroundTemplate"
 import { Text } from "react-native"
 
 export default function oauthredirect(){

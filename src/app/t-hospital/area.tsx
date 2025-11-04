@@ -4,7 +4,7 @@ import { router } from "expo-router"
 
 import { type hospitalType } from "@/src/types/types"
 import createAxiosClient from "@/utils/axiosClient"
-import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
+import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import CustomButton from "@/src/components/parts/CustomButton"
 import { LoadingContext } from "@/src/context/loadingContext"
 

@@ -1,34 +1,42 @@
-import { StyleSheet } from "react-native"
+import { ActivityIndicator, StyleSheet, Text } from "react-native"
 import { useState, useEffect, useContext } from "react"
 import MapView, { Marker } from 'react-native-maps'
 import { router } from "expo-router"
 
 import { type hospitalType } from "@/src/types/types"
 import createAxiosClient from "@/utils/axiosClient"
-import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
+import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import BannerAds from "@/src/components/template/BannerAds"
-import { LoadingContext } from "@/src/context/loadingContext"
 import { AuthContext } from "@/src/context/loginContext"
 
 export default function Map () {
   const [hospitals, setHospitals] = useState<hospitalType[]|undefined>(undefined)
-  const {setServerLoading} = useContext(LoadingContext)
+  const [loading, setLoading] = useState<boolean>(true)
+
   const {backToHome} = useContext(AuthContext)
 
   useEffect(()=>{
     async function getAxiosClient(){
       try {
-        setServerLoading(true)
         const axiosClient = await createAxiosClient()
         const response = await axiosClient?.get('/api/hospital')
         setHospitals(response?.data.hospitals)
-        setServerLoading(false)
+        setLoading(false)
       } catch {
         await backToHome("病院情報の取得に失敗しました。ホーム画面へ戻ります。")
       }
     }
     getAxiosClient()
   },[])
+
+  if(loading){
+    return(
+      <BackgroundTemplate>
+        <ActivityIndicator size="large" color="orange"/>
+        <Text>サーバーから読み込み中...</Text>
+      </BackgroundTemplate>
+    )
+  }
 
   return (
     <BackgroundTemplate>            
@@ -42,6 +50,11 @@ export default function Map () {
         }}
       >
         {hospitals?.map(hospital => {
+          if (
+            typeof hospital.lat !== 'number' || 
+            typeof hospital.lng !== 'number'
+          ) return null
+
           return (
             <Marker
               key={hospital._id}

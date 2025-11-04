@@ -2,7 +2,7 @@ import { useSearchParams } from "expo-router/build/hooks"
 import { useContext, useEffect, useState } from "react"
 import { StyleSheet, Text } from "react-native"
 
-import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
+import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import AddButton from "@/src/components/parts/AddButton"
 import { type talkThemeType } from "@/src/types/types"
 import createAxiosClient from "@/utils/axiosClient"

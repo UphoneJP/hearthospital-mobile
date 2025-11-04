@@ -4,7 +4,7 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-nati
 import { router } from "expo-router"
 import { Linking } from "react-native"
 
-import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
+import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import { reviewType } from "@/src/types/types"
 import createAxiosClient from "@/utils/axiosClient"
 import BannerAds from "@/src/components/template/BannerAds"

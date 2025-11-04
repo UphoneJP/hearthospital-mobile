@@ -62,7 +62,7 @@ export default function HospitalData( prop: PropsType) {
             />
 
             {expandedAreas[area]&&hospitals.map(hospital=>{
-              const years = ['R3', 'R4', 'R5']
+              const years = ['R3', 'R4', 'R5', 'R6']
 
               const DPCstackDatas: {stacks:{value:number, color:string}[], label:string}[] = []
               years.map(year=>{
@@ -87,7 +87,7 @@ export default function HospitalData( prop: PropsType) {
                 
               if(
                 hospital.area===area && 
-                (hospital.R3Kcode||hospital.R3DPCcode||hospital.R4Kcode||hospital.R4DPCcode||hospital.R5Kcode||hospital.R5DPCcode)
+                (hospital.R3Kcode||hospital.R3DPCcode||hospital.R4Kcode||hospital.R4DPCcode||hospital.R5Kcode||hospital.R5DPCcode||hospital.R6Kcode||hospital.R6DPCcode)
               ){
                 return (
                   <Fragment key={hospital._id}>
@@ -128,8 +128,8 @@ export default function HospitalData( prop: PropsType) {
                               // width={screenWidth - 60}
                               height={screenHeight / 2}
                               barWidth={40}
-                              initialSpacing={(screenWidth-180)/8}
-                              spacing={(screenWidth-180)/4}
+                              initialSpacing={(screenWidth-180)/12}
+                              spacing={(screenWidth-180)/6}
                               noOfSections={4}
                               autoCenterTooltip={true}
                               leftShiftForLastIndexTooltip={80}
@@ -173,8 +173,8 @@ export default function HospitalData( prop: PropsType) {
                               // width={screenWidth - 32}
                               height={screenHeight / 2}
                               barWidth={40}
-                              initialSpacing={(screenWidth-180)/8}
-                              spacing={(screenWidth-180)/4}
+                              initialSpacing={(screenWidth-180)/12}
+                              spacing={(screenWidth-180)/6}
                               noOfSections={4}
                               autoCenterTooltip={true}
                               leftShiftForLastIndexTooltip={80}

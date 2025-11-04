@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react"
 import { Alert, ScrollView, StyleSheet, Text, View } from "react-native"
 import { router } from "expo-router"
-import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
+import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import { AuthContext } from "@/src/context/loginContext"
 import { type usersExceptContactPersonsType, type contactPersonType } from "@/src/types/types"
 import createAxiosClient from "@/utils/axiosClient"

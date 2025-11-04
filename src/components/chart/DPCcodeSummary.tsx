@@ -78,7 +78,7 @@ export default function DPCcodeSummary(prop:PropsType){
               onPress={()=>setVisible(false)}  
             />
             <Text style={{ fontSize: 24, fontWeight: 'bold' }}>
-              令和{year==='R5' ? 5 : year==='R4' ? 4 : year==='R3' ? 3 : '?'}年度
+              令和{year==='R6' ? 6 : year==='R5' ? 5 : year==='R4' ? 4 : year==='R3' ? 3 : '?'}年度
             </Text>
             <Text style={{ fontSize: 16 }}>診断群分類別患者数 まとめ</Text>
 

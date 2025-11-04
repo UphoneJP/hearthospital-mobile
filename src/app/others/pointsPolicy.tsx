@@ -1,4 +1,4 @@
-import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
+import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import BannerAds from "@/src/components/template/BannerAds"
 import { router } from "expo-router"
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"

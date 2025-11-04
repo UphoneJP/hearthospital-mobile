@@ -14,6 +14,7 @@ type KcodeType = {
   K5702: string,
   K5741: string,
   K5761: string,
+  K5762: string,
   K5801: string,
   K5812: string,
   K5861: string,
@@ -94,7 +95,7 @@ export default function KcodeSummary(prop:PropsType){
               onPress={()=>setVisible(false)}  
             />
             <Text style={{ fontSize: 24, fontWeight: 'bold' }}>
-              令和{year==='R5' ? 5 : year==='R4' ? 4 : year==='R3' ? 3 : '?'}年度
+              令和{year==='R6' ? 6 : year==='R5' ? 5 : year==='R4' ? 4 : year==='R3' ? 3 : '?'}年度
             </Text>
             <Text style={{ fontSize: 16 }}>主要手術別患者数 まとめ</Text>
 

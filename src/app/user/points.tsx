@@ -1,5 +1,5 @@
 import { ScrollView, View } from "react-native"
-import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
+import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import BannerAds from "@/src/components/template/BannerAds"
 import PointsHeader from "@/src/components/points/PointsHeader"
 import PointsGet from "@/src/components/points/PointsGet"

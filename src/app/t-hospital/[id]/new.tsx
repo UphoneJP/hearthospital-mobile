@@ -11,7 +11,7 @@ import CustomInput from "@/src/components/parts/CustomInput"
 import { AuthContext } from "@/src/context/loginContext"
 import DiseasesBox from "@/src/components/review/DiseasesBox"
 import RaisedButton from "@/src/components/parts/RaisedButton"
-import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
+import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import { saveToken, getToken, deleteToken } from "@/utils/secureStore"
 import { LoadingContext } from "@/src/context/loadingContext"
 

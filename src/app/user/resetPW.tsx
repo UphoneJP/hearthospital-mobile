@@ -1,4 +1,4 @@
-import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
+import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import BannerAds from "@/src/components/template/BannerAds"
 import EmailInputForm from "@/src/components/user/EmailInputForm"
 import createAxiosClient from "@/utils/axiosClient"
@@ -11,12 +11,13 @@ import { LoadingContext } from "@/src/context/loadingContext"
 
 export default function resetPW(){
   const [email, setEmail] = useState<string>('')
-  const [authNum, setAuthNum] = useState<string>('')
-  const [answer, setAnswer] = useState<string>('')
-  const [expire, setExpire] = useState<number>(0)
+  // const [authNum, setAuthNum] = useState<string>('')
+  // const [answer, setAnswer] = useState<string>('')
+  // const [expire, setExpire] = useState<number>(0)
   const [password, setPassword] = useState<string>('')
   const { setServerLoading } = useContext(LoadingContext)
-  const readyForSent = email && password && authNum.length === 6 && authNum === answer && Date.now() < expire ? true : false
+  const readyForSent = email && password ? true : false
+  // const readyForSent = email && password && authNum.length === 6 && authNum === answer && Date.now() < expire ? true : false
 
   async function resetPWFun(){
     try {
@@ -24,8 +25,8 @@ export default function resetPW(){
       const axiosClient = await createAxiosClient()
       await axiosClient?.post('/api/user/resetPassword', {email, password})
       router.replace('/user/login')
-      setAuthNum('')
-      setAnswer('')
+      // setAuthNum('')
+      // setAnswer('')
       Alert.alert('パスワードを再設定しました')
     } catch {
       Alert.alert('エラーが発生しました')
@@ -46,10 +47,10 @@ export default function resetPW(){
         <EmailInputForm
           email={email}
           setEmail={setEmail}
-          authNum={authNum}
-          setAuthNum={setAuthNum}
-          setAnswer={setAnswer}
-          setExpire={setExpire}
+          // authNum={authNum}
+          // setAuthNum={setAuthNum}
+          // setAnswer={setAnswer}
+          // setExpire={setExpire}
         />
 
         <TextInput

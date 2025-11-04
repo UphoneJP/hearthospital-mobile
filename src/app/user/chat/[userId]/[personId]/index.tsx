@@ -1,6 +1,6 @@
 import { useSearchParams } from "expo-router/build/hooks"
 import { useContext, useEffect, useState } from "react"
-import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
+import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import createAxiosClient from "@/utils/axiosClient"
 import MessageHeader from "@/src/components/chatRoom/MessageHeader"
 import MessageForm from "@/src/components/chatRoom/MessageForm"

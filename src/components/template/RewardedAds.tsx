@@ -18,8 +18,8 @@ export default function RewardedAds(prop: propsType) {
   const androidAdmobRewarded = Constants.expoConfig?.extra?.REWARDED_ANDROID_UNIT_ID
   const iosAdmobRewarded = Constants.expoConfig?.extra?.REWARDED_IOS_UNIT_ID
   const productionID = Device.osName === 'Android' ? androidAdmobRewarded : iosAdmobRewarded
-  // const adUnitId = __DEV__ ? TestIds.REWARDED : productionID
-  const adUnitId =TestIds.REWARDED
+  const adUnitId = __DEV__ ? TestIds.REWARDED : productionID
+  // const adUnitId =TestIds.REWARDED
 
   function loadFun () {
     setLoading(true)

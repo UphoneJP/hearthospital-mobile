@@ -19,6 +19,7 @@ export default function Selector ({selectedValue, setSelectedValue}:PropsType) {
       <Picker.Item label="令和３年度データ" value="R3" />
       <Picker.Item label="令和４年度データ" value="R4" />
       <Picker.Item label="令和５年度データ" value="R5" />
+      <Picker.Item label="令和６年度データ" value="R6" />
     </Picker>
   )
 }

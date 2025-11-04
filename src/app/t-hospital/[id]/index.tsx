@@ -4,7 +4,7 @@ import { ScrollView, StyleSheet, Linking, TouchableOpacity, View } from "react-n
 import { Text } from "react-native"
 
 import { hospitalType } from "@/src/types/types"
-import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
+import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import ReviewsBox from "@/src/components/review/ReviewsBox"
 import AddButton from "@/src/components/parts/AddButton"
 import HospitalMap from "@/src/components/review/HospitalMap"

@@ -5,7 +5,7 @@ import { TextInput } from 'react-native-paper'
 
 import { type reviewType } from "@/src/types/types"
 import createAxiosClient from "@/utils/axiosClient"
-import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
+import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import DiseasesBox from "@/src/components/review/DiseasesBox"
 import ReviewsBox from "@/src/components/review/ReviewsBox"
 import { LoadingContext } from "@/src/context/loadingContext"

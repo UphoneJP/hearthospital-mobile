@@ -1,4 +1,4 @@
-import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
+import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import { AuthContext } from "@/src/context/loginContext"
 import { useTab } from "@/src/context/tabContext"
 import { userType } from "@/src/types/types"

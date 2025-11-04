@@ -24,10 +24,18 @@ export default function Tab(prop:Props) {
         tabBox: {
             width: '25%',
             backgroundColor: select?'#fede9d':'orange',
-            paddingVertical: deviceOS === 'android' ? 4 : 20
+            paddingVertical: deviceOS === 'android' ? 4 : 20,
+            position: 'relative'
         },
         imageStyle: {
             textAlign: 'center'
+        },
+        newStyle:{
+            position: 'absolute',
+            top: 0,
+            right: 16,
+            fontSize: 24,
+            color: 'red'
         },
         textStyle: {
             fontSize: 10,
@@ -57,7 +65,10 @@ export default function Tab(prop:Props) {
                   <FontAwesome6 name="hospital" size={20} color='white' style={styles.imageStyle} />
               }
               {name==='data'&&
-                  <Foundation name="graph-bar" size={20} color='white' style={styles.imageStyle} />
+                  <>
+                    <Foundation name="graph-bar" size={20} color='white' style={styles.imageStyle} />
+                    <Text style={styles.newStyle}>●</Text>
+                  </>
               }
               {name==='talkingRoom'&&
                   <Fontisto name="coffeescript" size={20} color='white' style={styles.imageStyle} />

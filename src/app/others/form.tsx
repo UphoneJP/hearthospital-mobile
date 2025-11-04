@@ -1,5 +1,5 @@
 import CustomInput from "@/src/components/parts/CustomInput"
-import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
+import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import { AuthContext } from "@/src/context/loginContext"
 import { useContext, useEffect, useState } from "react"
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native"

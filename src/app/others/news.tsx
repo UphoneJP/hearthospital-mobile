@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
+import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import BannerAds from "@/src/components/template/BannerAds"
 import Topic from "@/src/components/template/Topic"
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native"
@@ -14,6 +14,14 @@ export default function news(){
           <Image source={require('@/assets/hearton-singing.png')} style={{width: 120, height: 160, objectFit: 'contain'}}/>
         </View>
         <View style={styles.container}>
+
+          <Topic
+            date="2025/11/04"
+            title="病院データを令和６年度の最新データに更新しました!!"
+            content=" 令和6年度(2024.04.01~2025.03.31)の最新病院データに更新しました。 各病院でどんな手術を年間何件やっているかが視覚で直感的にわかります。 ぜひご覧ください!!"
+            backImageNum={4}
+            textColor="#5c12ab"
+          />
 
           <Topic
             date="2025/03/10"

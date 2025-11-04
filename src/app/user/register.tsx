@@ -1,7 +1,7 @@
 import { AuthContext } from "@/src/context/loginContext"
 import { useContext, useEffect } from "react"
 import { router } from "expo-router"
-import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
+import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import RegisterBox from "@/src/components/user/RegisterBox"
 import { Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import GoogleLogin from "@/src/components/OAuth/GoogleLogin"

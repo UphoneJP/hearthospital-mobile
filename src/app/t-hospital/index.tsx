@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native"
 
-import BackgroundTemplate from "@/src/components/template/BackgroundTemplete"
+import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import CustomButton from "@/src/components/parts/CustomButton"
 import BannerAds from "@/src/components/template/BannerAds"
 
