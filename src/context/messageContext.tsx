@@ -33,7 +33,7 @@ const MessageProvider = ({children}:{children: React.ReactNode}) => {
   const { user } = useContext(AuthContext)
   const [unReadMessages, setUnReadMessages] = useState<messageType[]>([])
   const [messages, setMessages] = useState<messageType[]>([])
-  const { setServerLoading } = useContext(LoadingContext)
+  const { setServerLoading, setLoadingPercentage } = useContext(LoadingContext)
 
   // ■EMIT
   function markAsReadIO( // ④自分が既読した
@@ -51,6 +51,7 @@ const MessageProvider = ({children}:{children: React.ReactNode}) => {
     setMessageInput: React.Dispatch<React.SetStateAction<string>>
   ){
     setServerLoading(true)
+    setLoadingPercentage(0)
     try {
       socket.emit("sendMessage", {userId, personId, content}, (response: { status: number })=>{
         if (response.status === 200) {

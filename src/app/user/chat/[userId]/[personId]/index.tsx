@@ -13,12 +13,13 @@ export default function ChatRoom(){
   const userId = useSearchParams().get('userId')
   const personId = useSearchParams().get('personId')
   const [recieverName, setRecieverName] = useState<string>('')
-  const { serverLoading, setServerLoading } = useContext(LoadingContext)
+  const { serverLoading, setServerLoading, setLoadingPercentage } = useContext(LoadingContext)
   const { setMessages } = useContext(UnReadMessagesContext)
 
   useEffect(()=>{
     async function getMessages(){
       setServerLoading(true)
+      setLoadingPercentage(0)
       try {
         const axiosClient = await createAxiosClient()
         const response = await axiosClient?.get(`/api/others/chat/${userId}/${personId}`)

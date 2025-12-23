@@ -1,42 +1,41 @@
-import { ActivityIndicator, StyleSheet, Text } from "react-native"
+import { StyleSheet } from "react-native"
 import { useState, useEffect, useContext } from "react"
 import MapView, { Marker } from 'react-native-maps'
 import { router } from "expo-router"
 
 import { type hospitalType } from "@/src/types/types"
-import createAxiosClient from "@/utils/axiosClient"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import BannerAds from "@/src/components/template/BannerAds"
 import { AuthContext } from "@/src/context/loginContext"
+import { LoadingContext } from "@/src/context/loadingContext"
+import { getData } from "@/utils/asyncStorage"
 
 export default function Map () {
   const [hospitals, setHospitals] = useState<hospitalType[]|undefined>(undefined)
-  const [loading, setLoading] = useState<boolean>(true)
+  const {setServerLoading, setLoadingPercentage} = useContext(LoadingContext)
 
   const {backToHome} = useContext(AuthContext)
 
   useEffect(()=>{
-    async function getAxiosClient(){
+    async function fetchHospitals(){
       try {
-        const axiosClient = await createAxiosClient()
-        const response = await axiosClient?.get('/api/hospital')
-        setHospitals(response?.data.hospitals)
-        setLoading(false)
+        setServerLoading(true)
+        setLoadingPercentage(0)
+        const loadHospitals = await getData('hospitals')
+        if(loadHospitals){
+          setHospitals(JSON.parse(loadHospitals))
+          setServerLoading(false)
+        } else {
+          setServerLoading(false)
+          await backToHome("病院情報の取得に失敗しました。ホーム画面へ戻ります。")
+        }
       } catch {
+        setServerLoading(false)
         await backToHome("病院情報の取得に失敗しました。ホーム画面へ戻ります。")
       }
     }
-    getAxiosClient()
-  },[])
-
-  if(loading){
-    return(
-      <BackgroundTemplate>
-        <ActivityIndicator size="large" color="orange"/>
-        <Text>サーバーから読み込み中...</Text>
-      </BackgroundTemplate>
-    )
-  }
+    fetchHospitals()
+  }, [])
 
   return (
     <BackgroundTemplate>            

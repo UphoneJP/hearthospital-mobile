@@ -10,17 +10,16 @@ import createAxiosClient from "@/utils/axiosClient"
 import CustomInput from "@/src/components/parts/CustomInput"
 import { AuthContext } from "@/src/context/loginContext"
 import DiseasesBox from "@/src/components/review/DiseasesBox"
-import RaisedButton from "@/src/components/parts/RaisedButton"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
-import { saveToken, getToken, deleteToken } from "@/utils/secureStore"
 import { LoadingContext } from "@/src/context/loadingContext"
+import { deleteData, getData, saveData } from "@/utils/asyncStorage"
+import CustomButton from "@/src/components/parts/CustomButton"
 
 export default function New(){
   const [hospital, setHospital] = useState<hospitalType|undefined>(undefined)
   const [titleName, setTitleName] = useState<string>('')
   const [diseaseNames, setDiseaseNames] = useState<string>('')
   const [url, setUrl] = useState<string>('')
-  const [loading, setLoading] = useState<boolean>(false)
   const currentYear = new Date().getFullYear()
   const currentMonth = new Date().getMonth() + 1
   const [year, setYear] = useState(currentYear)
@@ -30,47 +29,56 @@ export default function New(){
   const id = useSearchParams().get('id')
   const {user} = useContext(AuthContext)
   const {backToHome} = useContext(AuthContext)
-  const {setServerLoading} = useContext(LoadingContext)
+  const {setServerLoading, setLoadingPercentage} = useContext(LoadingContext)
 
   if(!id)return
 
   useEffect(()=>{
 
-    // 病院の読み込み関数
-    async function fetchHospital(){
+    async function fetchHospitals(){
       try {
-        setServerLoading(true)
-        const axiosClient = await createAxiosClient()
-        const response = await axiosClient?.get(`/api/hospital/${id}`)
-        setHospital(response?.data.hospital)
+        const loadHospitals = await getData('hospitals')
+        if(loadHospitals){
+          setHospital(JSON.parse(loadHospitals).find((hosp: hospitalType) => hosp._id === id))
+          setServerLoading(false)
+        } else {
+          setServerLoading(false)
+          await backToHome("病院情報の取得に失敗しました。ホーム画面へ戻ります。")
+        }
       } catch {
-        await backToHome('病院情報の取得に失敗しました。ホーム画面へ戻ります。')
+        setServerLoading(false)
+        await backToHome("病院情報の取得に失敗しました。ホーム画面へ戻ります。")
       }
     }
     
     // 病名一覧の読み込み関数
     async function fetchDiseases(){
       try {
-        setServerLoading(true)
-        const axiosClient = await createAxiosClient()
-        const response = await axiosClient?.get('/api/hospital/reviews')
-        const allDiseases = response?.data.reviews.map((review: { diseaseNames: string[] }) => review.diseaseNames).flat()
-        setDiseases([...new Set<string>(allDiseases)])
+        const loadReviews = await getData('reviews')
+        if(loadReviews){
+          const allDiseases = JSON.parse(loadReviews).map((review: { diseaseNames: string[] }) => review.diseaseNames).flat()
+          setDiseases([...new Set<string>(allDiseases)])
+          setServerLoading(false)
+        } else {
+          Alert.alert('病名の一覧を取得できませんでした。')
+          setServerLoading(false)
+        }
       } catch {
-        Alert.alert("病名の取得に失敗しました")
+        Alert.alert("病名の取得に失敗しました。")
       }
     }
 
     (async () => {
       setServerLoading(true)
+      setLoadingPercentage(0)
 
       // 途中入力の読み込み
-      const leftTitle = await getToken(`${id}-title`)
-      const leftDiseases = await getToken(`${id}-diseases`)
-      const leftYear = await getToken(`${id}-year`)
-      const leftMonth = await getToken(`${id}-month`)
-      const leftUrl = await getToken(`${id}-url`)
-      const leftComment = await getToken(`${id}-comment`)
+      const leftTitle = await getData(`${id}-title`)
+      const leftDiseases = await getData(`${id}-diseases`)
+      const leftYear = await getData(`${id}-year`)
+      const leftMonth = await getData(`${id}-month`)
+      const leftUrl = await getData(`${id}-url`)
+      const leftComment = await getData(`${id}-comment`)
       setTitleName(leftTitle || '')
       setDiseaseNames(leftDiseases || '')
       setYear(Number(leftYear) || currentYear)
@@ -78,7 +86,7 @@ export default function New(){
       setUrl(leftUrl || '')
       setComment(leftComment || '')
 
-      await fetchHospital()
+      await fetchHospitals()
       await fetchDiseases()
 
       setServerLoading(false)
@@ -88,7 +96,8 @@ export default function New(){
 
   async function sendFun () {
     try {
-      setLoading(true)
+      setServerLoading(true)
+      setLoadingPercentage(0)
       const axiosClient = await createAxiosClient()
       await axiosClient?.post(`/api/hospital/${id}/new`, {
         title: titleName.trim(),
@@ -98,17 +107,17 @@ export default function New(){
         comment: comment.trim(),
         userId: user?._id
       })
-      Alert.alert('投稿いただきありがとうございます','管理人が確認後に掲載いたします。。')
-      deleteToken(`${id}-title`)
-      deleteToken(`${id}-diseases`)
-      deleteToken(`${id}-year`)
-      deleteToken(`${id}-month`)
-      deleteToken(`${id}-url`)
-      deleteToken(`${id}-comment`)
+      Alert.alert('投稿いただきありがとうございます','管理人が確認後に掲載いたします。')
+      deleteData(`${id}-title`)
+      deleteData(`${id}-diseases`)
+      deleteData(`${id}-year`)
+      deleteData(`${id}-month`)
+      deleteData(`${id}-url`)
+      deleteData(`${id}-comment`)
       router.replace(`/t-hospital/${id}`)
     } catch {
       Alert.alert('投稿エラーが発生しました')
-      setLoading(false)
+      setServerLoading(false)
     }
   }
 
@@ -142,7 +151,7 @@ export default function New(){
               style={{ flex:1 }} 
               onValueChange={async(value) => {
                 setYear(value)
-                await saveToken(`${id}-year`, value.toString())
+                await saveData(`${id}-year`, value.toString())
               }}
               
             >
@@ -161,7 +170,7 @@ export default function New(){
               itemStyle={{ borderWidth: 1, borderColor: 'black'}}
               onValueChange={async(value) => {
                 setMonth(value)
-                await saveToken(`${id}-month`, value.toString())
+                await saveData(`${id}-month`, value.toString())
               }}
             >
               {[...Array(12)].map((_, i) => (
@@ -210,12 +219,11 @@ export default function New(){
             sessionName="comment"
           />
 
-          <RaisedButton
+          <CustomButton
             title="口コミを投稿する"
-            color="green"
-            disabled={!titleName || !diseaseNames || !comment || loading ? true : false}
+            color={!titleName || !diseaseNames || !comment ? "#dddddd" : "orange"}
+            disabledFun={!titleName || !diseaseNames || !comment ? true : false}
             fun={sendFun}
-            styleChange={{margin: 32}}
           />
 
         </View>

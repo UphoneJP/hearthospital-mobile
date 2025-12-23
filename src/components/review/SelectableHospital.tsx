@@ -2,10 +2,11 @@
 import { ActivityIndicator, Text, View } from "react-native"
 import { Picker } from "@react-native-picker/picker"
 import { useContext, useEffect, useState } from "react"
-import createAxiosClient from "@/utils/axiosClient"
 import { hospitalType } from "@/src/types/types"
-import { saveToken } from "@/utils/secureStore"
 import { AuthContext } from "@/src/context/loginContext"
+import areas from "@/utils/areas"
+import { LoadingContext } from "@/src/context/loadingContext"
+import { getData, saveData } from "@/utils/asyncStorage"
 
 
 interface PropsType {
@@ -21,30 +22,36 @@ export default function SelectableHospital(prop: PropsType){
     hospitals, 
     setHospitals
   } = prop
-  const [areas, setAreas] = useState<string[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const {backToHome} = useContext(AuthContext)
+  const {setServerLoading, setLoadingPercentage} = useContext(LoadingContext)
 
   useEffect(()=>{
-    async function getHospitals(){
+    async function fetchHospitals(){
       try {
-        const axiosClient = await createAxiosClient()
-        const response = await axiosClient?.get('/api/hospital')
-        setHospitals(response?.data.hospitals)
-        setAreas(response?.data.areas)
+        setServerLoading(true)
+        setLoadingPercentage(0)
+        const loadHospitals = await getData('hospitals')
+        if(loadHospitals){
+          setHospitals(JSON.parse(loadHospitals))
+        } else {
+          await backToHome("病院情報の取得に失敗しました。ホーム画面へ戻ります。")
+        }
+        setServerLoading(false)
       } catch {
-        await backToHome('エラーで病院情報を取得できませんでした。ホーム画面へ戻ります。')
+        setServerLoading(false)
+        await backToHome("病院情報の取得に失敗しました。ホーム画面へ戻ります。")
       }
     }
-    getHospitals()
+    fetchHospitals()
   }, [])
 
   useEffect(()=>{
-    if(hospitals&&areas) {
+    if(hospitals) {
       if(!selectedHospitalname)setSelectedHospitalname(areas[0])
       setLoading(false)
     }
-  }, [hospitals, areas])
+  }, [hospitals])
 
   if(loading){
     return (
@@ -60,7 +67,7 @@ export default function SelectableHospital(prop: PropsType){
         selectedValue={selectedHospitalname}
         onValueChange={async(hospitalname) => {
           setSelectedHospitalname(hospitalname)
-          await saveToken('reveiwNoID-hospital', hospitalname)
+          await saveData('reveiwNoID-hospital', hospitalname)
         }}
         style={{flex: 1, marginVertical: 8}}
       >

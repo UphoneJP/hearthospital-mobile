@@ -16,7 +16,7 @@ export default function Chat() {
   const { setMessages } = useContext(UnReadMessagesContext)
   const [contactPersons, setContactPersons] = useState<contactPersonType[]|undefined>(undefined)
   const [usersExceptContactPersons, setUsersExceptContactPersons] = useState<usersExceptContactPersonsType[]>([])
-  const { serverLoading, setServerLoading } = useContext(LoadingContext)
+  const { serverLoading, setServerLoading, setLoadingPercentage } = useContext(LoadingContext)
 
   function handlePress(personId: string){
     router.push(`/user/chat/${user?._id}/${personId}`)
@@ -24,6 +24,7 @@ export default function Chat() {
 
   useEffect(()=>{
     setServerLoading(true)
+    setLoadingPercentage(0)
     setMessages([])
     async function fetchData(){
       if(!user)return

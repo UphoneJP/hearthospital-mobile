@@ -8,7 +8,7 @@ export default function PenName () {
   const { user, setUser } = useContext(AuthContext)
   const [penNameEdit, setPenNameEdit] = useState<boolean>(false)
   const [penNameInput, setPenNameInput] = useState<string|undefined>(user?.penName)
-  const { setServerLoading } = useContext(LoadingContext)
+  const { setServerLoading, setLoadingPercentage } = useContext(LoadingContext)
 
   useEffect(()=>{
     setPenNameInput(user?.penName)
@@ -21,6 +21,7 @@ export default function PenName () {
       return
     }
     setServerLoading(true)
+    setLoadingPercentage(0)
     setPenNameEdit(false)
     try {
       const axiosClient = await createAxiosClient()

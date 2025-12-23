@@ -30,13 +30,6 @@ export default function Tab(prop:Props) {
         imageStyle: {
             textAlign: 'center'
         },
-        newStyle:{
-            position: 'absolute',
-            top: 0,
-            right: 16,
-            fontSize: 24,
-            color: 'red'
-        },
         textStyle: {
             fontSize: 10,
             color: 'white',
@@ -67,7 +60,6 @@ export default function Tab(prop:Props) {
               {name==='data'&&
                   <>
                     <Foundation name="graph-bar" size={20} color='white' style={styles.imageStyle} />
-                    <Text style={styles.newStyle}>●</Text>
                   </>
               }
               {name==='talkingRoom'&&

@@ -5,36 +5,53 @@ import { Text } from 'react-native-paper'
 
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import { talkThemeType } from "@/src/types/types"
-import createAxiosClient from "@/utils/axiosClient"
 import TalkThemes from "@/src/components/review/TalkThemes"
 import BannerAds from "@/src/components/template/BannerAds"
 import { router } from "expo-router"
 import { AuthContext } from "@/src/context/loginContext"
 import CustomDialog from "@/src/components/parts/CustomDialog"
 import { LoadingContext } from "@/src/context/loadingContext"
+import { getData } from "@/utils/asyncStorage"
+import reloadInfo from "@/utils/reloadInfo"
+import getApiKey from "@/utils/getApiKey"
 
 export default function TalkingRoom () {
   const [talkThemes, setTalkThemes] = useState<talkThemeType[]>([])
   const [num, setNum] = useState<number>(0)
   const [dialogVisible, setDialogVisible] = useState<boolean>(false)
   const { user } = useContext(AuthContext)
-  const {serverLoading, setServerLoading} = useContext(LoadingContext)
+  const {serverLoading, setServerLoading, setLoadingPercentage} = useContext(LoadingContext)
   const {backToHome} = useContext(AuthContext)
 
-  
   useEffect(()=>{
-    async function fetchTalkThemes(){
-      setServerLoading(true)
+    async function fetchData(){
       try {
-        const axiosClient = await createAxiosClient()
-        const response = await axiosClient?.get('/api/talkingRoom')
-        setTalkThemes(response?.data.talkThemes)
+        setServerLoading(true)
+        setLoadingPercentage(0)
+        // 投稿時のみサーバーに再取得
+        if(num!==0) {
+          await getApiKey()
+          setLoadingPercentage(50)
+          await reloadInfo()
+          setLoadingPercentage(100)
+        }
+
+        const loadTalkThemes = await getData('talkThemes')
+        if(loadTalkThemes){
+          setTalkThemes(JSON.parse(loadTalkThemes))
+          setServerLoading(false)
+        } else {
+          setServerLoading(false)
+          await backToHome("情報の取得に失敗しました。ホーム画面へ戻ります。")
+        }
       } catch {
-        await backToHome()
+        setServerLoading(false)
+        await backToHome("情報の取得に失敗しました。ホーム画面へ戻ります。")
       }
     }
-    fetchTalkThemes()
+    fetchData()
   }, [num])
+
 
   useEffect(() => {
     if(talkThemes && talkThemes.length !== 0) { setServerLoading(false) }

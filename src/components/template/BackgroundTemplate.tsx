@@ -11,8 +11,7 @@ import { LoadingContext } from '@/src/context/loadingContext'
 
 const BackgroundTemplate = ({ children }: { children: React.ReactNode }) => {
   const { menuVisible, toggleMenu } = useContext(MenuContext)
-  const { serverLoading } = useContext(LoadingContext)
-
+  const { serverLoading, loadingPercentage } = useContext(LoadingContext)
   return (
     <GestureHandlerRootView>
 
@@ -26,6 +25,11 @@ const BackgroundTemplate = ({ children }: { children: React.ReactNode }) => {
             <Text style={styles.loadingText}>
               サーバーと通信中...
             </Text>
+            {loadingPercentage > 0 && 
+              <Text style={styles.loadingText}>
+                {loadingPercentage}%
+              </Text>
+            }
           </View>
         )}
         <View style={styles.overlay}>

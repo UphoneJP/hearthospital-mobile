@@ -17,7 +17,7 @@ export default function Form(){
   const { user } = useContext(AuthContext)
   const [formContent, setFormContent] = useState<string>('')
   const { onTabPress } = useTab()
-  const { setServerLoading } = useContext(LoadingContext)
+  const { setServerLoading, setLoadingPercentage } = useContext(LoadingContext)
 
   useEffect(()=>{
     (async () => {
@@ -29,6 +29,7 @@ export default function Form(){
   async function sendFun(){
     try {
       setServerLoading(true)
+      setLoadingPercentage(0)
       const axiosClient = await createAxiosClient()
       await axiosClient?.post('/api/others/form', {
         formContent,

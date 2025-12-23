@@ -3,33 +3,38 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-nati
 import { router } from "expo-router"
 
 import { type hospitalType } from "@/src/types/types"
-import createAxiosClient from "@/utils/axiosClient"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import CustomButton from "@/src/components/parts/CustomButton"
 import { LoadingContext } from "@/src/context/loadingContext"
 
 import { AuthContext } from "@/src/context/loginContext"
+import areas from "@/utils/areas"
+import { getData } from "@/utils/asyncStorage"
 
 export default function Area () {
-  const [areas, setAreas] = useState<string[]>([])
   const [hospitals, setHospitals] = useState<hospitalType[]>([])
-  const {setServerLoading} = useContext(LoadingContext)
+  const {setServerLoading, setLoadingPercentage} = useContext(LoadingContext)
   const {backToHome} = useContext(AuthContext)
 
   useEffect(()=>{
-    async function getAxiosClient(){
+    async function fetchHospitals(){
       try {
         setServerLoading(true)
-        const axiosClient = await createAxiosClient()
-        const response = await axiosClient?.get('/api/hospital')
-        setAreas(response?.data.areas)
-        setHospitals(response?.data.hospitals)
-        setServerLoading(false)
+        setLoadingPercentage(0)
+        const loadHospitals = await getData('hospitals')
+        if(loadHospitals){
+          setHospitals(JSON.parse(loadHospitals))
+          setServerLoading(false)
+        } else {
+          setServerLoading(false)
+          await backToHome("病院情報の取得に失敗しました。ホーム画面へ戻ります。")
+        }
       } catch {
+        setServerLoading(false)
         await backToHome("病院情報の取得に失敗しました。ホーム画面へ戻ります。")
       }
     }
-    getAxiosClient()
+    fetchHospitals()
   }, [])
 
   return (

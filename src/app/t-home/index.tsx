@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import { Alert, Animated, StyleSheet, Text, TouchableOpacity, View, Platform } from "react-native"
+import { Alert, Animated, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useContext, useEffect, useRef, useState } from "react"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import { MenuContext } from "@/src/context/menuContext"
@@ -8,23 +8,9 @@ import { router } from "expo-router"
 import { AuthContext } from "@/src/context/loginContext"
 import Tips from "@/src/components/template/Tips"
 import { getToken, saveToken } from "@/utils/secureStore"
-import * as Application from "expo-application"
-import Constants from "expo-constants"
-import axios from "axios"
-import CryptoJS from 'crypto-js'
-import {jwtDecode} from "jwt-decode"
 import { LoadingContext } from "@/src/context/loadingContext"
-
-interface DecodedToken {
-  apiKey: string
-  JWTSecret: string
-  deviceId: string
-  iat: number
-}
-
-const axiosClient = axios.create({
-  baseURL: Constants.expoConfig?.extra?.API_BASE_URL
-})
+import getApiKey from "@/utils/getApiKey"
+import reloadInfo from "@/utils/reloadInfo"
 
 export default function Home() {
   const [showTips, setShowTips] = useState(false)
@@ -39,7 +25,7 @@ export default function Home() {
   const heartonMoveX = useRef(new Animated.Value(0)).current
   const heartonMoveY = useRef(new Animated.Value(0)).current
   const heartonRotate = useRef(new Animated.Value(0)).current
-  const { setServerLoading } = useContext(LoadingContext)
+  const { setServerLoading, setLoadingPercentage } = useContext(LoadingContext)
 
   useEffect(() => {
     (async () => {
@@ -50,70 +36,19 @@ export default function Home() {
           setTimeout(() => setShowTips(true), 6000)
           await saveToken('isFirstLaunchDone', 'true')
         }
-
-        // APIキーを取得する関数
-        async function getApiKey () {
-          try {
-            // 前回APIキー取得から5分以内なら再取得しない
-            const lastContactTime = await getToken('lastContactTime')
-            if (lastContactTime && Date.now() < parseInt(lastContactTime) + 1000 * 60 * 5) return setStartOK(true)
-            
-            // ①デバイスIDの取得
-            let deviceId: string
-            if (Platform.OS === "android") {
-              deviceId = Application.getAndroidId() || "testDeviceId"
-            } else if (Platform.OS === "ios") {
-              deviceId = await Application.getIosIdForVendorAsync() || "testDeviceId"
-            } else {
-              deviceId = "testDeviceId"
-            }
-
-            // ②timestampの作成
-            const timestamp = Date.now()
-
-            // ③HMAC署名の生成
-            const payload = `${deviceId}:${timestamp}`
-            const apiKeyIni = Constants.expoConfig?.extra?.API_KEY_INI
-            const signature = CryptoJS.HmacSHA256(
-              CryptoJS.enc.Utf8.parse(payload),
-              CryptoJS.enc.Utf8.parse(apiKeyIni)
-            ).toString(CryptoJS.enc.Hex)
-
-            // サーバーへ①②③と共にリクエスト
-            const response = await axiosClient.post("/firstLaunch", {
-              deviceId,
-              timestamp,
-              signature
-            })
-
-            // 返ってきたトークンをデコードして検証
-            const token = response.data.token
-            const decoded = jwtDecode<DecodedToken>(token)
-            if (
-              !decoded ||
-              !decoded.iat ||
-              decoded.iat + 300 < Math.floor(Date.now() / 1000) ||
-              deviceId !== decoded.deviceId
-            ) {
-              Alert.alert('データベースとの通信初期設定に失敗しました。')
-              return
-            }
-
-            // 検証が問題無ければapiKeyとJWTSecretを保存
-            await saveToken('apiKey', decoded.apiKey)
-            await saveToken('JWTSecret', decoded.JWTSecret)
-            await saveToken('lastContactTime', Date.now().toString())
-            setStartOK(true)
-            // Alert.alert('データベースとの通信初期設定が完了しました。')
-
-          } catch (err) {
-            console.log('初期通信エラー:', err)
-            Alert.alert('エラーが発生しました。データベースへアクセスできません。')
-          }
-        }
         
         setServerLoading(true)
-        await getApiKey()
+        setLoadingPercentage(0)
+
+        // 前回APIキー取得から5分以内なら再取得しない
+        const lastContactTime = await getToken('lastContactTime')
+        if (lastContactTime && Date.now() > parseInt(lastContactTime) + 1000 * 60 * 1) {
+          await getApiKey()
+          setLoadingPercentage(50)
+          await reloadInfo()
+          setLoadingPercentage(100)
+        }
+        setStartOK(true)
         setServerLoading(false)
 
       } catch (err) {

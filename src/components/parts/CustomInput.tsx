@@ -1,5 +1,5 @@
 import { TextInput } from "react-native-paper"
-import { saveToken } from "@/utils/secureStore"
+import { saveData } from "@/utils/asyncStorage"
 
 interface PropsType {
   label: string
@@ -22,9 +22,9 @@ export default function CustomInput(prop:PropsType){
       onChangeText={async(text) => {
         setVal(text)
         if(id){
-          await saveToken(`${id}-${sessionName}`, text)
+          await saveData(`${id}-${sessionName}`, text)
         } else {
-          await saveToken(`${sessionName}`, text)
+          await saveData(`${sessionName}`, text)
         }
       }}
       autoCapitalize="none"

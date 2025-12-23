@@ -3,48 +3,53 @@ import { useContext, useEffect, useState } from "react"
 import { ScrollView, StyleSheet, Linking, TouchableOpacity, View } from "react-native"
 import { Text } from "react-native"
 
-import { hospitalType } from "@/src/types/types"
+import { hospitalType, reviewType } from "@/src/types/types"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import ReviewsBox from "@/src/components/review/ReviewsBox"
 import AddButton from "@/src/components/parts/AddButton"
 import HospitalMap from "@/src/components/review/HospitalMap"
-import createAxiosClient from "@/utils/axiosClient"
 import BannerAds from "@/src/components/template/BannerAds"
 import { LoadingContext } from "@/src/context/loadingContext"
 import { AuthContext } from "@/src/context/loginContext"
+import { getData } from "@/utils/asyncStorage"
 
 export default function HospitalDetail () {
   const searchParams = useSearchParams()
   const id = searchParams.get('id')
   const [hospital, setHospital] = useState<hospitalType|undefined>(undefined)
+  const [reviews, setReviews] = useState<reviewType[]>([])
   const [addButtonVisible, setAddButtonVisible] = useState<boolean>(true)
-  const [reviewLength, setReviewLength] = useState<number|undefined>(undefined)
-  const { setServerLoading } = useContext(LoadingContext)
+  const { setServerLoading, setLoadingPercentage } = useContext(LoadingContext)
   const {backToHome} = useContext(AuthContext)
 
   const website = () => {
     Linking.openURL(hospital?.url || 'https://www.hearthospital.jp')
   }
   const url = `/t-hospital/${id}/new`
-
-  useEffect(()=>{
-    setReviewLength(hospital?.reviews?.filter(review=>review.ownerCheck===true&&review.author?.isDeleted===false).length) 
-  }, [hospital])
   
   useEffect(()=>{
-    async function getAxiosClient(){
-      setServerLoading(true)
+    async function fetchData(){
       try {
-        const axiosClient = await createAxiosClient()
-        const response = await axiosClient?.get(`/api/hospital/${id}`)
-        setHospital(response?.data.hospital)
+        setServerLoading(true)
+        setLoadingPercentage(0)
+        const loadHospitals = await getData('hospitals')
+        const loadReviews = await getData('reviews')
+        if(loadHospitals && loadReviews){
+          setHospital(JSON.parse(loadHospitals).find((hosp: hospitalType)=>hosp._id===id))
+          const reviewsOfThisHospital = JSON.parse(loadReviews).filter((review: reviewType)=>review.hospital?._id===id && review.author?.isDeleted!==true)
+          setReviews(reviewsOfThisHospital)
+          setServerLoading(false)
+        } else {
+          setServerLoading(false)
+          await backToHome("病院情報の取得に失敗しました。ホーム画面へ戻ります。")
+        }
       } catch {
+        setServerLoading(false)
         await backToHome("病院情報の取得に失敗しました。ホーム画面へ戻ります。")
       }
-      setServerLoading(false)
     }
-    getAxiosClient()
-  },[id])
+    fetchData()
+  }, [])
 
   return (
     <BackgroundTemplate>
@@ -56,7 +61,7 @@ export default function HospitalDetail () {
         setAddButtonVisible={setAddButtonVisible}
       />
 
-      {hospital && reviewLength !== undefined && (
+      {hospital && reviews && (
         <>
           <ScrollView key={hospital._id} style={styles.scroll}>
             {/* ヘッダー */}
@@ -68,16 +73,18 @@ export default function HospitalDetail () {
                 公式HPをブラウザで開く
               </Text>
             </TouchableOpacity>
-            <Text selectable={true} style={styles.location}>{hospital.location}</Text>
+            <Text selectable={true} style={styles.location}>
+              {hospital.location}
+            </Text>
 
             {/* マップ */}
             <HospitalMap hospital={hospital}/>
 
             {/* 口コミ */}
             
-            {reviewLength !== 0 ?(
+            {reviews.length !== 0 ?(
               <ReviewsBox 
-                reviews={hospital.reviews} 
+                reviews={reviews} 
                 setHospital={setHospital} 
                 jump 
               />

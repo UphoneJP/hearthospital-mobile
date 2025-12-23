@@ -23,7 +23,7 @@ export default function ReviewsBox ( prop: PropsType ) {
 
   return (
     <>
-      {reviews?.filter(review => !review.author?.isDeleted).map(review=>{
+      {reviews?.map(review=>{
 
         async function deleteFun (){
           try {
@@ -35,8 +35,6 @@ export default function ReviewsBox ( prop: PropsType ) {
             Alert.alert('エラーで削除できませんでした')
           }
         }
-
-        if(!review.ownerCheck)return null
         
         return (
           <View key={review._id} style={styles.box}>
@@ -193,7 +191,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     backgroundColor: '#eeeeee',
     color: '#666666',
-    fontSize: 8
+    fontSize: 12
   },
   commentBox: {
     maxHeight: 64

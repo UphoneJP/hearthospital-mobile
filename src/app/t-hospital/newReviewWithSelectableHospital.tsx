@@ -1,5 +1,4 @@
 import CustomInput from "@/src/components/parts/CustomInput"
-import RaisedButton from "@/src/components/parts/RaisedButton"
 import DiseasesBox from "@/src/components/review/DiseasesBox"
 import SelectableHospital from "@/src/components/review/SelectableHospital"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
@@ -11,14 +10,15 @@ import { Divider } from "react-native-paper"
 import { router } from "expo-router"
 import { useContext, useEffect, useState } from "react"
 import { Alert, ScrollView, StyleSheet, Text, View } from "react-native"
-import { saveToken, getToken, deleteToken } from "@/utils/secureStore"
+import { deleteData, getData, saveData } from "@/utils/asyncStorage"
+import { LoadingContext } from "@/src/context/loadingContext"
+import CustomButton from "@/src/components/parts/CustomButton"
 
 export default function newReviewWithSelectableHospital (){
-  const { user } = useContext(AuthContext)
+  const { user, backToHome } = useContext(AuthContext)
   const [titleName, setTitleName] = useState<string>('')
   const [diseaseNames, setDiseaseNames] = useState<string>('')
   const [url, setUrl] = useState<string>('')
-  const [loading, setLoading] = useState<boolean>(false)
   const currentYear = new Date().getFullYear()
   const currentMonth = new Date().getMonth() + 1
   const [year, setYear] = useState(currentYear)
@@ -27,46 +27,57 @@ export default function newReviewWithSelectableHospital (){
   const [diseases, setDiseases] = useState<string[]>([])
   const [hospitals, setHospitals] = useState<hospitalType[]|undefined>(undefined)
   const [selectedHospitalname, setSelectedHospitalname] = useState<string>("")
+  const {setServerLoading, setLoadingPercentage} = useContext(LoadingContext)
 
   useEffect(()=>{
-
-    // 途中入力の読み込み
-    (async () => {
-      const leftHospital = await getToken('reveiwNoID-hospital')
-      const leftTitle = await getToken('reveiwNoID-title')
-      const leftDiseases = await getToken('reveiwNoID-diseases')
-      const leftYear = await getToken('reveiwNoID-year')
-      const leftMonth = await getToken('reveiwNoID-month')
-      const leftUrl = await getToken('reveiwNoID-url')
-      const leftComment = await getToken('reveiwNoID-comment')
-      setSelectedHospitalname(leftHospital || '')
-      setTitleName(leftTitle || '')
-      setDiseaseNames(leftDiseases || '')
-      setYear(Number(leftYear) || currentYear)
-      setMonth(Number(leftMonth) || currentMonth)
-      setUrl(leftUrl || '')
-      setComment(leftComment || '')
-    })()
-
-    // 病名一覧の読み込み
-    async function getAxiosClient(){
+    async function fetchHospitals(){
       try {
-        const axiosClient = await createAxiosClient()
-        const response = await axiosClient?.get('/api/hospital/reviews')
-        const allDiseases = response?.data.reviews.map((review: { diseaseNames: string[] }) => review.diseaseNames).flat()
-        setDiseases([...new Set<string>(allDiseases)])
+        setServerLoading(true)
+        setLoadingPercentage(0)
+
+        // 途中入力の読み込み
+        const leftHospital = await getData('reveiwNoID-hospital')
+        const leftTitle = await getData('reveiwNoID-title')
+        const leftDiseases = await getData('reveiwNoID-diseases')
+        const leftYear = await getData('reveiwNoID-year')
+        const leftMonth = await getData('reveiwNoID-month')
+        const leftUrl = await getData('reveiwNoID-url')
+        const leftComment = await getData('reveiwNoID-comment')
+        setSelectedHospitalname(leftHospital || '')
+        setTitleName(leftTitle || '')
+        setDiseaseNames(leftDiseases || '')
+        setYear(Number(leftYear) || currentYear)
+        setMonth(Number(leftMonth) || currentMonth)
+        setUrl(leftUrl || '')
+        setComment(leftComment || '')
+
+        // 病名一覧の読み込み
+        const loadReviews = await getData('reviews')
+        if(loadReviews){
+          const allDiseases = JSON.parse(loadReviews).map((review: { diseaseNames: string[] }) => review.diseaseNames).flat()
+          setDiseases([...new Set<string>(allDiseases)])
+          setServerLoading(false)
+        } else {
+          Alert.alert('病名の一覧を取得できませんでした。')
+          setServerLoading(false)
+        }
       } catch {
-        Alert.alert('病名の一覧を取得できませんでした。')
+        setServerLoading(false)
+        await backToHome("情報の取得に失敗しました。ホーム画面へ戻ります。")
       }
     }
-    getAxiosClient()
+    fetchHospitals()
   }, [])
 
   async function sendFun () {
     try {
-      setLoading(true)
+      setServerLoading(true)
+      setLoadingPercentage(0)
       const selectedHospital = hospitals?.find(h=>h.hospitalname === selectedHospitalname)
-      if(!selectedHospital) return Alert.alert('病院を選択してください')
+      if(!selectedHospital) {
+        setServerLoading(false)
+        return Alert.alert('病院を選択してください')
+      }
       const axiosClient = await createAxiosClient()
       await axiosClient?.post(`/api/hospital/${selectedHospital?._id}/new`, 
         {
@@ -79,18 +90,19 @@ export default function newReviewWithSelectableHospital (){
         }
       )
       Alert.alert('投稿いただきありがとうございます。','管理人が確認後に掲載いたします。')
-      deleteToken('reveiwNoID-hospital')
-      deleteToken('reveiwNoID-title')
-      deleteToken('reveiwNoID-diseases')
-      deleteToken('reveiwNoID-year')
-      deleteToken('reveiwNoID-month')
-      deleteToken('reveiwNoID-url')
-      deleteToken('reveiwNoID-comment')
+      deleteData('reveiwNoID-hospital')
+      deleteData('reveiwNoID-title')
+      deleteData('reveiwNoID-diseases')
+      deleteData('reveiwNoID-year')
+      deleteData('reveiwNoID-month')
+      deleteData('reveiwNoID-url')
+      deleteData('reveiwNoID-comment')
+      setServerLoading(false)
       router.replace(`/t-hospital/${selectedHospital?._id}`)
     } catch(e){
       console.log(e)
       Alert.alert('投稿エラーが発生しました。ご投稿内容をコピーし、ホーム画面へ一度戻ってから再度お試しください。')
-      setLoading(false)
+      setServerLoading(false)
     }
   }
 
@@ -133,7 +145,7 @@ export default function newReviewWithSelectableHospital (){
               style={{ flex:1 }} 
               onValueChange={async(value) => {
                 setYear(value)
-                await saveToken('reveiwNoID-year', value.toString())
+                await saveData('reveiwNoID-year', value.toString())
               }}
             >
               {[...Array(30)].map((_, i) => (
@@ -151,7 +163,7 @@ export default function newReviewWithSelectableHospital (){
               itemStyle={{ borderWidth: 1, borderColor: 'black'}}
               onValueChange={async(value) => {
                 setMonth(value)
-                await saveToken('reveiwNoID-month', value.toString())
+                await saveData('reveiwNoID-month', value.toString())
               }}
             >
               {[...Array(12)].map((_, i) => (
@@ -201,12 +213,11 @@ export default function newReviewWithSelectableHospital (){
             sessionName="reveiwNoID-comment"
           />
 
-          <RaisedButton
+          <CustomButton
             title="口コミを投稿する"
-            color="green"
-            disabled={!titleName || !diseaseNames || !comment || loading ? true : false}
+            color={!titleName || !diseaseNames || !comment ? "#dddddd": "orange"}
+            disabledFun={!titleName || !diseaseNames || !comment ? true : false}
             fun={sendFun}
-            styleChange={{margin: 0}}
           />
 
         </View>

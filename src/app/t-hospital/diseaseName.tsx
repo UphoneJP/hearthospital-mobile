@@ -4,12 +4,12 @@ import { ScrollView, StyleSheet, View } from "react-native"
 import { TextInput } from 'react-native-paper'
 
 import { type reviewType } from "@/src/types/types"
-import createAxiosClient from "@/utils/axiosClient"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import DiseasesBox from "@/src/components/review/DiseasesBox"
 import ReviewsBox from "@/src/components/review/ReviewsBox"
 import { LoadingContext } from "@/src/context/loadingContext"
 import { AuthContext } from "@/src/context/loginContext"
+import { getData } from "@/utils/asyncStorage"
 
 export default function DiseaseName () {
   const [inputVal, setInputVal] = useState<string>('')
@@ -19,27 +19,32 @@ export default function DiseaseName () {
   const [diseasesCopy, setDiseasesCopy] = useState<string[]>([])
   const params = useSearchParams()
   const disease = decodeURIComponent(params.get('disease') || '')
-  const { setServerLoading } = useContext(LoadingContext)
+  const { setServerLoading, setLoadingPercentage } = useContext(LoadingContext)
   const {backToHome} = useContext(AuthContext)
 
   useEffect(()=>{
-    async function getAxiosClient(){
+    async function fetchHospitals(){
       try {
         setServerLoading(true)
-        const axiosClient = await createAxiosClient()
-        const response = await axiosClient?.get('/api/hospital/reviews')
-        setReviews(response?.data.reviews)
-        setReviewsCopy(response?.data.reviews)
+        setLoadingPercentage(0)
+        const loadReviews = await getData('reviews')
+        if(loadReviews){
+          setReviews(JSON.parse(loadReviews))
+          setReviewsCopy(JSON.parse(loadReviews))
+          const allDiseases = JSON.parse(loadReviews).map((review: { diseaseNames: string[] }) => review.diseaseNames).flat()
+          setDiseases([...new Set<string>(allDiseases)])
+          setDiseasesCopy([...new Set<string>(allDiseases)])
+          setInputVal(disease)
+        } else {
+          await backToHome("情報の取得に失敗しました。ホーム画面へ戻ります。")
+        }
         setServerLoading(false)
-        const allDiseases = response?.data.reviews.map((review: { diseaseNames: string[] }) => review.diseaseNames).flat()
-        setDiseases([...new Set<string>(allDiseases)])
-        setDiseasesCopy([...new Set<string>(allDiseases)])
-        setInputVal(disease)
       } catch {
-        await backToHome("データベースの取得に失敗しました。ホーム画面へ戻ります。")
+        setServerLoading(false)
+        await backToHome("情報の取得に失敗しました。ホーム画面へ戻ります。")
       }
     }
-    getAxiosClient()
+    fetchHospitals()
   }, [])
 
   useEffect(()=>{

@@ -8,7 +8,7 @@ export default function Promotion () {
   const { user, setUser } = useContext(AuthContext)
   const [promotionEdit, setPromotionEdit] = useState<boolean>(false)
   const [promotionInput, setPromotionInput] = useState<string|undefined>(user?.promotion)
-  const { setServerLoading } = useContext(LoadingContext)
+  const { setServerLoading, setLoadingPercentage } = useContext(LoadingContext)
 
 
   useEffect(()=>{
@@ -18,6 +18,7 @@ export default function Promotion () {
   async function changePromotion () {
     Keyboard.dismiss()
     setServerLoading(true)
+    setLoadingPercentage(0)
     setPromotionEdit(false)
     if (!promotionInput || promotionInput.length < 1) {
       Alert.alert('自己紹介文を入力してください。')

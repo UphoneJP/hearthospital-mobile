@@ -46,7 +46,7 @@ const AuthProvider: React.FC<ChildrenType> = ({ children }:ChildrenType) => {
   const { onTabPress } = useTab()
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [user, setUser] = useState(null)
-  const {setServerLoading} = useContext(LoadingContext)
+  const {setServerLoading, setLoadingPercentage} = useContext(LoadingContext)
 
   async function checkLoginStatus () {
     const token = await getToken("accessToken")
@@ -85,6 +85,7 @@ const AuthProvider: React.FC<ChildrenType> = ({ children }:ChildrenType) => {
   async function register(penName: string, email: string, password: string) {
     try{
       setServerLoading(true)
+      setLoadingPercentage(0)
       const axiosClient = await createAxiosClient()
       const response = await axiosClient?.post("/api/user/register", { penName, email, password })
       if(response?.data.success){
@@ -105,6 +106,7 @@ const AuthProvider: React.FC<ChildrenType> = ({ children }:ChildrenType) => {
   async function login( email: string, password: string) {
     try {
       setServerLoading(true)
+      setLoadingPercentage(0)
       const axiosClient = await createAxiosClient()
       const response = await axiosClient?.post("/api/user/login", { email, password })
       await saveToken("accessToken", response?.data.accessToken)
@@ -167,6 +169,7 @@ const AuthProvider: React.FC<ChildrenType> = ({ children }:ChildrenType) => {
 
   async function logout () {
     setServerLoading(true)
+    setLoadingPercentage(0)
     await deleteToken("accessToken")
     await deleteToken("refreshToken")
     setIsLoggedIn(false)

@@ -17,8 +17,8 @@ export default function EditButton(prop: propsType){
   const idRef = useRef<string>("")
   const titleRef = useRef<string>("")
   const detailRef = useRef<string>("")
-  const inputRef = useRef<React.ElementRef<typeof TextInput> | null>(null)
-  const detailInputRef = useRef<React.ElementRef<typeof TextInput> | null>(null)
+  const inputRef = useRef<React.ComponentRef<typeof TextInput> | null>(null)
+  const detailInputRef = useRef<React.ComponentRef<typeof TextInput> | null>(null)
 
   // Stateが更新後に起動してeditDialogを表示
   useEffect(() => {

@@ -8,7 +8,7 @@ import { LoadingContext } from "@/src/context/loadingContext"
 export default function Notify () {
   const [checked, setChecked] = useState('notify')
   const { user } = useContext(AuthContext)
-  const { setServerLoading } = useContext(LoadingContext)
+  const { setServerLoading, setLoadingPercentage } = useContext(LoadingContext)
 
   useEffect(()=>{
     if(!user?.notify){
@@ -20,6 +20,7 @@ export default function Notify () {
     if(checked === 'notify') return
     try {
       setServerLoading(true)
+      setLoadingPercentage(0)
       const axiosClient = await createAxiosClient()
       const response = await axiosClient?.get(`/api/user/${user?._id}/notifyTrue`)
       if(response?.data.success){
@@ -36,6 +37,7 @@ export default function Notify () {
     if(checked === 'not-notify') return
     try {
       setServerLoading(true)
+      setLoadingPercentage(0)
       const axiosClient = await createAxiosClient()
       const response = await axiosClient?.get(`/api/user/${user?._id}/notifyFalse`)
       if(response?.data.success){

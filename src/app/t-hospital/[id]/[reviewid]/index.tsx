@@ -6,48 +6,43 @@ import { Linking } from "react-native"
 
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import { reviewType } from "@/src/types/types"
-import createAxiosClient from "@/utils/axiosClient"
 import BannerAds from "@/src/components/template/BannerAds"
 import { LoadingContext } from "@/src/context/loadingContext"
 import { AuthContext } from "@/src/context/loginContext"
+import { getData } from "@/utils/asyncStorage"
 
 export default function ReveiwDetail () {
   const params = useSearchParams()
   const reviewId = params.get('reviewid')
   const [review, setReview] = useState<reviewType|undefined>(undefined)
-  const {setServerLoading} = useContext(LoadingContext)
+  const {setServerLoading, setLoadingPercentage} = useContext(LoadingContext)
   const {backToHome} = useContext(AuthContext)
 
-
-  useEffect(()=> {
-    async function fetchReview(){
-      setServerLoading(true)
+  useEffect(()=>{
+    async function fetchData(){
       try {
-        const axiosClient = await createAxiosClient()
-        const response = await axiosClient?.get('/api/hospital/reviews')
-        const rev = response?.data.reviews.filter((review: { _id: { toString: () => string | null } })=>review._id.toString()===reviewId)
-        setReview(rev[0])
+        setServerLoading(true)
+        setLoadingPercentage(0)
+        const loadReviews = await getData('reviews')
+        if(loadReviews){
+          const filteredReview = JSON.parse(loadReviews).filter((review: reviewType)=>review._id===reviewId)
+          setReview(filteredReview[0])
+          setServerLoading(false)
+        } else {
+          setServerLoading(false)
+          await backToHome("病院情報の取得に失敗しました。ホーム画面へ戻ります。")
+        }
       } catch {
-        await backToHome('病院情報を取得できませんでした。ホーム画面へ戻ります。')
+        setServerLoading(false)
+        await backToHome("病院情報の取得に失敗しました。ホーム画面へ戻ります。")
       }
-      setServerLoading(false)
     }
-    fetchReview()
+    fetchData()
   }, [])
-
 
   const jumpFun = (d: SetStateAction<string>) => {
     router.push(`/t-hospital/diseaseName?disease=${d}`)
   }
-
-  // if(loading || !review){
-  //   return (
-  //     <BackgroundTemplate>
-  //       <ActivityIndicator size="large" color="orange" />
-  //       <Text>サーバーから読み込み中...</Text>
-  //     </BackgroundTemplate>
-  //   )
-  // }
 
   return (
     <BackgroundTemplate>

@@ -1,114 +1,109 @@
 import { useContext, useEffect, useState } from "react"
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native"
+import { ScrollView, StyleSheet, Text, View } from "react-native"
 
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
 import { type hospitalType } from "@/src/types/types"
-import createAxiosClient from "@/utils/axiosClient"
 import Selector from "@/src/components/chart/Selector"
 import DPCcodeSummary from "@/src/components/chart/DPCcodeSummary"
 import KcodeSummary from "@/src/components/chart/KcodeSummary"
 import HospitalData from "@/src/components/chart/HospitalData"
 import BannerAds from "@/src/components/template/BannerAds"
 import { AuthContext } from "@/src/context/loginContext"
+import areas from "@/utils/areas"
+import { LoadingContext } from "@/src/context/loadingContext"
+import { getData } from "@/utils/asyncStorage"
 
 export default function Data() {
-  const [areas, setAreas] = useState<string[]>([])
   const [hospitals, setHospitals] = useState<hospitalType[]>([])
-  const [loading, setLoading] = useState<boolean>(true)
   const [selectedValue, setSelectedValue] = useState("R6")
   const {backToHome} = useContext(AuthContext)
+  const {setServerLoading, setLoadingPercentage} = useContext(LoadingContext)
   
   useEffect(()=>{
-    async function getAxiosClient(){
+    async function fetchHospitals(){
       try {
-        const axiosClient = await createAxiosClient()
-        const response = await axiosClient?.get("/api/hospital")
-        setAreas(response?.data.areas)
-        setHospitals(response?.data.hospitals)
-        setLoading(false)
+        setServerLoading(true)
+        setLoadingPercentage(0)
+        const loadHospitals = await getData('hospitals')
+        if(loadHospitals){
+          setHospitals(JSON.parse(loadHospitals))
+        } else {
+          await backToHome("病院情報の取得に失敗しました。ホーム画面へ戻ります。")
+        }
+        setServerLoading(false)
       } catch {
-        await backToHome("病院データの取得に失敗しました。ホーム画面へ戻ります。")
+        setServerLoading(false)
+        await backToHome("病院情報の取得に失敗しました。ホーム画面へ戻ります。")
       }
     }
-    getAxiosClient()
+    fetchHospitals()
   }, [])
+   
+  return (
+    <BackgroundTemplate>
+      <ScrollView style={{width: "100%"}}>
+        <Text style={styles.headerTitle}>数字で見る病院データ</Text>
 
-  if(loading){
-    return(
-      <BackgroundTemplate>
-        <ActivityIndicator size="large" color="orange"/>
-        <Text>サーバーから読み込み中...</Text>
-      </BackgroundTemplate>
-    )
-  }
+        <Text style={styles.subTitle}>
+          全病院における年度毎の患者数
+        </Text>
 
-  if(!loading){    
-    return (
-      <BackgroundTemplate>
-        <ScrollView style={{width: "100%"}}>
-          <Text style={styles.headerTitle}>数字で見る病院データ</Text>
+        <Selector
+          selectedValue={selectedValue} 
+          setSelectedValue={setSelectedValue} 
+        />
 
-          <Text style={styles.subTitle}>
-            全病院における年度毎の患者数
-          </Text>
+        <DPCcodeSummary
+          hospitals={hospitals} 
+          calcPatientsDPC={calcPatientsDPC}
+          DPCcodeName={DPCcodeName}
+          diseases={diseases}
+          DPCs={DPCs}
+          bgcolors={bgcolors}
+          year={selectedValue}
+        />
 
-          <Selector
-            selectedValue={selectedValue} 
-            setSelectedValue={setSelectedValue} 
-          />
+        <KcodeSummary
+          hospitals={hospitals} 
+          calcPatientsKcode={calcPatientsKcode}
+          KcodeName={KcodeName}
+          bgcolors={bgcolors}
+          year={selectedValue}
+        />
 
-          <DPCcodeSummary
-            hospitals={hospitals} 
-            calcPatientsDPC={calcPatientsDPC}
-            DPCcodeName={DPCcodeName}
-            diseases={diseases}
-            DPCs={DPCs}
-            bgcolors={bgcolors}
-            year={selectedValue}
-          />
+        <View style={{
+          width: 300,
+          borderWidth: 1,
+          borderColor: "#bbbbbb",
+          marginVertical: 24,
+          margin: "auto"
+          }}
+        />
 
-          <KcodeSummary
-            hospitals={hospitals} 
-            calcPatientsKcode={calcPatientsKcode}
-            KcodeName={KcodeName}
-            bgcolors={bgcolors}
-            year={selectedValue}
-          />
+        <Text style={styles.subTitle}>
+          各病院における患者数の年推移
+        </Text>
 
-          <View style={{
-            width: 300,
-            borderWidth: 1,
-            borderColor: "#bbbbbb",
-            marginVertical: 24,
-            margin: "auto"
-            }}
-          />
+        <HospitalData 
+          hospitals={hospitals} 
+          areas={areas} 
+          diseases={diseases}
+          calcPatientsDPC={calcPatientsDPC}
+          DPCs={DPCs}
+          KcodeName={KcodeName}
+          calcPatientsKcode={calcPatientsKcode}
+          bgcolors={bgcolors}
+        />
 
-          <Text style={styles.subTitle}>
-            各病院における患者数の年推移
-          </Text>
-
-          <HospitalData 
-            hospitals={hospitals} 
-            areas={areas} 
-            diseases={diseases}
-            calcPatientsDPC={calcPatientsDPC}
-            DPCs={DPCs}
-            KcodeName={KcodeName}
-            calcPatientsKcode={calcPatientsKcode}
-            bgcolors={bgcolors}
-          />
-
-          <View style={{padding: 64}}/>
-        </ScrollView>
-        
-        <View style={{position: "absolute", bottom: 0}}>
-          <BannerAds />
-        </View>
+        <View style={{padding: 64}}/>
+      </ScrollView>
       
-      </BackgroundTemplate>
-    )
-  }
+      <View style={{position: "absolute", bottom: 0}}>
+        <BannerAds />
+      </View>
+    
+    </BackgroundTemplate>
+  )
 }
 
 const styles = StyleSheet.create({

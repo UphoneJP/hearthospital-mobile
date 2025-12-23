@@ -15,13 +15,14 @@ export default function resetPW(){
   // const [answer, setAnswer] = useState<string>('')
   // const [expire, setExpire] = useState<number>(0)
   const [password, setPassword] = useState<string>('')
-  const { setServerLoading } = useContext(LoadingContext)
+  const { setServerLoading, setLoadingPercentage } = useContext(LoadingContext)
   const readyForSent = email && password ? true : false
   // const readyForSent = email && password && authNum.length === 6 && authNum === answer && Date.now() < expire ? true : false
 
   async function resetPWFun(){
     try {
       setServerLoading(true)
+      setLoadingPercentage(0)
       const axiosClient = await createAxiosClient()
       await axiosClient?.post('/api/user/resetPassword', {email, password})
       router.replace('/user/login')

@@ -14,7 +14,7 @@ import { LoadingContext } from "@/src/context/loadingContext"
 export default function Feedback(){
   const [feedbackContent, setFeedbackContent] = useState<string>('')
   const { onTabPress } = useTab()
-  const { setServerLoading } = useContext(LoadingContext)
+  const { setServerLoading, setLoadingPercentage } = useContext(LoadingContext)
 
   useEffect(()=>{
     (async () => {
@@ -26,6 +26,7 @@ export default function Feedback(){
   async function sendFun(){
     try {
       setServerLoading(true)
+      setLoadingPercentage(0)
       const axiosClient = await createAxiosClient()
       await axiosClient?.post('/api/others/feedback', {feedbackContent})
       Alert.alert('フィードバックを送信いたしました。ご意見、ありがとうございます。')

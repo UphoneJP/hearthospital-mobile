@@ -1,10 +1,11 @@
 import { router } from "expo-router"
-import { useContext } from "react"
+import { JSX, useContext } from "react"
 import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { Badge } from 'react-native-paper'
 import { Feather } from '@expo/vector-icons'
 import { AuthContext } from "@/src/context/loginContext"
 import { useTab } from "@/src/context/tabContext"
+import Ionicons from '@expo/vector-icons/Ionicons'
 
 interface PropsType {
   icon: JSX.Element
@@ -15,9 +16,10 @@ interface PropsType {
   unReadCount?: number
   externalIcon?: boolean
   fun?: () => void
+  reloadIcon?: boolean
 }
 export default function MenuItem(prop: PropsType){
-  const { icon, label, name, url, toggleMenu, unReadCount, externalIcon, fun } = prop
+  const { icon, label, name, url, toggleMenu, unReadCount, externalIcon, fun, reloadIcon=false } = prop
   const { selectedTab, onTabPress } = useTab()
   const { logout } = useContext(AuthContext)
 
@@ -83,6 +85,15 @@ export default function MenuItem(prop: PropsType){
             size={16} 
             color='#444444' 
             style={{alignSelf: 'center', marginLeft: 8}} 
+          />
+        }
+
+        {reloadIcon&&
+          <Ionicons 
+            name="reload-circle" 
+            size={24} 
+            color="white" 
+            style={{alignSelf: 'center', marginLeft: 8, position: 'absolute', right: 16}}
           />
         }
 
