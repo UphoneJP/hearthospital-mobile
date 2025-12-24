@@ -8,8 +8,6 @@ import { Platform, StatusBar } from 'react-native'
 import { InterstitialAd, AdEventType, TestIds } from 'react-native-google-mobile-ads'
 import Constants from "expo-constants"
 import * as Device from "expo-device"
-import EditButton from "../parts/EditButton"
-import DeleteButton from "../parts/DeleteButton"
 
 // interstitial広告
 const androidAdmobInterstitial = Constants.expoConfig?.extra?.INTERSTITIAL_ANDROID_UNIT_ID
@@ -22,10 +20,12 @@ const interstitial = InterstitialAd.createForAdRequest(adUnitId, {
 })
 
 interface PropsType {
+  setSelectedTalkTheme: React.Dispatch<React.SetStateAction<talkThemeType | null>>
   talkThemes: talkThemeType[]
-  setNum: React.Dispatch<React.SetStateAction<number>>
+  setEditDialogVisible: React.Dispatch<React.SetStateAction<boolean>>
+  setDeleteDialogVisible: React.Dispatch<React.SetStateAction<boolean>>
 }
-export default function TalkThemes ({ talkThemes, setNum }: PropsType) {
+export default function TalkThemes ({ talkThemes, setSelectedTalkTheme, setEditDialogVisible, setDeleteDialogVisible }: PropsType) {
   const { user } = useContext(AuthContext)
   const [loaded, setLoaded] = useState(false)
   const [loadingAd, setLoadingAd] = useState(false)
@@ -59,16 +59,17 @@ export default function TalkThemes ({ talkThemes, setNum }: PropsType) {
   }, [])
 
   // talkThemeのBOXを押したときの処理
-  function handleTalkThemePress(talkThemeId: string) {
+  function handleTalkThemePress(talkTheme: talkThemeType) {
     if (loaded) {
       interstitial.show()
       const unsubscribeClosed = interstitial.addAdEventListener(AdEventType.CLOSED, () => {
-        router.push(`t-talkingRoom/${talkThemeId}`)
+        setSelectedTalkTheme(talkTheme)
+        router.push(`t-talkingRoom/${talkTheme._id}`)
         unsubscribeClosed()
       })
     } else {
       console.log('Ad not loaded yet')
-      router.push(`t-talkingRoom/${talkThemeId}`)
+      router.push(`t-talkingRoom/${talkTheme._id}`)
       if (!loadingAd) {
         setLoadingAd(true)
         interstitial.load()
@@ -88,7 +89,7 @@ export default function TalkThemes ({ talkThemes, setNum }: PropsType) {
             {/* talkThemeのBOX */}
             <TouchableOpacity
               style={styles.tBox}
-              onPress={()=> handleTalkThemePress(talkTheme._id)}
+              onPress={()=> handleTalkThemePress(talkTheme)}
               activeOpacity={0.6}
             >
               {/* 背景 */}
@@ -115,15 +116,25 @@ export default function TalkThemes ({ talkThemes, setNum }: PropsType) {
                 {talkTheme.author === user?._id && (
                   <View style={styles.buttons}>
                     
-                    <EditButton
-                      talkTheme={talkTheme}
-                      setNum={setNum}
-                    />
+                    <Text
+                      style={[styles.deleteButton, {backgroundColor: 'blue'}]}
+                      onPress={()=>{
+                        setSelectedTalkTheme(talkTheme)
+                        setEditDialogVisible(true)
+                      }}
+                    >
+                      編集
+                    </Text>
 
-                    <DeleteButton
-                      talkTheme={talkTheme}
-                      setNum={setNum}
-                    />
+                    <Text
+                      style={styles.deleteButton}
+                      onPress={()=>{
+                        setSelectedTalkTheme(talkTheme)
+                        setDeleteDialogVisible(true)
+                      }}
+                    >
+                      削除
+                    </Text>
 
                   </View>
                 )}
@@ -180,5 +191,14 @@ const styles = StyleSheet.create({
     gap: 8, 
     justifyContent: 'center', 
     marginTop: 8
+  },
+  deleteButton: {
+    backgroundColor: 'red',
+    color: 'white',
+    textAlign: 'center',
+    width: 48,
+    paddingBottom: 4,
+    paddingTop: 2,
+    borderRadius: 4
   }
 })

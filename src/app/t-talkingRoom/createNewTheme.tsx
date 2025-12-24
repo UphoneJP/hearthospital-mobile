@@ -1,17 +1,18 @@
 import CustomButton from "@/src/components/parts/CustomButton"
 import BackgroundTemplate from "@/src/components/template/BackgroundTemplate"
+import { LoadingContext } from "@/src/context/loadingContext"
 import { AuthContext } from "@/src/context/loginContext"
 import createAxiosClient from "@/utils/axiosClient"
 import { router } from "expo-router"
 import { useContext, useState } from "react"
-import { ActivityIndicator, Alert, StyleSheet, Text, View } from "react-native"
+import { Alert, StyleSheet, Text, View } from "react-native"
 import { TextInput } from "react-native-paper"
 
 export default function CreateNewTheme() {
   const [title, setTitle] = useState<string>("")
   const [detail, setDetail] = useState<string>("")
-  const [loading, setLoading] = useState<boolean>(false)
   const { user } = useContext(AuthContext)
+  const { setServerLoading, setLoadingPercentage } = useContext(LoadingContext)
 
 
   async function sendNewTalkTheme(){
@@ -21,8 +22,9 @@ export default function CreateNewTheme() {
       Alert.alert('タイトルと説明の両方を記述してください')
       return
     }
-    setLoading(true)
     try {
+      setServerLoading(true)
+      setLoadingPercentage(0)
       const axiosClient = await createAxiosClient()
       await axiosClient?.post('/api/talkingRoom/new', {
         title: titleNoSpace, 
@@ -32,10 +34,14 @@ export default function CreateNewTheme() {
       setTitle("")
       setDetail("")
       Alert.alert('トークテーマを作成しました')
-      setLoading(false)
-      router.push('/t-talkingRoom')
+      setServerLoading(false)
+      router.replace({
+        pathname: '/t-talkingRoom',
+        params: { refresh: 'true' }
+      })
     } catch(err) {
       console.error(err)
+      setServerLoading(false)
       Alert.alert('エラーでトークテーマを作成できませんでした')
     }
   }
@@ -43,13 +49,6 @@ export default function CreateNewTheme() {
 
   return (
     <BackgroundTemplate>
-
-      {loading && (
-        <View style={styles.mask}>
-          <ActivityIndicator size="large" color="orange" />
-          <Text style={{textAlign: 'center'}}>新しいテーマを作成中...</Text>
-        </View>
-      )}
 
       <Text style={styles.headerTitle}>新しいトークテーマを作る</Text>
 
