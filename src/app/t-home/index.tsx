@@ -36,23 +36,22 @@ export default function Home() {
           setTimeout(() => setShowTips(true), 6000)
           await saveToken('isFirstLaunchDone', 'true')
         }
-        
         setServerLoading(true)
+        
         setLoadingPercentage(0)
+        await getApiKey()
+        setLoadingPercentage(50)
+        await reloadInfo()
+        setLoadingPercentage(100)
 
-        // 前回APIキー取得から5分以内なら再取得しない
-        const lastContactTime = await getToken('lastContactTime')
-        if (lastContactTime && Date.now() > parseInt(lastContactTime) + 1000 * 60 * 1) {
-          await getApiKey()
-          setLoadingPercentage(50)
-          await reloadInfo()
-          setLoadingPercentage(100)
-        }
         setStartOK(true)
         setServerLoading(false)
 
-      } catch (err) {
-        console.log('useEffectエラー:', err)
+      } catch {
+        Alert.alert(
+          "エラーが発生しました。",
+          "通信環境を確認の上、アプリを再起動してください。改善しない場合は\nhttps://www.hearthospital.jp \nのWebページをご利用ください。"
+        )
       }
     })()
   }, [])
